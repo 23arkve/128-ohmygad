@@ -524,7 +524,7 @@ export default function EventsPage() {
 		{
 			key: "actions",
 			header: <div className="text-center">Actions</div>,
-			width: "11%",
+			width: "8%",
 			render: (event) => (
 				<div
 					style={{
