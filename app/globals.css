@@ -641,10 +641,6 @@ header {
   transition: var(--transition);
 }
 
-.auth-card:hover {
-  box-shadow: var(--shadow-float);
-}
-
 .card:hover {
   box-shadow: var(--shadow-float);
 }

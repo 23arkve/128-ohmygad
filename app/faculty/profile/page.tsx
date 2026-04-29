@@ -335,14 +335,6 @@ export default function FacultyProfilePage() {
                     onChange={set("department")}
                     maxLength={64}
                   />
-                  <Input
-                    label="Office"
-                    prefixIcon={<Building2 size={15} />}
-                    placeholder="e.g. Room 301, CAS Building"
-                    value={profile.office}
-                    onChange={set("office")}
-                    maxLength={64}
-                  />
                 </div>
               )}
 
