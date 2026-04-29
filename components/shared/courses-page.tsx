@@ -274,7 +274,7 @@ export default function CoursesPage() {
       )}
 
       {/* Detail Modal */}
-      <Modal open={!!detailCourse} onClose={() => setDetailCourse(null)} hideCloseButton modalStyle={{ maxWidth: 1000 }}>
+      <Modal open={!!detailCourse} onClose={() => setDetailCourse(null)} hideCloseButton modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto" }}>
         {detailCourse && (
           <div className="flex flex-col gap-2 p-2">
             <div className="flex justify-end items-center">
