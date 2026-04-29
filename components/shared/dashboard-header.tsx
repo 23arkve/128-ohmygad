@@ -83,7 +83,7 @@ export default function DashboardHeader({ basePath, pageLabels }: DashboardHeade
 
         {/* row 2 (mobile only): page title for non-dashboard pages */}
         {!isDashboard && (
-          <div className="flex md:hidden items-center gap-1.5 mt-2 mx-1">
+          <div className="flex md:hidden items-center gap-1.5 mt-2">
             <h1 className="heading-md">{pageLabel}</h1>
           </div>
         )}

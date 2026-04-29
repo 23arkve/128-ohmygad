@@ -24,7 +24,7 @@ async function StudentAuthGuard({ children }: { children: React.ReactNode }) {
 
 export default function StudentLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen w-full p-2 bg-[var(--primary-dark)]">
+    <div className="flex h-screen w-full p-0 md:p-2 bg-[var(--primary-dark)]">
 
       {/* outer card that hugs sidebar + content */}
       <div className="bg-[var(--primary-dark)]" style={{ position:'relative', zIndex:1, display:'flex', flex:1, overflow:'hidden' }}>

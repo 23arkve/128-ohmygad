@@ -24,7 +24,7 @@ async function FacultyAuthGuard({ children }: { children: React.ReactNode }) {
 
 export default function FacultyLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen w-full p-2 bg-[var(--primary-dark)]">
+    <div className="flex h-screen w-full p-0 md:p-2 bg-[var(--primary-dark)]">
 
       {/* outer card that hugs sidebar + content */}
       <div className="bg-[var(--primary-dark)]" style={{ position:'relative', zIndex:1, display:'flex', flex:1, overflow:'hidden' }}>
@@ -48,7 +48,7 @@ export default function FacultyLayout({ children }: { children: React.ReactNode 
                 <span className="opacity-30">·</span>
               </span>
               <span className="flex items-center gap-3">
-                <span>© {new Date().getFullYear()} UP Baguio</span>
+                <span>© 2026 UP Baguio</span>
               </span>
             </footer>
           </main>

@@ -2,11 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
+ * Maps event categories to their corresponding profile column names.
+ */
+const CATEGORY_FIELD_MAP: Record<string, string> = {
+  GSO: "gso_attended",
+  ASHO: "asho_attended",
+  Forum: "forum_attended",
+  Research: "research_attended",
+  Training: "training_attended",
+  Workshop: "workshop_attended",
+};
+
+const VALID_CATEGORIES = Object.keys(CATEGORY_FIELD_MAP);
+
+/**
  * POST /api/admin/sync-session-count
- * Recalculates a user's gso_attended or asho_attended count
+ * Recalculates a user's attended count for a given event category
  * based on their actual attended event_registration records.
  *
- * Body: { userId: string, category: "GSO" | "ASHO" }
+ * Body: { userId: string, category: "GSO" | "ASHO" | "Forum" | "Research" | "Training" | "Workshop" }
  */
 export async function POST(req: NextRequest) {
   try {
@@ -19,9 +33,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (category !== "GSO" && category !== "ASHO") {
+    if (!VALID_CATEGORIES.includes(category)) {
       return NextResponse.json(
-        { error: "category must be GSO or ASHO" },
+        { error: `category must be one of: ${VALID_CATEGORIES.join(", ")}` },
         { status: 400 },
       );
     }
@@ -60,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
 
     // update the user's profile
-    const field = category === "GSO" ? "gso_attended" : "asho_attended";
+    const field = CATEGORY_FIELD_MAP[category];
     const { error: updateError } = await supabaseAdmin
       .from("profile")
       .update({ [field]: attendedCount })

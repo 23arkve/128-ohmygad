@@ -67,7 +67,7 @@ export default function StaffShell({ children }: { children: React.ReactNode }) 
   const state = open ? "expanded" : "collapsed";
 
   return (
-    <div className="flex h-screen w-full p-2 bg-[var(--primary-dark)]">
+    <div className="flex h-screen w-full p-0 md:p-2 bg-[var(--primary-dark)]">
       {/* outer card that hugs sidebar + content */}
       <div
         style={{

@@ -69,7 +69,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const state = open ? "expanded" : "collapsed";
 
   return (
-    <div className="flex h-screen w-full p-2 bg-[var(--primary-dark)]">
+    <div className="flex h-screen w-full p-0 md:p-2 bg-[var(--primary-dark)]">
 
       {/* outer card that hugs sidebar + content */}
       <div style={{ position: "relative", zIndex: 1, display: "flex", flex: 1, overflow: "hidden", background: "var(--primary-dark)" }}>
