@@ -284,7 +284,7 @@ export default function CoursesPage() {
             <div className="divider" />
             <div className="space-y-3">
               <p className="label">Description</p>
-              <p className="body text-gray-600">{detailCourse.description || "No description provided."}</p>
+              <p className="body text-gray-600" style={{wordBreak:"break-word"}}>{detailCourse.description || "No description provided."}</p>
             </div>
 
 
