@@ -112,7 +112,6 @@ export default function EventsPage() {
 	const [categoryFilters, setCategoryFilters] = useState<Set<string>>(
 		new Set(),
 	);
-	const [statusFilters, setStatusFilters] = useState<Set<string>>(new Set());
 	const [activeChip, setActiveChip] = useState("All");
 
 	const [page, setPage] = useState(1);
@@ -300,14 +299,7 @@ export default function EventsPage() {
 			);
 		}
 
-		// status filter
-		if (statusFilters.size > 0) {
-			result = result.filter((e) =>
-				statusFilters.has(
-					deriveStatus(e.start_date ?? "", e.end_date ?? ""),
-				),
-			);
-		}
+
 
 		// sorting
 		result = result.sort((a, b) => {
@@ -701,24 +693,7 @@ export default function EventsPage() {
 							</Button>
 						}
 					>
-						<div style={{ padding: "4px 12px 6px" }}>
-							<p className="label" style={{ marginBottom: 4 }}>
-								Status
-							</p>
-						</div>
-						{STATUSES.map((s) => (
-							<DropdownItem key={s}>
-								<Checkbox
-									label={
-										s.charAt(0).toUpperCase() + s.slice(1)
-									}
-									checked={statusFilters.has(s)}
-									onChange={() => toggleStatus(s)}
-								/>
-							</DropdownItem>
-						))}
 
-						<DropdownDivider />
 
 						<div style={{ padding: "6px 12px 4px" }}>
 							<p className="label" style={{ marginBottom: 4 }}>
@@ -755,22 +730,7 @@ export default function EventsPage() {
 				<div className="flex items-center gap-2 flex-wrap -mt-2">
 					<span className="caption">Active filters:</span>
 
-					{/* Status pills */}
-					{[...statusFilters].map((s) => (
-						<Badge
-							key={s}
-							variant={STATUS_VARIANT[s] ?? "dark"}
-							dot
-						>
-							<span className="capitalize">{s}</span>
-							<button
-								onClick={() => toggleStatus(s)}
-								style={{ marginLeft: 6 }}
-							>
-								×
-							</button>
-						</Badge>
-					))}
+
 
 					{/* Category pills */}
 					{[...categoryFilters].map((c) => (

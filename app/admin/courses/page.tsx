@@ -392,20 +392,21 @@ const confirmDelete = async () => {
 				open={!!modalContent}
 				onClose={() => setModalContent(null)}
 				title={modalContent?.label}
-				modalStyle={{ maxWidth: 1000 }}
+				modalStyle={{ maxWidth: "70vw", height: "70vh", overflowY: "auto" }}
 			>
-			<div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto">
+			
 				<p
 					style={{
 						fontSize: 14,
 						lineHeight: 1.8,
 						color: "var(--primary-dark)",
 						whiteSpace: "pre-wrap",
+						overflowWrap: "break-word",
 					}}
 				>
 					{modalContent?.text || "No description provided."}
 				</p>
-			</div>
+			
 			</Modal>
 
 			{/* confirm delete modal */}
