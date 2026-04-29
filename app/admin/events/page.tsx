@@ -335,7 +335,16 @@ export default function EventsPage() {
 
 		setFiltered(result);
 		setPage(1);
-	}, [search, events, sort, categoryFilters]);
+	}, [search, events, sort, categoryFilters, statusFilters]);
+
+	function toggleStatus(s: string) {
+		setStatusFilters((prev) => {
+			const next = new Set(prev);
+			next.has(s) ? next.delete(s) : next.add(s);
+			return next;
+		});
+		setPage(1);
+	}
 
 	function toggleCategory(c: string) {
 		setCategoryFilters((prev) => {
@@ -349,6 +358,7 @@ export default function EventsPage() {
 
 	function clearAllFilters() {
 		setCategoryFilters(new Set());
+		setStatusFilters(new Set());
 		setActiveChip("All");
 	}
 
@@ -407,7 +417,7 @@ export default function EventsPage() {
 		setDeletingId(null);
 	};
 
-	const activeFilterCount = categoryFilters.size;
+	const activeFilterCount = categoryFilters.size + statusFilters.size;
 	const hasActiveFilters = activeFilterCount > 0;
 
     // for querying in search
@@ -755,7 +765,12 @@ export default function EventsPage() {
 							<span className="capitalize">{s}</span>
 							<button
 								onClick={() => toggleStatus(s)}
-								style={{ marginLeft: 6 }}
+								style={{
+									all: "unset",
+									cursor: "pointer",
+									marginLeft: 4,
+									lineHeight: 1,
+								}}
 							>
 								×
 							</button>
@@ -771,7 +786,12 @@ export default function EventsPage() {
 									toggleCategory(c);
 									setActiveChip("All");
 								}}
-								style={{ marginLeft: 6 }}
+								style={{
+									all: "unset",
+									cursor: "pointer",
+									marginLeft: 4,
+									lineHeight: 1,
+								}}
 							>
 								×
 							</button>
@@ -917,9 +937,21 @@ export default function EventsPage() {
 						<div className="flex gap-6 p-5 sm:p-7 overflow-y-auto">
 							{/* left column: event info */}
 							<div className="flex flex-col gap-4 flex-1 min-w-0">
-								<h2 className="heading-md">
-									{detailEvent.title}
-								</h2>
+								<div className="flex items-center justify-between gap-2">
+									<h2 className="heading-md">
+										{detailEvent.title}
+									</h2>
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={() => {
+											setEditTarget(detailEvent);
+											setDetailEvent(null);
+										}}
+									>
+										<Pencil size={15} /> Edit
+									</Button>
+								</div>
 								{/* category and status badges moved below */}
 								<div className="flex gap-2 items-center">
 									<Badge variant="ghost">
