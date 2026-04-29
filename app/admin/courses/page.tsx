@@ -392,7 +392,7 @@ const confirmDelete = async () => {
 				open={!!modalContent}
 				onClose={() => setModalContent(null)}
 				title={modalContent?.label}
-				modalStyle={{ maxWidth: "70vw", height: "70vh", overflowY: "auto" }}
+				modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto" }}
 			>
 			
 				<p
