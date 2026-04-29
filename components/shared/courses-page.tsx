@@ -263,7 +263,7 @@ export default function CoursesPage() {
         </div>
         
         {/* Read More Indicator */}
-        <div className="text-black-600 font-medium flex items-center gap-1 group-hover:underline text-xs mt-auto">
+        <div className="text-blue-600 font-medium flex items-center gap-1 group-hover:underline text-xs mt-auto">
           Read more
         </div>
       </div>
@@ -299,7 +299,6 @@ export default function CoursesPage() {
             className="h-[200px] sm:h-[180px] relative shrink-0 rounded-t-[var(--radius-xl)]"
        
           >
-            {/* detailCourse.banner_url ? `url(${detailCourse.banner_url}) center/cover no-repeat` : */}
             {/* close button inside cover */}
             <button
               onClick={() => { setDetailCourse(null); }}
