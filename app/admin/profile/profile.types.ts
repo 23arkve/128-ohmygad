@@ -25,6 +25,10 @@ export type Profile = {
   gender_identity: string;
   gso_attended: number | null;
   asho_attended: number | null;
+  forum_attended: number | null;
+  research_attended: number | null;
+  training_attended: number | null;
+  workshop_attended: number | null;
   avatar_url?: string | null;
 };
 

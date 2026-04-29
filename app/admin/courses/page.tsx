@@ -219,7 +219,7 @@ const confirmDelete = async () => {
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
           <Button
             variant="icon"
-            title="Edit course"
+            title="Edit guideline"
             onClick={(e) => {
               e.stopPropagation();
               setEditTarget(course);
@@ -229,7 +229,7 @@ const confirmDelete = async () => {
           </Button>
           <Button
             variant="icon"
-            title="Delete course"
+            title="Delete guideline"
             disabled={deletingId === course.id}
             style={
               deletingId === course.id
@@ -392,7 +392,9 @@ const confirmDelete = async () => {
 				open={!!modalContent}
 				onClose={() => setModalContent(null)}
 				title={modalContent?.label}
+				modalStyle={{ maxWidth: 1000 }}
 			>
+			<div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto">
 				<p
 					style={{
 						fontSize: 14,
@@ -403,6 +405,7 @@ const confirmDelete = async () => {
 				>
 					{modalContent?.text || "No description provided."}
 				</p>
+			</div>
 			</Modal>
 
 			{/* confirm delete modal */}

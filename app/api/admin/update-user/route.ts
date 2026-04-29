@@ -9,7 +9,9 @@ export async function PATCH(req: Request) {
             id, email, password, full_name, display_name, role,
             contact_num, address, pronouns, college, program,
             student_num, year_level, sex_at_birth, gender_identity,
-            gso_attended, asho_attended, is_onboarded, office, department,
+            gso_attended, asho_attended, forum_attended,
+            research_attended, training_attended, workshop_attended,
+            is_onboarded, office, department,
         } = body;
 
         if (!id) {
@@ -65,6 +67,10 @@ export async function PATCH(req: Request) {
         if (gender_identity !== undefined) profileUpdatePayload.gender_identity = gender_identity || null;
         if (gso_attended !== undefined) profileUpdatePayload.gso_attended = gso_attended ? Number(gso_attended) : 0;
         if (asho_attended !== undefined) profileUpdatePayload.asho_attended = asho_attended ? Number(asho_attended) : 0;
+        if (forum_attended !== undefined) profileUpdatePayload.forum_attended = forum_attended ? Number(forum_attended) : 0;
+        if (research_attended !== undefined) profileUpdatePayload.research_attended = research_attended ? Number(research_attended) : 0;
+        if (training_attended !== undefined) profileUpdatePayload.training_attended = training_attended ? Number(training_attended) : 0;
+        if (workshop_attended !== undefined) profileUpdatePayload.workshop_attended = workshop_attended ? Number(workshop_attended) : 0;
         if (is_onboarded !== undefined) profileUpdatePayload.is_onboarded = is_onboarded;
         if (office !== undefined) profileUpdatePayload.office = office || null;
         if (department !== undefined) profileUpdatePayload.department = department || null;

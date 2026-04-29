@@ -205,9 +205,9 @@ export default function EventsPage() {
 
 			if (error) throw error;
 
-			// If this is a GSO or ASHO event, recalculate the user's session count via server API
+			// Recalculate the user's session count via server API for the event's category
 			const eventCategory = detailEvent?.category;
-			if (eventCategory === "GSO" || eventCategory === "ASHO") {
+			if (eventCategory) {
 				const reg = registrations.find(
 					(r) => r.registration_id === registrationId,
 				);
@@ -515,7 +515,8 @@ export default function EventsPage() {
 			header: "Location",
 			width: "17%",
 			render: (event) => (
-				<span className="caption text-left max-w-[150px] truncate block">
+				<span className="caption text-left max-w-[150px] truncate block"
+				title={event.location}>
 					{event.location}
 				</span>
 			),
