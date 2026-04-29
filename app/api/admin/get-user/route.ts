@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   const { data: user, error } = await supabase
     .from("profile")
     .select(
-      "id, full_name, email, role, display_name, contact_num, address, pronouns, sex_at_birth, gender_identity, college, program, department, office, student_num, year_level, gso_attended, asho_attended, is_onboarded"
+      "id, full_name, email, role, display_name, contact_num, address, pronouns, sex_at_birth, gender_identity, college, program, department, office, student_num, year_level, gso_attended, asho_attended, forum_attended, research_attended, training_attended, workshop_attended, is_onboarded"
     )
     .eq("id", id)
     .single();

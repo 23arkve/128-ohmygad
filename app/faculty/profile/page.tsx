@@ -27,6 +27,10 @@ type Profile = {
   gender_identity: string;
   gso_attended: number | null;
   asho_attended: number | null;
+  forum_attended: number | null;
+  research_attended: number | null;
+  training_attended: number | null;
+  workshop_attended: number | null;
 };
 
 type ToastState = { type: "success" | "error"; message: string } | null;
@@ -45,7 +49,10 @@ export default function FacultyProfilePage() {
     id: "", full_name: "", display_name: "", email: "",
     contact_num: "", address: "", pronouns: "", role: "faculty",
     college: "", department: "", office: "",
-    sex_at_birth: "", gender_identity: "", gso_attended: null, asho_attended: null
+    sex_at_birth: "", gender_identity: "",
+    gso_attended: null, asho_attended: null,
+    forum_attended: null, research_attended: null,
+    training_attended: null, workshop_attended: null,
   });
 
   const [initialProfile, setInitialProfile] = useState<Profile | null>(null);
@@ -198,7 +205,7 @@ export default function FacultyProfilePage() {
             {/* gso progress bar */}
             <div className="w-full text-left pt-6 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={profile.gso_attended === 2 ? 100 : profile.gso_attended === 1 ? 50 : 0}
+                value={Math.min(((profile.gso_attended ?? 0) / 2) * 100, 100)}
                 variant="gradient"
                 label="GSO Attendance"
                 sublabel={`${profile.gso_attended ?? 0} / 2 completed`}
@@ -208,7 +215,7 @@ export default function FacultyProfilePage() {
             {/* asho progress bar */}
             <div className="w-full text-left pt-6 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={profile.asho_attended === 2 ? 100 : profile.asho_attended === 1 ? 50 : 0}
+                value={Math.min(((profile.asho_attended ?? 0) / 2) * 100, 100)}
                 variant="gradient"
                 label="ASHO Attendance"
                 sublabel={`${profile.asho_attended ?? 0} / 2 completed`}
@@ -218,37 +225,37 @@ export default function FacultyProfilePage() {
             {/* forums progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={profile.gso_attended === 2 ? 100 : profile.gso_attended === 1 ? 50 : 0}
+                value={Math.min(((profile.forum_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Forums Attended"
-                sublabel={`${profile.gso_attended ?? 0} attended`}
+                sublabel={`${profile.forum_attended ?? 0} attended`}
               />
             </div>
             {/* research progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={profile.gso_attended === 2 ? 100 : profile.gso_attended === 1 ? 50 : 0}
+                value={Math.min(((profile.research_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Research Attended"
-                sublabel={`${profile.gso_attended ?? 0} attended`}
+                sublabel={`${profile.research_attended ?? 0} attended`}
               />
             </div>
             {/* training progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={profile.gso_attended === 2 ? 100 : profile.gso_attended === 1 ? 50 : 0}
+                value={Math.min(((profile.training_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Trainings Attended"
-                sublabel={`${profile.gso_attended ?? 0} attended`}
+                sublabel={`${profile.training_attended ?? 0} attended`}
               />
             </div>
-            {/* research progress bar */}
+            {/* workshops progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={profile.gso_attended === 2 ? 100 : profile.gso_attended === 1 ? 50 : 0}
+                value={Math.min(((profile.workshop_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Workshops Attended"
-                sublabel={`${profile.gso_attended ?? 0} attended`}
+                sublabel={`${profile.workshop_attended ?? 0} attended`}
               />
             </div>
 
