@@ -297,7 +297,7 @@ export default function CoursesPage() {
         <div className="flex flex-col min-h-0">
           <div
             className="h-[200px] sm:h-[180px] relative shrink-0 rounded-t-[var(--radius-xl)]"
-            style={{ background: CATEGORY_GRADIENT[detailCourse.semester ?? ""] ?? DEFAULT_GRADIENT }}
+       
           >
             {/* detailCourse.banner_url ? `url(${detailCourse.banner_url}) center/cover no-repeat` : */}
             {/* close button inside cover */}
