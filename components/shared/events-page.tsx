@@ -18,6 +18,7 @@ import {
   DropdownItem,
   DropdownDivider,
   Checkbox,
+  Tabs,
 } from "@/components/ui";
 import { useSearchParams } from "next/navigation";
 
@@ -73,10 +74,12 @@ export default function EventsPage() {
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<SortState>({ field: "start_date", direction: "asc" });
   const [filters, setFilters] = useState<FilterState>({ 
-    status: searchParams.get("search") ? new Set() : new Set(["today", "upcoming"]), 
+    status: new Set(), 
     category: new Set() 
   });
   const [activeChip, setActiveChip] = useState("All");
+  // Primary tab filter: Today / Upcoming / Past
+  const [tabFilter, setTabFilter] = useState<"today" | "upcoming" | "past">("today");
 
   // event detail modal
   const [detailEvent, setDetailEvent] = useState<EventFormData | null>(null);
@@ -311,10 +314,15 @@ export default function EventsPage() {
     }
   };
 
-  // apply search filters sort
+  // apply tab filter, then search, then dropdown filters, then sort
   const now = new Date();
   const filtered = sortEvents(
     events
+      // Primary tab filter (Today / Upcoming / Past)
+      .filter((e) => {
+        const computedStatus = deriveStatus(e.start_date ?? "", e.end_date ?? "");
+        return computedStatus === tabFilter;
+      })
       .filter((e) => `${e.title} ${e.category || ""} ${e.location || ""}`.toLowerCase().includes(search.toLowerCase()))
       .filter((e) => {
         const computedStatus = deriveStatus(e.start_date ?? "", e.end_date ?? "");
@@ -340,8 +348,28 @@ export default function EventsPage() {
   // PAGE PROPER ----------------------------------------------------------------
   return (
     <div className="flex flex-col gap-4">
+      {/* header with tabs */}
+      <div className="flex items-center justify-between gap-4 shrink-0 flex-wrap">
+        <h2 className="heading-lg">Events</h2>
+        <Tabs
+          tabs={["Today", "Upcoming", "Past"]}
+          defaultTab={
+            tabFilter === "upcoming"
+              ? "Upcoming"
+              : tabFilter === "today"
+              ? "Today"
+              : "Past"
+          }
+          onChange={(tab) => {
+            const key = tab === "Upcoming" ? "upcoming" : tab === "Today" ? "today" : "past";
+            setTabFilter(key);
+          }}
+          className="w-fit"
+        />
+      </div>
+
       {/* search, sort, filter */}
-      <div className="flex flex-col gap-3 mt-2">
+      <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3 flex-wrap overflow-visible">
           {/* search bar */}
           <SearchBar
@@ -523,7 +551,11 @@ export default function EventsPage() {
                 ? "No events match your filters."
                 : search
                   ? "No events match your search."
-                  : "No events available."}
+                  : tabFilter === "today"
+                    ? "No events today."
+                    : tabFilter === "upcoming"
+                      ? "No upcoming events."
+                      : "No past events."}
             </p>
             {(hasActiveFilters || search) && (
               <Button
