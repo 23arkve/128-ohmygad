@@ -263,9 +263,9 @@ export default function CoursesPage() {
         </div>
         
         {/* Read More Indicator */}
-        <div className="text-blue-600 font-medium flex items-center gap-1 group-hover:underline text-xs mt-auto">
+         <Button variant="ghost" size="xs" className="p-0">
           Read more
-        </div>
+          </Button>
       </div>
     </div>
   ))}
