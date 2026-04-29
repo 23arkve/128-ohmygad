@@ -109,7 +109,7 @@ export default function AdminSidebar() {
         } as React.CSSProperties}
       >
         {/* logo ------------------------------------------------ */}
-        <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[70px] px-[10px] gap-[6px] overflow-hidden">
+        <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[65px] py-3.5 gap-[6px] overflow-hidden">
           <button
             onClick={() => !open && setOpen(true)}
             onMouseEnter={() => setLogoHovered(true)}
