@@ -320,6 +320,7 @@ export default function EventsPage() {
     events
       // Primary tab filter (Today / Upcoming / Past)
       .filter((e) => {
+        if (search.trim() !== "") return true;
         const computedStatus = deriveStatus(e.start_date ?? "", e.end_date ?? "");
         return computedStatus === tabFilter;
       })
@@ -496,26 +497,30 @@ export default function EventsPage() {
 					</div>
 					{/* end sort filter group */}
 				</div>
-				<Tabs
-					tabs={["Today", "Upcoming", "Past"]}
-					defaultTab={
-						tabFilter === "upcoming"
-							? "Upcoming"
-							: tabFilter === "today"
-								? "Today"
-								: "Past"
-					}
-					onChange={(tab) => {
-						const key =
-							tab === "Upcoming"
-								? "upcoming"
-								: tab === "Today"
-									? "today"
-									: "past";
-						setTabFilter(key);
-					}}
-					className="w-fit"
-				/>
+				{search.trim() === "" && (
+				<div className="shrink-0 mt-2">
+					<Tabs
+						tabs={["Today", "Upcoming", "Past"]}
+						defaultTab={
+							tabFilter === "upcoming"
+								? "Upcoming"
+								: tabFilter === "today"
+									? "Today"
+									: "Past"
+						}
+						onChange={(tab) => {
+							const key =
+								tab === "Upcoming"
+									? "upcoming"
+									: tab === "Today"
+										? "today"
+										: "past";
+							setTabFilter(key);
+						}}
+						className="w-fit"
+					/>
+				</div>
+			)}
 			</div>
 
 			{/* active filter pills */}
