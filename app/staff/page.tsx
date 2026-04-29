@@ -6,7 +6,6 @@ import {
 	Calendar,
 	UserCheck,
 	ClipboardList,
-	BookOpen,
 } from "lucide-react";
 import {
 	Card,
@@ -38,8 +37,8 @@ import {
 	Bar,
 	LabelList,
 } from "recharts";
-import { useDashboardData } from "./hooks/use-dashboard-data";
-import { useSurveyCompletionRates } from "./hooks/use-survey-completion-rates";
+import { useDashboardData } from "@/app/admin/hooks/use-dashboard-data";
+import { useSurveyCompletionRates } from "@/app/admin/hooks/use-survey-completion-rates";
 import GlobalSearch from "@/components/global-search";
 import EventForm from "@/components/admin/event-form";
 import SurveyForm from "@/components/admin/survey-form";
@@ -92,6 +91,7 @@ interface TooltipEntry {
 		fill?: string;
 		eventTitle?: string;
 		completedCount?: number;
+		respondentCount?: number;
 		totalRegistrations?: number;
 	};
 	name?: string;
@@ -108,9 +108,11 @@ function CustomTooltip({
 	label?: string;
 }) {
 	if (!active || !payload?.length) return null;
-	const firstPayload = payload[0]?.payload;
+	const firstPayload =
+		payload.find((entry) => entry.payload?.respondentCount !== undefined || entry.payload?.completedCount !== undefined || entry.payload?.totalRegistrations !== undefined)
+			?.payload ?? payload[0]?.payload;
 	const eventTitle = firstPayload?.eventTitle;
-	const totalRespondents = firstPayload?.completedCount;
+	const totalRespondents = firstPayload?.respondentCount ?? firstPayload?.completedCount;
 	const totalAttendees = firstPayload?.totalRegistrations;
 	return (
 		<div className="bg-white/90 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-2 min-w-[160px]">
@@ -180,7 +182,7 @@ export default function DashboardPage() {
 
 	// quick action modals
 	const [activeModal, setActiveModal] = useState<
-		"event" | "survey" | null
+		"event" | "user" | "course" | "survey" | null
 	>(null);
 	const closeModal = () => setActiveModal(null);
 
@@ -243,7 +245,12 @@ export default function DashboardPage() {
 	);
 	const surveyCompletionChartData = useMemo(() => {
 		const startIndex = (surveyPage - 1) * 4;
-		return surveyCompletionFiltered.slice(startIndex, startIndex + 4);
+		return surveyCompletionFiltered
+			.slice(startIndex, startIndex + 4)
+			.map((item) => ({
+				...item,
+				respondentCount: item.respondentCount ?? item.completedCount,
+			}));
 	}, [surveyCompletionFiltered, surveyPage]);
 
 	useEffect(() => {
@@ -325,7 +332,7 @@ export default function DashboardPage() {
 						</div>
 					</div>
 
-					{/* attendance ------------------------------------------------ */}
+					{/* attendance and quick actions ------------------------------------------------ */}
 					<div className="grid grid-cols-1 gap-4">
 						{/* attendance over time */}
 						<Card variant="no-hover" className="flex flex-col p-4 min-h-[320px]" >
@@ -438,6 +445,7 @@ export default function DashboardPage() {
 								)}
 							</div>
 						</Card>
+
 					</div>
 
 					{/* other analytics ------------------------------------------------ */}
@@ -688,6 +696,7 @@ export default function DashboardPage() {
 									className="min-w-[220px] max-w-full"
 								/>
 							</div>
+
 							<div className="w-full min-h-[220px] cursor-default select-none mt-2">
 								{surveyCompletionLoading ? (
 									<div className="flex items-center justify-center h-full">
@@ -710,8 +719,8 @@ export default function DashboardPage() {
 												data={surveyCompletionChartData}
 												margin={{
 													top: 24,
-													right: 16,
-													left: 40,
+													right: 100,
+													left: 20,
 													bottom: 5,
 												}}
 												barCategoryGap="30%"
@@ -842,29 +851,28 @@ export default function DashboardPage() {
 						<TodayTimeline events={todayEvents} loading={loading} />
 					</Card>
 
-
-					{/* quick actions */}
-					<Card variant="no-hover" className="flex flex-col justify-around p-4 gap-3" >
-						<div>
-							<h2 className="heading-sm">Quick Actions</h2>
-						</div>
-						<div className="flex flex-col gap-2">
-							<Button
-								variant="soft"
-								className="w-full justify-between"
-								onClick={() => setActiveModal("event")}
-							>
-								<Calendar size={16} /> New Event
-							</Button>
-							<Button
-								variant="soft"
-								className="w-full justify-between"
-								onClick={() => setActiveModal("survey")}
-							>
-								<ClipboardList size={16} /> New Survey
-							</Button>
-						</div>
-					</Card>
+                    {/* quick actions */}
+                        <Card variant="no-hover" className="flex flex-col justify-around p-4 gap-3" >
+                            <div>
+								<h2 className="heading-sm">Quick Actions</h2>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Button
+                                    variant="soft"
+                                    className="w-full justify-between"
+                                    onClick={() => setActiveModal("event")}
+                                >
+                                    <Calendar size={16} /> New Event
+                                </Button>
+                                <Button
+                                    variant="soft"
+                                    className="w-full justify-between"
+                                    onClick={() => setActiveModal("survey")}
+                                >
+                                    <ClipboardList size={16} /> New Survey
+                                </Button>
+                            </div>
+                        </Card>                                     
 				</aside>
 			</div>
 			{/* end xl:flex-row */}

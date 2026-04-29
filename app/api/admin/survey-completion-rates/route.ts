@@ -28,9 +28,9 @@ export async function GET() {
       throw profileError;
     }
 
-    if (profile?.role !== "admin") {
+    if (profile?.role !== "admin" && profile?.role !== "staff") {
       return NextResponse.json(
-        { error: "Forbidden: Admin access required" },
+        { error: "Forbidden: Admin or staff access required" },
         { status: 403 },
       );
     }
