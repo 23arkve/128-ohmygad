@@ -765,7 +765,12 @@ export default function EventsPage() {
 							<span className="capitalize">{s}</span>
 							<button
 								onClick={() => toggleStatus(s)}
-								style={{ all: "unset", cursor: "pointer", marginLeft: 4, lineHeight: 1 }}
+								style={{
+									all: "unset",
+									cursor: "pointer",
+									marginLeft: 4,
+									lineHeight: 1,
+								}}
 							>
 								×
 							</button>
@@ -781,7 +786,12 @@ export default function EventsPage() {
 									toggleCategory(c);
 									setActiveChip("All");
 								}}
-								style={{ all: "unset", cursor: "pointer", marginLeft: 4, lineHeight: 1 }}
+								style={{
+									all: "unset",
+									cursor: "pointer",
+									marginLeft: 4,
+									lineHeight: 1,
+								}}
 							>
 								×
 							</button>
@@ -927,19 +937,19 @@ export default function EventsPage() {
 						<div className="flex gap-6 p-5 sm:p-7 overflow-y-auto">
 							{/* left column: event info */}
 							<div className="flex flex-col gap-4 flex-1 min-w-0">
-								<div className="flex items-center gap-2">
+								<div className="flex items-center justify-between gap-2">
 									<h2 className="heading-md">
 										{detailEvent.title}
 									</h2>
 									<Button
-										variant="icon"
-										title="Edit event"
+										variant="ghost"
+										size="sm"
 										onClick={() => {
 											setEditTarget(detailEvent);
 											setDetailEvent(null);
 										}}
 									>
-										<Pencil size={14} />
+										<Pencil size={15} /> Edit
 									</Button>
 								</div>
 								{/* category and status badges moved below */}
