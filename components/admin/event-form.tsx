@@ -100,6 +100,19 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   };
 
+  const hasChanges = 
+    title !== (initialData?.title ?? "") ||
+    description !== (initialData?.description ?? "") ||
+    location !== (initialData?.location ?? "") ||
+    start_date !== (initialData?.start_date ?? "") ||
+    end_date !== (initialData?.end_date ?? "") ||
+    capacity !== (initialData?.capacity ?? null) ||
+    registration_open !== (initialData?.registration_open ?? "") ||
+    registration_close !== (initialData?.registration_close ?? "") ||
+    category !== (initialData?.category ?? "") ||
+    banner_url !== (initialData?.banner_url ?? "") ||
+    bannerFile !== null;
+
   // submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -384,7 +397,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 <Button
                 type="submit"
                 variant="primary"
-                disabled={isLoading || uploadingBanner}
+                disabled={isLoading || uploadingBanner || (mode === "edit" && !hasChanges)}
                 className="px-8"
                 >
                 {uploadingBanner
@@ -396,6 +409,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 </Button>
             </div>
           </div>
+
 
         </div>
       </div>
