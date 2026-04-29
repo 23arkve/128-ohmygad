@@ -200,7 +200,7 @@ const confirmDelete = async () => {
     {
       key: "description",
       header: "Description",
-      width: "60%",
+      width: "70%",
       render: (course) => (
         <span
           style={{ color: "var(--primary-dark)", fontSize: 13 }}
