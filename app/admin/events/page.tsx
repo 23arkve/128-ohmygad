@@ -327,16 +327,7 @@ export default function EventsPage() {
 
 		setFiltered(result);
 		setPage(1);
-	}, [search, events, sort, categoryFilters, statusFilters]);
-
-	// toggle helpers
-	function toggleStatus(s: string) {
-		setStatusFilters((prev) => {
-			const next = new Set(prev);
-			next.has(s) ? next.delete(s) : next.add(s);
-			return next;
-		});
-	}
+	}, [search, events, sort, categoryFilters]);
 
 	function toggleCategory(c: string) {
 		setCategoryFilters((prev) => {
@@ -350,7 +341,6 @@ export default function EventsPage() {
 
 	function clearAllFilters() {
 		setCategoryFilters(new Set());
-		setStatusFilters(new Set());
 		setActiveChip("All");
 	}
 
@@ -409,7 +399,7 @@ export default function EventsPage() {
 		setDeletingId(null);
 	};
 
-	const activeFilterCount = categoryFilters.size + statusFilters.size;
+	const activeFilterCount = categoryFilters.size;
 	const hasActiveFilters = activeFilterCount > 0;
 
     // for querying in search
