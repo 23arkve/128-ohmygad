@@ -402,6 +402,7 @@ const confirmDelete = async () => {
 						color: "var(--primary-dark)",
 						whiteSpace: "pre-wrap",
 						overflowWrap: "break-word",
+						wordBreak: "break-word",
 					}}
 				>
 					{modalContent?.text || "No description provided."}
