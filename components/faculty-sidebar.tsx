@@ -96,7 +96,7 @@ export default function FacultySidebar() {
       } as React.CSSProperties}
     >
         {/* logo ------------------------------------------------ */}
-        <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[70px] gap-[6px] overflow-hidden">
+        <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[65px] py-3.5 gap-[6px] overflow-hidden">
           <div className="relative shrink-0 flex items-center justify-center rounded-[10px]" style={{ width: 44, height: 44 }}>
             <Image src="/kasarian-upb-logo.svg" alt="UPB Kasarian" width={44} height={44} />
           </div>
