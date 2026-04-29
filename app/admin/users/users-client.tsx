@@ -328,6 +328,10 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
               setSearch(e.target.value);
               setPage(1);
             }}
+            onClear={() => {
+              setSearch("");
+              setPage(1);
+            }}
             containerStyle={{ flex: 1, minWidth: 220 }}
           />
 

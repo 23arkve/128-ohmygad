@@ -179,17 +179,27 @@ export function Select({ label, options, className = "", ...props }: SelectProps
 }
 
 // ---------------------------- SearchBar ----------------------------
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement> {
   containerStyle?: React.CSSProperties;
+  onClear?: () => void;
 }
 
-export function SearchBar({ containerStyle, className = "", ...props }: SearchBarProps) {
+export function SearchBar({ containerStyle, className = "", onClear, ...props }: SearchBarProps) {
   return (
     <div className="search-wrap" style={containerStyle}>
       <span className="search-icon"><Search size={16} /></span>
       <input className={`search-input ${className}`.trim()} {...props} />
+      {props.value && onClear && (
+        <button
+          type="button"
+          onClick={onClear}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray)] hover:text-[var(--primary-dark)] bg-transparent border-none cursor-pointer p-1 rounded-full hover:bg-[var(--lavender)] transition-all flex items-center justify-center"
+        >
+          <X size={14} />
+        </button>
+      )}
     </div>
   );
 }

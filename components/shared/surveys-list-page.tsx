@@ -170,6 +170,7 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
           placeholder="Search surveys…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
           containerStyle={{ flex: 1, minWidth: 120 }}
         />
 

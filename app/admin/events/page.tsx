@@ -623,6 +623,7 @@ export default function EventsPage() {
 						placeholder="Search by title, category, or location…"
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
+						onClear={() => setSearch("")}
 						containerStyle={{ flex: 1, minWidth: 220 }}
 					/>
 
@@ -1154,6 +1155,7 @@ export default function EventsPage() {
 									onChange={(e) =>
 										setRegistrantSearch(e.target.value)
 									}
+									onClear={() => setRegistrantSearch("")}
 									containerStyle={{ width: "100%" }}
 								/>
 
