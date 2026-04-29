@@ -186,6 +186,7 @@ export default function CoursesPage() {
             placeholder="Search…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
             containerStyle={{ flex: 1, minWidth: 120 }}
           />
 

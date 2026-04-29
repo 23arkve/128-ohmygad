@@ -313,6 +313,7 @@ export default function SurveysPage() {
             placeholder="Search by title or status…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
             containerStyle={{ flex: 1, minWidth: 220 }}
           />
 

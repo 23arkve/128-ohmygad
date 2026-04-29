@@ -732,6 +732,7 @@ export default function DashboardPage() {
 									onChange={(e) =>
 										setSurveySearch(e.target.value)
 									}
+									onClear={() => setSurveySearch("")}
 									className="min-w-[220px] max-w-full"
 								/>
 							</div>

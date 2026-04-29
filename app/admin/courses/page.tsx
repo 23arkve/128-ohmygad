@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Plus, ArrowUpDown, Pencil, Trash2, Loader2, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, ArrowUpDown, Pencil, Trash2, Loader2, ChevronUp, ChevronDown, X } from "lucide-react";
 import CourseForm, { type CourseFormData } from "@/components/admin/course-form";
 import { paginate, totalPages, PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
@@ -263,6 +263,7 @@ const confirmDelete = async () => {
 						placeholder="Search by title or description"
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
+						onClear={() => setSearch("")}
 						containerStyle={{ flex: 1, minWidth: 220 }}
 					/>
 
