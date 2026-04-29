@@ -758,8 +758,8 @@ export default function DashboardPage() {
 												data={surveyCompletionChartData}
 												margin={{
 													top: 24,
-													right: 16,
-													left: 40,
+													right: 100,
+													left: 20,
 													bottom: 5,
 												}}
 												barCategoryGap="30%"
