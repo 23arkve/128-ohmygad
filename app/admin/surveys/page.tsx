@@ -231,7 +231,7 @@ export default function SurveysPage() {
           className="text-left font-semibold hover:underline underline-offset-4 max-w-[240px] truncate block"
           style={{ color: "var(--primary-dark)", fontSize: 13 }}
           onClick={() => setAnalyticsTarget(survey)}
-          title="Click to view analytics"
+          title={survey.title}
         >
           {survey.title}
         </button>
