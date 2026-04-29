@@ -86,7 +86,20 @@ export default function FacultyProfilePage() {
       if (error && error.code !== "PGRST116") throw error;
 
       if (data) {
-        const p = { ...data, email: user.email ?? data.email };
+        const p = {
+          ...data,
+          email: user.email ?? data.email ?? "",
+          full_name: data.full_name ?? "",
+          display_name: data.display_name ?? "",
+          contact_num: data.contact_num ?? "",
+          address: data.address ?? "",
+          pronouns: data.pronouns ?? "",
+          college: data.college ?? "",
+          department: data.department ?? "",
+          office: data.office ?? "",
+          sex_at_birth: data.sex_at_birth ?? "",
+          gender_identity: data.gender_identity ?? "",
+        };
         setProfile(p);
         setInitialProfile(p);
       } else {
