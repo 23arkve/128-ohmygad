@@ -280,11 +280,11 @@ export default function CoursesPage() {
             <div className="flex justify-end items-center">
               <button onClick={() => setDetailCourse(null)}><X size={20} /></button>
             </div>
-            <h2 className="heading-md">{detailCourse.title}</h2>
+            <h2 className="heading-md" style={{padding: "1rem", background: "white", position:"sticky", top:0, zIndex:10}}>{detailCourse.title}</h2>
             <div className="divider" />
             <div className="space-y-3">
               <p className="label">Description</p>
-              <p className="body text-gray-600" style={{wordBreak:"break-word"}}>{detailCourse.description || "No description provided."}</p>
+              <p className="body text-gray-600" style={{wordBreak:"break-word", margin: "1rem"}}>{detailCourse.description || "No description provided."}</p>
             </div>
 
 
