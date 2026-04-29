@@ -89,6 +89,7 @@ export const EventPanel = (): JSX.Element => {
           return {
             id:                 e.id,
             title:              e.title,
+            description:        e.description ?? undefined,
             location:           e.location ?? "—",
             date:               formatDateLabel(e.start_date),
             dayOfWeek:          formatDayOfWeek(e.start_date),
@@ -441,6 +442,15 @@ export const EventPanel = (): JSX.Element => {
                         <span className="capitalize">{detailEvent.registrationStatus}</span>
                         </Badge>
                     )}
+
+                    <div className="divider" />
+
+                    <div className="flex flex-col gap-2 pb-2">
+                        <p className="label">ABOUT THIS EVENT</p>
+                        <p className="body whitespace-pre-wrap">
+                        {detailEvent.description || "No description provided."}
+                        </p>
+                    </div>
                     </div>
                 </div>
                 );
