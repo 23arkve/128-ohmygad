@@ -90,7 +90,13 @@ function colorFor(map: Record<string, string>, key: string, idx: number) {
 // tooltip ------------------------------------------------
 interface TooltipEntry {
 	color?: string;
-	payload?: { fill?: string; eventTitle?: string };
+	payload?: {
+		fill?: string;
+		eventTitle?: string;
+		completedCount?: number;
+		respondentCount?: number;
+		totalRegistrations?: number;
+	};
 	name?: string;
 	dataKey?: string;
 	value?: number | string;
@@ -105,14 +111,34 @@ function CustomTooltip({
 	label?: string;
 }) {
 	if (!active || !payload?.length) return null;
-	const eventTitle = payload[0]?.payload?.eventTitle;
+	const firstPayload =
+		payload.find((entry) => entry.payload?.respondentCount !== undefined || entry.payload?.completedCount !== undefined || entry.payload?.totalRegistrations !== undefined)
+			?.payload ?? payload[0]?.payload;
+	const eventTitle = firstPayload?.eventTitle;
+	const totalRespondents = firstPayload?.respondentCount ?? firstPayload?.completedCount;
+	const totalAttendees = firstPayload?.totalRegistrations;
 	return (
-		<div className="bg-white/90 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-2 min-w-[120px]">
+		<div className="bg-white/90 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-2 min-w-[160px]">
 			{label && (
 				<p className="body uppercase tracking-wider mb-1.5">{label}</p>
 			)}
 			{eventTitle && (
 				<p className="caption text-[var(--gray)] mb-1">Linked event: {eventTitle}</p>
+			)}
+			{typeof totalRespondents === "number" && typeof totalAttendees === "number" && (
+				<p className="caption text-[var(--gray)] mb-1">
+					Respondents: {totalRespondents} / {totalAttendees} attendees
+				</p>
+			)}
+			{typeof totalRespondents === "number" && typeof totalAttendees !== "number" && (
+				<p className="caption text-[var(--gray)] mb-1">
+					Respondents: {totalRespondents}
+				</p>
+			)}
+			{typeof totalAttendees === "number" && typeof totalRespondents !== "number" && (
+				<p className="caption text-[var(--gray)] mb-1">
+					Attendees: {totalAttendees}
+				</p>
 			)}
 			{payload.map((e: TooltipEntry, i: number) => (
 				<div key={i} className="flex items-center gap-2">
@@ -222,7 +248,12 @@ export default function DashboardPage() {
 	);
 	const surveyCompletionChartData = useMemo(() => {
 		const startIndex = (surveyPage - 1) * 4;
-		return surveyCompletionFiltered.slice(startIndex, startIndex + 4);
+		return surveyCompletionFiltered
+			.slice(startIndex, startIndex + 4)
+			.map((item) => ({
+				...item,
+				respondentCount: item.respondentCount ?? item.completedCount,
+			}));
 	}, [surveyCompletionFiltered, surveyPage]);
 
 	useEffect(() => {

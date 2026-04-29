@@ -47,7 +47,7 @@ export function useSurveyCompletionRates() {
 
         const responsesBySurvey: Record<string, Set<string>> = {};
         (responses ?? []).forEach((row: any) => {
-          if (!row.survey_id) return;
+          if (!row.survey_id || !row.response_token) return;
           responsesBySurvey[row.survey_id] ||= new Set();
           responsesBySurvey[row.survey_id].add(row.response_token);
         });
@@ -91,32 +91,31 @@ export function useSurveyCompletionRates() {
           });
         }
 
-        const completionData = await Promise.all(
-          (surveys ?? []).map(async (survey: any) => {
-            const attendedUsers = survey.event_id ? registrationsByEvent[survey.event_id] ?? new Set<string>() : new Set<string>();
-            const completedCount = [...(responsesBySurvey[survey.id] ?? new Set<string>())]
-              .filter((token) => attendedUsers.has(token))
-              .length;
-            const attendeeCount = attendedUsers.size;
-            let completedPct = 0;
+        const completionData = (surveys ?? []).map((survey: any) => {
+          const attendedUsers = survey.event_id ? registrationsByEvent[survey.event_id] ?? new Set<string>() : new Set<string>();
+          const completedCount = (responsesBySurvey[survey.id] ?? new Set<string>()).size;
+          const attendeeCount = attendedUsers.size;
+          let completedPct = 0;
 
-            if (attendeeCount > 0) {
-              completedPct = Math.round((completedCount / attendeeCount) * 100);
-            }
+          if (attendeeCount > 0) {
+            completedPct = Math.min(
+              100,
+              Math.round((completedCount / attendeeCount) * 100),
+            );
+          }
 
-            return {
-              id: survey.id,
-              title: survey.title ?? "Untitled Survey",
-              eventTitle: survey.event_id
-                ? eventTitlesById[survey.event_id] ?? "Unknown event"
-                : undefined,
-              completedPct,
-              incompletePct: attendeeCount > 0 ? Math.max(0, 100 - completedPct) : 0,
-              completedCount,
-              totalRegistrations: attendeeCount,
-            };
-          })
-        );
+          return {
+            id: survey.id,
+            title: survey.title ?? "Untitled Survey",
+            eventTitle: survey.event_id
+              ? eventTitlesById[survey.event_id] ?? "Unknown event"
+              : undefined,
+            completedPct,
+            incompletePct: attendeeCount > 0 ? Math.max(0, 100 - completedPct) : 0,
+            completedCount,
+            totalRegistrations: attendeeCount,
+          };
+        });
 
         if (!cancelled) {
           setData(completionData.filter((item) => item.totalRegistrations > 0));
