@@ -269,7 +269,7 @@ export default function SurveysPage() {
     {
       key: "actions",
       header: <div className="text-center">Actions</div>,
-      width: "10%",
+      width: "8%",
       render: (survey) => (
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
           <Button

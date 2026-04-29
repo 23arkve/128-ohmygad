@@ -279,7 +279,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     {
       key: "gso_attended",
       header: "GSO",
-      width: "18%",
+      width: "20%",
       render: (p) => (
         <Badge variant={p.gso_attended ? "success" : "warning"}>
           {p.gso_attended ? "Attended" : "Pending"}
@@ -289,7 +289,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     {
       key: "actions",
       header: <div className="text-center">Actions</div>,
-      width: "8%",
+      width: "7%",
       render: (p) => (
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
           <Button variant="icon" title="Edit user" onClick={(e) => { e.stopPropagation(); openEditModal(p.id); }}>
