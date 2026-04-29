@@ -507,7 +507,8 @@ export default function EventsPage() {
 			header: "Location",
 			width: "17%",
 			render: (event) => (
-				<span className="caption text-left max-w-[150px] truncate block">
+				<span className="caption text-left max-w-[150px] truncate block"
+				title={event.location}>
 					{event.location}
 				</span>
 			),
