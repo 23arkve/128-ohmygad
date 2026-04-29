@@ -442,29 +442,6 @@ export default function EventsPage() {
 								</Button>
 							}
 						>
-							{/* status section */}
-							{statuses.length > 0 && (
-								<>
-									<div className="px-3 pt-1 pb-1.5">
-										<p className="label mb-1">Status</p>
-									</div>
-									{statuses.map((s) => (
-										<DropdownItem key={s}>
-											<Checkbox
-												label={
-													s.charAt(0).toUpperCase() +
-													s.slice(1)
-												}
-												checked={filters.status.has(s)}
-												onChange={() =>
-													toggleFilter("status", s)
-												}
-											/>
-										</DropdownItem>
-									))}
-									<DropdownDivider />
-								</>
-							)}
 							{/* category section */}
 							{categories.length > 0 && (
 								<>
@@ -527,22 +504,6 @@ export default function EventsPage() {
 			{hasActiveFilters && (
 				<div className="flex items-center gap-2 flex-wrap -mt-2">
 					<span className="caption">Active filters:</span>
-					{[...filters.status].map((s) => (
-						<Badge
-							key={s}
-							variant={STATUS_VARIANT[s] ?? "dark"}
-							dot
-						>
-							<span className="capitalize">{s}</span>
-							<button
-								onClick={() => toggleFilter("status", s)}
-								className="ml-1.5"
-								aria-label={`Remove ${s} filter`}
-							>
-								×
-							</button>
-						</Badge>
-					))}
 					{[...filters.category].map((cat) => (
 						<Badge key={cat} variant="ghost" dot>
 							{cat}
