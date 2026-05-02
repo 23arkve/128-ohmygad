@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Search, Loader2, ChevronUp, ExternalLink, X, MoveUp, MoveDown } from "lucide-react";
 import { Badge } from "@/components/ui";
@@ -36,12 +36,12 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
     isNavigating.current = false;
   }, [pathname]);
 
-  const AVAILABLE_CATEGORIES = [
-    { id: "Events", type: "Event" },
+  const AVAILABLE_CATEGORIES = useMemo(() => [
+    { id: "Events",     type: "Event"  },
     ...(role === "admin" ? [{ id: "Users", type: "User" }] : []),
     { id: "Guidelines", type: "Course" },
-    { id: "Surveys", type: "Survey" },
-  ];
+    { id: "Surveys",    type: "Survey" },
+  ], [role]);
 
 
   // debouncing
@@ -91,13 +91,12 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [open]);
 
-  const handleSelect = (r: SearchResult, e: React.MouseEvent) => {
+  const handleSelect = useCallback((r: SearchResult, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     isNavigating.current = true;
     setOpen(false);
     inputRef.current?.blur();
-    // Don't clear query immediately to prevent glitchy re-renders while closing
 
     if (r.type === "Course") {
       router.push(`/${role}/courses?search=${encodeURIComponent(r.title)}`);
@@ -108,7 +107,26 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
     } else if (r.type === "Survey") {
       router.push(`/${role}/surveys?search=${encodeURIComponent(r.title)}`);
     }
-  };
+  }, [router, role]);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    if (!open && e.target.value.trim().length >= 2 && !isNavigating.current) {
+      setOpen(true);
+    }
+  }, [open]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && query.trim().length >= 2) {
+      e.preventDefault();
+      setOpen(false);
+      router.push(`/${role}/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  }, [query, role, router]);
+
+  const handleFocus = useCallback(() => {
+    if (query.trim().length >= 2) setOpen(true);
+  }, [query]);
 
   return (
     <div className="search-wrap" style={{ width: "100%", position: "relative" }} ref={containerRef}>
@@ -119,20 +137,9 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
         ref={inputRef}
         placeholder={placeholder}
         value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          if (!open && e.target.value.trim().length >= 2 && !isNavigating.current) {
-            setOpen(true);
-          }
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && query.trim().length >= 2) {
-            e.preventDefault();
-            setOpen(false);
-            router.push(`/${role}/search?q=${encodeURIComponent(query.trim())}`);
-          }
-        }}
-        onFocus={() => { if (query.trim().length >= 2) setOpen(true); }}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        onFocus={handleFocus}
       />
       {query && (
         <button
