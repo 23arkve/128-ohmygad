@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
 	SlidersHorizontal,
 	Loader2,
@@ -111,6 +111,10 @@ export default function EventsPage() {
 		? registeringId === detailEvent.id
 		: false;
 
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value), [setSearch]);
+  const handleSearchClear  = useCallback(() => setSearch(""), [setSearch]);
+  const handleModalClose   = useCallback(() => { setDetailEvent(null); setRegisterError(null); }, [setRegisterError]);
+
 // PAGE -----------------------------------------------------------------------
 	return (
 		<div className="flex flex-col gap-4">
@@ -121,8 +125,8 @@ export default function EventsPage() {
 					<SearchBar
 						placeholder="Search…"
 						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						onClear={() => setSearch("")}
+						onChange={handleSearchChange}
+						onClear={handleSearchClear}
 						containerStyle={{ flex: 1, minWidth: 120 }}
 					/>
 
@@ -443,10 +447,7 @@ export default function EventsPage() {
 			{/* event detail modal */}
 			<Modal
 				open={!!detailEvent}
-				onClose={() => {
-					setDetailEvent(null);
-					setRegisterError(null);
-				}}
+				onClose={handleModalClose}
 				hideCloseButton
 				modalStyle={{ maxWidth: 600, padding: 0 }}
 				footer={
