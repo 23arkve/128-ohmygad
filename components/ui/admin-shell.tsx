@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
 
-const SPRING = { type: "spring", stiffness: 500, damping: 38 } as const;
+const SPRING = { type: "spring", stiffness: 700, damping: 40 } as const;
 const FADE = { duration: 0.15, ease: "easeInOut" } as const;
 
 const NAV_ITEMS = [
