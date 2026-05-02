@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { EventPanel } from "@/components/event-panel";
+import { EventPanel } from "@/components/shared/event-panel";
 import { Card } from "@/components/ui";
 import ScrollToTop from "../ui/scroll-to-top";
 import GlobalSearch from "../global-search";
