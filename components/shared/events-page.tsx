@@ -114,10 +114,6 @@ export default function EventsPage() {
 // PAGE -----------------------------------------------------------------------
 	return (
 		<div className="flex flex-col gap-4">
-			{/* header */}
-			<div className="flex items-center justify-between gap-4 shrink-0 flex-wrap">
-				<h2 className="heading-lg">Events</h2>
-			</div>
 
 			{/* search, sort, filter */}
 			<div className="flex flex-col gap-3">
