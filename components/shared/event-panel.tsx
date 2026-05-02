@@ -164,9 +164,10 @@ export const EventPanel = (): JSX.Element => {
 							<Button
 								variant="soft"
 								size="sm"
-								onClick={() =>
-									(window.location.href = "student/events")
-								}
+								onClick={() => {
+									const base = window.location.pathname.split("/").slice(0, 2).join("/");
+									window.location.href = `${base}/events`;
+								}}
 							>
 								Browse Events
 							</Button>
