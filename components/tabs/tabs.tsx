@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, forwardRef } from "react";
+import { useState, useMemo, useCallback, forwardRef } from "react";
 import { TabsProps } from "./tabs.types";
 import { TabsContext } from "./tabs-context";
 
@@ -33,10 +33,10 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     const isControlled = controlledTab !== undefined;
     const activeTab = isControlled ? controlledTab : internalTab;
 
-    const handleTabChange = (newTab: string) => {
+    const handleTabChange = useCallback((newTab: string) => {
       if (!isControlled) setInternalTab(newTab);
       onTabChange?.(newTab);
-    };
+    }, [isControlled, onTabChange]);
 
     const isHorizontal = orientation === "horizontal";
 
@@ -68,19 +68,22 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       .filter(Boolean)
       .join(" ");
 
+    const contextValue = useMemo(
+      () => ({
+        activeTab,
+        setActiveTab: handleTabChange,
+        variant,
+        orientation,
+        size: large ? "large" : tabsSize,
+        withIndicator,
+        disabled,
+        tabsPosition,
+      }),
+      [activeTab, handleTabChange, variant, orientation, large, tabsSize, withIndicator, disabled, tabsPosition],
+    );
+
     return (
-      <TabsContext.Provider
-        value={{
-          activeTab,
-          setActiveTab: handleTabChange,
-          variant,
-          orientation,
-          size: large ? "large" : tabsSize,
-          withIndicator,
-          disabled,
-          tabsPosition,
-        }}
-      >
+      <TabsContext.Provider value={contextValue}>
         <div
           ref={ref}
           className={containerClasses}
