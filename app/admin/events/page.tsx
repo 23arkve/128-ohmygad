@@ -20,6 +20,7 @@ import {
 	Clock,
 	X,
 	ClipboardList,
+	Download,
 } from "lucide-react";
 import EventForm, {
 	type EventFormData,
@@ -261,6 +262,74 @@ export default function EventsPage() {
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
 		}
+	};
+
+	const handleExportCSV = () => {
+		if (!detailEvent) return;
+
+		const fmt = (d?: string | null) =>
+			d ? new Date(d).toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" }) : "—";
+
+		// Event details section
+		const eventRows = [
+			["EVENT DETAILS"],
+			["Title", detailEvent.title],
+			["Category", detailEvent.category ?? "—"],
+			["Status", deriveStatus(detailEvent.start_date ?? "", detailEvent.end_date ?? "")],
+			["Location", detailEvent.location ?? "—"],
+			["Start Date", fmt(detailEvent.start_date)],
+			["End Date", fmt(detailEvent.end_date)],
+			["Capacity", detailEvent.capacity ?? "—"],
+			["Registration Open", fmt(detailEvent.registration_open)],
+			["Registration Close", fmt(detailEvent.registration_close)],
+			["Description", detailEvent.description ?? "—"],
+			[],
+		];
+
+		// Registrations section
+		const regRows = [
+			["REGISTRATIONS"],
+			["Name", "Email", "Registration Date", "Attended"],
+			...registrations.map((r) => [
+				r.display_name || r.full_name || "—",
+				r.email ?? "—",
+				fmt(r.registration_date),
+				r.attended ? "Yes" : "No",
+			]),
+			[],
+		];
+
+		// Attendance section
+		const attended = registrations.filter((r) => r.attended);
+		const attendRows = [
+			["ATTENDANCE"],
+			[`${attended.length} attended out of ${registrations.length} registered`],
+			["Name", "Email"],
+			...attended.map((r) => [
+				r.display_name || r.full_name || "—",
+				r.email ?? "—",
+			]),
+		];
+
+		const escape = (val: any) => {
+			const str = String(val ?? "");
+			return str.includes(",") || str.includes('"') || str.includes("\n")
+				? `"${str.replace(/"/g, '""')}"`
+				: str;
+		};
+
+		const csv = [...eventRows, ...regRows, ...attendRows]
+			.map((row) => row.map(escape).join(","))
+			.join("\n");
+
+		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		const safeName = detailEvent.title.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+		a.href = url;
+		a.download = `${safeName}_event_details.csv`;
+		a.click();
+		URL.revokeObjectURL(url);
 	};
 
 	const getEvents = async () => {
@@ -942,6 +1011,15 @@ export default function EventsPage() {
 									<h2 className="heading-md">
 										{detailEvent.title}
 									</h2>
+								<div className="flex items-center gap-2">
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={handleExportCSV}
+										title="Export event details to CSV"
+									>
+										<Download size={15} /> Export CSV
+									</Button>
 									<Button
 										variant="ghost"
 										size="sm"
@@ -952,6 +1030,7 @@ export default function EventsPage() {
 									>
 										<Pencil size={15} /> Edit
 									</Button>
+								</div>
 								</div>
 								{/* category and status badges moved below */}
 								<div className="flex gap-2 items-center">
