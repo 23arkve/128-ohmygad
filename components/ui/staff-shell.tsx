@@ -129,7 +129,7 @@ function StaffSidebarPanel() {
 				</div>
 
 				{/* nav */}
-				<nav className="flex flex-col flex-1 gap-3 py-3 overflow-y-auto overflow-x-hidden mr-2">
+				<nav className="flex flex-col flex-1 gap-3 py-3 overflow-y-auto overflow-x-hidden">
 					<TooltipProvider delayDuration={70}>
 						{NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
 							const active = isActive(pathname, href, exact);
