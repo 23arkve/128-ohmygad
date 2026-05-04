@@ -449,7 +449,7 @@ header {
 
 /* Size modifiers */
 .btn-sm {
-  padding: 8px 12px !important;
+  padding: 6px 10px !important;
   font-size: 12px !important;
   letter-spacing: 0.02em;
 }

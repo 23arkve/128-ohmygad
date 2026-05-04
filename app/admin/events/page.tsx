@@ -1001,36 +1001,38 @@ export default function EventsPage() {
 							>
 								<X size={15} />
 							</button>
+
+							<div className="absolute bottom-3 right-3 flex gap-2 z-10">
+								<Button
+									variant="primary"
+                                    size="sm"
+									onClick={handleExportCSV}
+									title="Export event details to CSV"
+								>
+									<Download size={15} /> Export CSV
+								</Button>
+								<Button
+									variant="primary"
+                                    size="sm"
+									onClick={() => {
+										setEditTarget(detailEvent);
+										setDetailEvent(null);
+									}}
+									title="Edit event details"
+								>
+									<Pencil size={15} /> Edit event
+								</Button>
+							</div>
 						</div>
 
 						{/* two-column body */}
 						<div className="flex gap-6 p-5 sm:p-7 overflow-y-auto">
 							{/* left column: event info */}
 							<div className="flex flex-col gap-4 flex-1 min-w-0">
-								<div className="flex items-center justify-between gap-2">
+								<div className="flex items-center">
 									<h2 className="heading-md">
 										{detailEvent.title}
 									</h2>
-								<div className="flex items-center gap-2">
-									<Button
-										variant="ghost"
-										size="sm"
-										onClick={handleExportCSV}
-										title="Export event details to CSV"
-									>
-										<Download size={15} /> Export CSV
-									</Button>
-									<Button
-										variant="ghost"
-										size="sm"
-										onClick={() => {
-											setEditTarget(detailEvent);
-											setDetailEvent(null);
-										}}
-									>
-										<Pencil size={15} /> Edit
-									</Button>
-								</div>
 								</div>
 								{/* category and status badges moved below */}
 								<div className="flex gap-2 items-center">
@@ -1058,6 +1060,7 @@ export default function EventsPage() {
 											</Badge>
 										) : null;
 									})()}
+									<div className="flex items-center gap-2"></div>
 								</div>
 
 								<div className="flex flex-col gap-3">
