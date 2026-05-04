@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, memo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { deleteEventAndLinkedSurveys } from "./actions";
@@ -20,7 +20,7 @@ import {
 	Clock,
 	X,
 	ClipboardList,
-	Download,
+    Upload,
 } from "lucide-react";
 import EventForm, {
 	type EventFormData,
@@ -65,6 +65,7 @@ const SORT_OPTIONS: { label: string; field: SortField }[] = [
 	{ label: "Status", field: "status" },
 	{ label: "Date", field: "start_date" },
 ];
+
 type BadgeVariant =
 	| "pink-light"
 	| "periwinkle"
@@ -84,21 +85,76 @@ type RegisteredUser = {
 	attended: boolean;
 };
 
+// stable modal style constants
+const MODAL_STYLE_LG = { maxWidth: 900 };
+const MODAL_STYLE_DETAIL = { maxWidth: 960, padding: 0 };
+const MODAL_CONTENT_STYLE_DETAIL = {
+	display: "flex",
+	flexDirection: "column" as const,
+};
+const SEARCHBAR_FULL_WIDTH = { width: "100%" };
+
+// shared user row renderer used in both registrations and attendance tabs
+const UserRow = memo(function UserRow({
+	user,
+	i,
+	showCheckbox,
+	onToggle,
+}: {
+	user: RegisteredUser;
+	i: number;
+	showCheckbox: boolean;
+	onToggle: (id: string, val: boolean) => void;
+}) {
+	return (
+		<div
+			className={`grid gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--lavender)] transition-colors items-center ${showCheckbox ? "grid-cols-[1fr_1fr_44px]" : "grid-cols-[1fr_1fr]"} ${i % 2 !== 0 ? "bg-[rgba(45,42,74,0.02)]" : ""}`}
+		>
+			<span className="caption truncate font-medium">
+				{user.display_name || user.full_name || (
+					<span className="text-[var(--gray)]">—</span>
+				)}
+			</span>
+			<span className="caption truncate text-[var(--gray)]">
+				{user.email || "—"}
+			</span>
+			{showCheckbox && (
+				<div
+					className="flex items-center justify-center"
+					onClick={(e) => e.stopPropagation()}
+				>
+					<Checkbox
+						label=""
+						checked={user.attended}
+						onChange={(newVal) =>
+							onToggle(user.registration_id, newVal)
+						}
+					/>
+				</div>
+			)}
+		</div>
+	);
+});
+
 export default function EventsPage() {
 	const searchParams = useSearchParams();
 
 	const [events, setEvents] = useState<EventFormData[]>([]);
-	const [filtered, setFiltered] = useState<EventFormData[]>([]);
+	// debounced search input. raw input state drives the displayed value
+	const [searchInput, setSearchInput] = useState(
+		searchParams.get("search") || "",
+	);
 	const [search, setSearch] = useState(searchParams.get("search") || "");
 	const [prevUrlSearch, setPrevUrlSearch] = useState(
 		searchParams.get("search") || "",
 	);
 	const [deleteError, setDeleteError] = useState<string | null>(null);
 
-	// Sync search state with URL parameter synchronously to avoid "previous search" flash
+	// sync search state with URL parameter synchronously to avoid "previous search" flash
 	const urlSearch = searchParams.get("search") || "";
 	if (urlSearch !== prevUrlSearch) {
 		setPrevUrlSearch(urlSearch);
+		setSearchInput(urlSearch);
 		setSearch(urlSearch);
 	}
 
@@ -134,14 +190,20 @@ export default function EventsPage() {
 		message?: string;
 	} | null>(null);
 
-	const showToast = (
-		variant: "success" | "error",
-		title: string,
-		message?: string,
-	) => {
-		setToast({ variant, title, message });
-		setTimeout(() => setToast(null), 3000);
-	};
+	// ref-tracked timer so clearing toast never leaks after unmount
+	const toastTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+	const showToast = useCallback(
+		(variant: "success" | "error", title: string, message?: string) => {
+			setToast({ variant, title, message });
+			clearTimeout(toastTimerRef.current);
+			toastTimerRef.current = setTimeout(() => setToast(null), 3000);
+		},
+		[],
+	);
+
+	// clean up toast timer on unmount
+	useEffect(() => () => clearTimeout(toastTimerRef.current), []);
 
 	// ----- event detail modal -----
 	const [detailEvent, setDetailEvent] = useState<EventFormData | null>(null);
@@ -156,126 +218,170 @@ export default function EventsPage() {
 	// for searching registrants inside event detail modal
 	const [registrantSearch, setRegistrantSearch] = useState("");
 
-	const fetchRegistrations = async (eventId: string) => {
+	// cache registrations by event id to avoid refetching the same event
+	const registrationsCache = useRef<Record<string, RegisteredUser[]>>({});
+
+	// debounce timers for the session count sync API call
+	const syncTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+		{},
+	);
+
+	const fetchAbortRef = useRef<AbortController>();
+
+	const fetchRegistrations = useCallback(async (eventId: string) => {
+		// return cached registrations immediately if available
+		if (registrationsCache.current[eventId]) {
+			setRegistrations(registrationsCache.current[eventId]);
+			return;
+		}
+
 		setLoadingRegs(true);
 		const supabase = createClient();
 		const { data } = await supabase
 			.from("event_registration")
-			.select( ` id, user_id, registration_date, attended, profile:user_id ( display_name, full_name, email ) `,
+			.select(
+				`id, user_id, registration_date, attended, profile:user_id ( display_name, full_name, email )`,
 			)
 			.eq("event_id", eventId);
 
 		if (data) {
-			setRegistrations(
-				data.map((r: any) => ({
-					registration_id: r.id,
-					user_id: r.user_id,
-					display_name: r.profile?.display_name ?? null,
-					full_name: r.profile?.full_name ?? null,
-					email: r.profile?.email ?? null,
-					registration_date: r.registration_date,
-					attended: r.attended ?? false,
-				})),
-			);
+			const mapped = data.map((r: any) => ({
+				registration_id: r.id,
+				user_id: r.user_id,
+				display_name: r.profile?.display_name ?? null,
+				full_name: r.profile?.full_name ?? null,
+				email: r.profile?.email ?? null,
+				registration_date: r.registration_date,
+				attended: r.attended ?? false,
+			}));
+			registrationsCache.current[eventId] = mapped;
+			setRegistrations(mapped);
 		}
 		setLoadingRegs(false);
-	};
+	}, []);
 
 	// Toggle attended
-	const handleToggleAttendance = async (
-		registrationId: string,
-		newValue: boolean,
-	) => {
-		setRegistrations((prev) =>
-			prev.map((r) =>
-				r.registration_id === registrationId
-					? { ...r, attended: newValue }
-					: r,
-			),
-		);
-		setTogglingId(registrationId);
-
-		const supabase = createClient();
-
-		try {
-			const { error } = await supabase
-				.from("event_registration")
-				.update({ attended: newValue })
-				.eq("id", registrationId)
-				.select();
-
-			if (error) throw error;
-
-			// Recalculate the user's session count via server API for the event's category
-			const eventCategory = detailEvent?.category;
-			if (eventCategory) {
-				const reg = registrations.find(
-					(r) => r.registration_id === registrationId,
-				);
-				if (reg?.user_id) {
-					await fetch("/api/admin/sync-session-count", {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({
-							userId: reg.user_id,
-							category: eventCategory,
-						}),
-					});
-				}
-			}
-		} catch (err: any) {
-			console.error("Attendance update failed:", err.message);
-
-			// Rollback UI state on failure
+	const handleToggleAttendance = useCallback(
+		async (registrationId: string, newValue: boolean) => {
+			// Optimistic UI update
 			setRegistrations((prev) =>
 				prev.map((r) =>
 					r.registration_id === registrationId
-						? { ...r, attended: !newValue }
+						? { ...r, attended: newValue }
 						: r,
 				),
 			);
-		} finally {
-			setTogglingId(null);
-		}
-	};
+			setTogglingId(registrationId);
 
-	const openDetail = (event: EventFormData) => {
-		setDetailEvent(event);
-		setDetailTab("registrations");
-		setRegistrations([]);
-        setRegistrantSearch("");
-		setCopied(false);
-		fetchRegistrations(event.id!);
-	};
+			const supabase = createClient();
 
-	const handleCopyEmails = (targetUsers?: RegisteredUser[]) => {
-		// registrations or attended (targeted users)
-		const listToCopy = targetUsers || registrations;
+			try {
+				const { error } = await supabase
+					.from("event_registration")
+					.update({ attended: newValue })
+					.eq("id", registrationId)
+					.select();
 
-		const emails = listToCopy
-			.map((r) => r.email)
-			.filter(Boolean)
-			.join(", ");
+				if (error) throw error;
 
-		if (emails) {
-			navigator.clipboard.writeText(emails);
-			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
-		}
-	};
+				// invalidate the cache for this event so the next open reflects fresh data
+				if (detailEvent?.id) {
+					delete registrationsCache.current[detailEvent.id];
+				}
 
-	const handleExportCSV = () => {
+				// debounce the session-count sync per user.
+                // rapid toggles collapse into one call, and ensures the latest value is what gets synced
+				const eventCategory = detailEvent?.category;
+				if (eventCategory) {
+					const reg = registrations.find(
+						(r) => r.registration_id === registrationId,
+					);
+					if (reg?.user_id) {
+						clearTimeout(syncTimers.current[reg.user_id]);
+						syncTimers.current[reg.user_id] = setTimeout(() => {
+							fetch("/api/admin/sync-session-count", {
+								method: "POST",
+								headers: { "Content-Type": "application/json" },
+								body: JSON.stringify({
+									userId: reg.user_id,
+									category: eventCategory,
+								}),
+							});
+						}, 800);
+					}
+				}
+			} catch (err: any) {
+				console.error("Attendance update failed:", err.message);
+
+				// rollback UI state on failure
+				setRegistrations((prev) =>
+					prev.map((r) =>
+						r.registration_id === registrationId
+							? { ...r, attended: !newValue }
+							: r,
+					),
+				);
+			} finally {
+				setTogglingId(null);
+			}
+		},
+		[detailEvent, registrations],
+	);
+
+	const openDetail = useCallback(
+		(event: EventFormData) => {
+			setDetailEvent(event);
+			setDetailTab("registrations");
+			setRegistrations([]);
+			setRegistrantSearch("");
+			setCopied(false);
+			fetchRegistrations(event.id!);
+		},
+		[fetchRegistrations],
+	);
+
+	const handleCopyEmails = useCallback(
+		(targetUsers?: RegisteredUser[]) => {
+			// registrations or attended (targeted users)
+			const listToCopy = targetUsers || registrations;
+
+			const emails = listToCopy
+				.map((r) => r.email)
+				.filter(Boolean)
+				.join(", ");
+
+			if (emails) {
+				navigator.clipboard.writeText(emails);
+				setCopied(true);
+				setTimeout(() => setCopied(false), 2000);
+			}
+		},
+		[registrations],
+	);
+
+	const handleExportCSV = useCallback(() => {
 		if (!detailEvent) return;
 
 		const fmt = (d?: string | null) =>
-			d ? new Date(d).toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" }) : "—";
+			d
+				? new Date(d).toLocaleString("en-PH", {
+						dateStyle: "medium",
+						timeStyle: "short",
+					})
+				: "—";
 
 		// Event details section
 		const eventRows = [
 			["EVENT DETAILS"],
 			["Title", detailEvent.title],
 			["Category", detailEvent.category ?? "—"],
-			["Status", deriveStatus(detailEvent.start_date ?? "", detailEvent.end_date ?? "")],
+			[
+				"Status",
+				deriveStatus(
+					detailEvent.start_date ?? "",
+					detailEvent.end_date ?? "",
+				),
+			],
 			["Location", detailEvent.location ?? "—"],
 			["Start Date", fmt(detailEvent.start_date)],
 			["End Date", fmt(detailEvent.end_date)],
@@ -303,7 +409,9 @@ export default function EventsPage() {
 		const attended = registrations.filter((r) => r.attended);
 		const attendRows = [
 			["ATTENDANCE"],
-			[`${attended.length} attended out of ${registrations.length} registered`],
+			[
+				`${attended.length} attended out of ${registrations.length} registered`,
+			],
 			["Name", "Email"],
 			...attended.map((r) => [
 				r.display_name || r.full_name || "—",
@@ -325,38 +433,138 @@ export default function EventsPage() {
 		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
-		const safeName = detailEvent.title.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+		const safeName = detailEvent.title
+			.replace(/[^a-z0-9]/gi, "_")
+			.toLowerCase();
 		a.href = url;
 		a.download = `${safeName}_event_details.csv`;
 		a.click();
 		URL.revokeObjectURL(url);
-	};
+	}, [detailEvent, registrations]);
 
-	const getEvents = async () => {
+	const getEvents = useCallback(async () => {
+		// cancel any in-flight fetch before starting a new one
+		fetchAbortRef.current?.abort();
+		fetchAbortRef.current = new AbortController();
+
 		const supabase = createClient();
 		const { data, error } = await supabase
 			.from("event")
 			.select(
 				"id, title, description, category, status, start_date, end_date, capacity, location, registration_open, registration_close, banner_url",
 			)
-			.order("start_date", { ascending: false });
+			.order("start_date", { ascending: false })
+			.abortSignal(fetchAbortRef.current.signal);
 
 		if (!error && data) {
 			setEvents(data);
 		}
 		setIsLoading(false);
-	};
+	}, []);
 
 	useEffect(() => {
 		getEvents();
-	}, []);
+	}, [getEvents]);
 
-	// filter / sort
+    const handleExportEvents = useCallback(async () => {
+		if (!events || events.length === 0) return;
+
+		const supabase = createClient();
+
+		// fetch registration counts and attended counts grouped by event_id
+		const { data: regData } = await supabase
+			.from("event_registration")
+			.select("event_id, attended")
+			.in(
+				"event_id",
+				events.map((e) => e.id),
+			);
+
+		const regCountMap = new Map<string, number>();
+		const attendedCountMap = new Map<string, number>();
+
+		for (const r of regData ?? []) {
+			regCountMap.set(r.event_id, (regCountMap.get(r.event_id) ?? 0) + 1);
+			if (r.attended) {
+				attendedCountMap.set(
+					r.event_id,
+					(attendedCountMap.get(r.event_id) ?? 0) + 1,
+				);
+			}
+		}
+
+		const fmt = (d?: string | null) =>
+			d
+				? new Date(d).toLocaleString("en-PH", {
+						dateStyle: "medium",
+						timeStyle: "short",
+					})
+				: "—";
+
+		const escape = (val: any) => {
+			const str = String(val ?? "");
+			return str.includes(",") || str.includes('"') || str.includes("\n")
+				? `"${str.replace(/"/g, '""')}"`
+				: str;
+		};
+
+		const header = [
+			"Title",
+			"Category",
+			"Registrations",
+			"Attended",
+			"Status",
+			"Description",
+			"Location",
+			"Start Date",
+			"End Date",
+			"Capacity",
+			"Registration Open",
+			"Registration Close",
+		];
+
+		const eventListRows = [
+			["EVENTS LIST"],
+			header,
+			...events.map((e) => [
+				e.title,
+				e.category ?? "—",
+				regCountMap.get(e.id) ?? 0,
+				attendedCountMap.get(e.id) ?? 0,
+				deriveStatus(e.start_date ?? "", e.end_date ?? ""),
+				e.description ?? "—",
+				e.location ?? "—",
+				fmt(e.start_date),
+				fmt(e.end_date),
+				e.capacity ?? "—",
+				fmt(e.registration_open),
+				fmt(e.registration_close),
+			]),
+		];
+
+		const csv = eventListRows
+			.map((row) => row.map(escape).join(","))
+			.join("\n");
+
+		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `events_list_${new Date().toISOString().slice(0, 10).replace(/-/g, "_")}.csv`;
+		a.click();
+		URL.revokeObjectURL(url);
+	}, [events]);
+
+	// debounce the search input by 200ms so filtering wont run on every keystroke
 	useEffect(() => {
-		const q = search.toLowerCase();
-		let result = events;
+		const timer = setTimeout(() => setSearch(searchInput), 200);
+		return () => clearTimeout(timer);
+	}, [searchInput]);
 
-		result = result.filter((e) =>
+	// filter / sort derived via useMemo so no extra state or effect is needed
+	const filtered = useMemo(() => {
+		const q = search.toLowerCase();
+		let result = events.filter((e) =>
 			`${e.title} ${e.category || ""} ${e.location || ""}`
 				.toLowerCase()
 				.includes(q),
@@ -379,7 +587,7 @@ export default function EventsPage() {
 		}
 
 		// sorting
-		result = result.sort((a, b) => {
+		return result.sort((a, b) => {
 			let aVal: any = a[sort.field as keyof EventFormData];
 			let bVal: any = b[sort.field as keyof EventFormData];
 
@@ -401,21 +609,23 @@ export default function EventsPage() {
 			if (aVal > bVal) return sort.direction === "asc" ? 1 : -1;
 			return 0;
 		});
-
-		setFiltered(result);
-		setPage(1);
 	}, [search, events, sort, categoryFilters, statusFilters]);
 
-	function toggleStatus(s: string) {
+	// reset to page 1 whenever the filtered result set changes
+	useEffect(() => {
+		setPage(1);
+	}, [filtered]);
+
+	const toggleStatus = useCallback((s: string) => {
 		setStatusFilters((prev) => {
 			const next = new Set(prev);
 			next.has(s) ? next.delete(s) : next.add(s);
 			return next;
 		});
 		setPage(1);
-	}
+	}, []);
 
-	function toggleCategory(c: string) {
+	const toggleCategory = useCallback((c: string) => {
 		setCategoryFilters((prev) => {
 			const next = new Set(prev);
 			next.has(c) ? next.delete(c) : next.add(c);
@@ -423,15 +633,15 @@ export default function EventsPage() {
 		});
 		// Reset chip visual if multiple or different selected
 		setActiveChip("All");
-	}
+	}, []);
 
-	function clearAllFilters() {
+	const clearAllFilters = useCallback(() => {
 		setCategoryFilters(new Set());
 		setStatusFilters(new Set());
 		setActiveChip("All");
-	}
+	}, []);
 
-	const handleSort = (field: SortField) => {
+	const handleSort = useCallback((field: SortField) => {
 		setSort((prev) => ({
 			field,
 			direction:
@@ -440,10 +650,10 @@ export default function EventsPage() {
 					: "asc",
 		}));
 		setPage(1);
-	};
+	}, []);
 
 	// delete execution logic triggered by the modal
-	const confirmDelete = async () => {
+	const confirmDelete = useCallback(async () => {
 		if (!deleteTarget) return;
 		setDeleteError(null);
 
@@ -474,8 +684,13 @@ export default function EventsPage() {
 
 		if (!result.success) {
 			setDeleteError(result.error || "Failed to delete event.");
-			showToast("error", "Failed to delete event", result.error || "Unknown error");
+			showToast(
+				"error",
+				"Failed to delete event",
+				result.error || "Unknown error",
+			);
 		} else {
+			// avoids a full refetch after delete
 			setEvents((prev) => prev.filter((e) => e.id !== deleteTarget.id));
 			showToast("success", "Event deleted successfully");
 			setDeleteTarget(null);
@@ -484,200 +699,247 @@ export default function EventsPage() {
 		}
 
 		setDeletingId(null);
-	};
+	}, [deleteTarget, deletePassword, showToast]);
+
+	// stable callbacks for modal success handlers
+	// props on every render and prevents unnecessary child re-renders
+	const handleCreateSuccess = useCallback(
+		(newEvent?: EventFormData) => {
+			if (newEvent) {
+				setEvents((prev) => [newEvent, ...prev]);
+			} else {
+				getEvents();
+			}
+			setCreateModalOpen(false);
+		},
+		[getEvents],
+	);
+
+	const handleEditSuccess = useCallback(
+		(updated?: EventFormData) => {
+			if (updated) {
+				setEvents((prev) =>
+					prev.map((e) => (e.id === updated.id ? updated : e)),
+				);
+			} else {
+				getEvents();
+			}
+			setEditTarget(null);
+		},
+		[getEvents],
+	);
+
+	const handleCreateCancel = useCallback(() => setCreateModalOpen(false), []);
+	const handleEditCancel = useCallback(() => setEditTarget(null), []);
 
 	const activeFilterCount = categoryFilters.size + statusFilters.size;
 	const hasActiveFilters = activeFilterCount > 0;
 
-    // for querying in search
-    const q = registrantSearch.trim().toLowerCase();
-    const filteredRegistrations = registrations.filter((r) => 
-        !q ||
-        (r.display_name && r.display_name.toLowerCase().includes(q)) ||
-        (r.full_name && r.full_name.toLowerCase().includes(q)) ||
-        (r.email && r.email.toLowerCase().includes(q))
-    );
+	// registrant search query (trimmed, lowercased) used for both tabs
+	const q = registrantSearch.trim().toLowerCase();
+
+	// memoized filtered registrations and attendance lists
+	const filteredRegistrations = useMemo(
+		() =>
+			registrations.filter(
+				(r) =>
+					!q ||
+					[r.display_name, r.full_name, r.email].some((v) =>
+						v?.toLowerCase().includes(q),
+					),
+			),
+		[registrations, q],
+	);
 
 	// Derived lists for attendance tab
-	const attendedUsers = registrations.filter((r) => r.attended);
-    const filteredAttended = attendedUsers.filter((r) =>
-        !q ||
-        (r.display_name && r.display_name.toLowerCase().includes(q)) ||
-        (r.full_name && r.full_name.toLowerCase().includes(q)) ||
-        (r.email && r.email.toLowerCase().includes(q)),
+	const attendedUsers = useMemo(
+		() => registrations.filter((r) => r.attended),
+		[registrations],
 	);
+
+	const filteredAttended = useMemo(
+		() =>
+			attendedUsers.filter(
+				(r) =>
+					!q ||
+					[r.display_name, r.full_name, r.email].some((v) =>
+						v?.toLowerCase().includes(q),
+					),
+			),
+		[attendedUsers, q],
+	);
+
 	const attendanceCount = attendedUsers.length;
 
-	const columns: Column<EventFormData>[] = [
-		{
-			key: "title",
-			header: "Title",
-			width: "22%",
-			render: (event) => (
-				<span
-					className="font-semibold truncate block"
-					style={{ color: "var(--primary-dark)", fontSize: 13 }}
-					title={event.title}
-				>
-					{event.title}
-				</span>
-			),
-		},
-		{
-			key: "category",
-			header: "Category",
-			width: "14%",
-			render: (event) => (
-				<span
-					className="font-semibold"
-					style={{ color: "var(--primary-dark)", fontSize: 13 }}
-				>
-					{event.category}
-				</span>
-			),
-		},
-		{
-			key: "status",
-			header: "Status",
-			width: "12%",
-			render: (event) => {
-				const computedStatus = deriveStatus(
-					event.start_date ?? "",
-					event.end_date ?? "",
-				);
-				return (
-					<Badge variant={STATUS_VARIANT[computedStatus] ?? "dark"}>
-						<span className="capitalize">{computedStatus}</span>
-					</Badge>
-				);
+	// only changes when deletingId changes (action button state),
+	// preventing DataTable from rerendering all rows on unrelated state updates
+	const columns = useMemo<Column<EventFormData>[]>(
+		() => [
+			{
+				key: "title",
+				header: "Title",
+				width: "22%",
+				render: (event) => (
+					<span
+						className="font-semibold truncate block"
+						style={{ color: "var(--primary-dark)", fontSize: 13 }}
+						title={event.title}
+					>
+						{event.title}
+					</span>
+				),
 			},
-		},
-		{
-			key: "start_date",
-			header: "Date",
-			width: "14%",
-			render: (event) => (
-				<span className="caption whitespace-nowrap">
-					{event.start_date
-						? new Date(event.start_date).toLocaleDateString(
-								"en-PH",
-								{
-									month: "short",
-									day: "numeric",
-									year: "numeric",
-								},
-							)
-						: "—"}
-				</span>
-			),
-		},
-		{
-			key: "capacity",
-			header: "Capacity",
-			width: "10%",
-			render: (event) => (
-				<span className="caption">{event.capacity}</span>
-			),
-		},
-		{
-			key: "location",
-			header: "Location",
-			width: "17%",
-			render: (event) => (
-				<span className="caption text-left max-w-[150px] truncate block"
-				title={event.location}>
-					{event.location}
-				</span>
-			),
-		},
-		{
-			key: "actions",
-			header: <div className="text-center">Actions</div>,
-			width: "8%",
-			render: (event) => (
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "flex-end",
-						gap: 4,
-					}}
-				>
-					<Button
-						variant="icon"
-						title="Edit event"
-						onClick={(e) => {
-							e.stopPropagation();
-							setEditTarget(event);
+			{
+				key: "category",
+				header: "Category",
+				width: "14%",
+				render: (event) => (
+					<span
+						className="font-semibold"
+						style={{ color: "var(--primary-dark)", fontSize: 13 }}
+					>
+						{event.category}
+					</span>
+				),
+			},
+			{
+				key: "status",
+				header: "Status",
+				width: "12%",
+				render: (event) => {
+					const computedStatus = deriveStatus(
+						event.start_date ?? "",
+						event.end_date ?? "",
+					);
+					return (
+						<Badge
+							variant={STATUS_VARIANT[computedStatus] ?? "dark"}
+						>
+							<span className="capitalize">{computedStatus}</span>
+						</Badge>
+					);
+				},
+			},
+			{
+				key: "start_date",
+				header: "Date",
+				width: "14%",
+				render: (event) => (
+					<span className="caption whitespace-nowrap">
+						{event.start_date
+							? new Date(event.start_date).toLocaleDateString(
+									"en-PH",
+									{
+										month: "short",
+										day: "numeric",
+										year: "numeric",
+									},
+								)
+							: "—"}
+					</span>
+				),
+			},
+			{
+				key: "capacity",
+				header: "Capacity",
+				width: "10%",
+				render: (event) => (
+					<span className="caption">{event.capacity}</span>
+				),
+			},
+			{
+				key: "location",
+				header: "Location",
+				width: "17%",
+				render: (event) => (
+					<span
+						className="caption text-left max-w-[150px] truncate block"
+						title={event.location}
+					>
+						{event.location}
+					</span>
+				),
+			},
+			{
+				key: "actions",
+				header: <div className="text-center">Actions</div>,
+				width: "8%",
+				render: (event) => (
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "flex-end",
+							gap: 4,
 						}}
 					>
-						<Pencil size={14} />
-					</Button>
-					<Button
-						variant="icon"
-						title="Delete event"
-						disabled={deletingId === event.id}
-						style={
-							deletingId === event.id
-								? { opacity: 0.5 }
-								: { color: "var(--error)" }
-						}
-						onClick={(e) => {
-							e.stopPropagation();
-							setDeleteTarget({
-								id: event.id!,
-								title: event.title,
-							});
-							setDeleteError(null);
-						}}
-					>
-						{deletingId === event.id ? (
-							<Loader2 size={14} className="animate-spin" />
-						) : (
-							<Trash2 size={14} />
-						)}
-					</Button>
-				</div>
-			),
-		},
-	];
+						<Button
+							variant="icon"
+							title="Edit event"
+							onClick={(e) => {
+								e.stopPropagation();
+								setEditTarget(event);
+							}}
+						>
+							<Pencil size={14} />
+						</Button>
+						<Button
+							variant="icon"
+							title="Delete event"
+							disabled={deletingId === event.id}
+							style={
+								deletingId === event.id
+									? { opacity: 0.5 }
+									: { color: "var(--error)" }
+							}
+							onClick={(e) => {
+								e.stopPropagation();
+								setDeleteTarget({
+									id: event.id!,
+									title: event.title,
+								});
+								setDeleteError(null);
+							}}
+						>
+							{deletingId === event.id ? (
+								<Loader2 size={14} className="animate-spin" />
+							) : (
+								<Trash2 size={14} />
+							)}
+						</Button>
+					</div>
+				),
+			},
+		],
+		[deletingId],
+	);
 
-	// Shared user row renderer used in both registrations and attendance tabs
-	const UserRow = ({
-		user,
-		i,
-		showCheckbox,
-	}: {
-		user: RegisteredUser;
-		i: number;
-		showCheckbox: boolean;
-	}) => (
-		<div
-			key={user.registration_id}
-			className={`grid gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--lavender)] transition-colors items-center ${showCheckbox ? "grid-cols-[1fr_1fr_44px]" : "grid-cols-[1fr_1fr]"} ${i % 2 !== 0 ? "bg-[rgba(45,42,74,0.02)]" : ""}`}
-		>
-			<span className="caption truncate font-medium">
-				{user.display_name || user.full_name || (
-					<span className="text-[var(--gray)]">—</span>
-				)}
-			</span>
-			<span className="caption truncate text-[var(--gray)]">
-				{user.email || "—"}
-			</span>
-			{showCheckbox && (
-				<div
-					className="flex items-center justify-center"
-					onClick={(e) => e.stopPropagation()}
+	// memoized to avoid recreating the footer
+	const deleteModalFooter = useMemo(
+		() => (
+			<div className="flex gap-3 w-full">
+				<Button
+					variant="ghost"
+					className="flex-1"
+					onClick={() => {
+						setDeleteTarget(null);
+						setDeletePassword("");
+						setDeleteError(null);
+					}}
+					disabled={!!deletingId}
 				>
-					<Checkbox
-						label=""
-						checked={user.attended}
-						onChange={(newVal) =>
-							handleToggleAttendance(user.registration_id, newVal)
-						}
-					/>
-				</div>
-			)}
-		</div>
+					Cancel
+				</Button>
+				<Button
+					variant="primary"
+					className="flex-1 !bg-[var(--error)]"
+					onClick={confirmDelete}
+					disabled={!!deletingId || !deletePassword.trim()}
+				>
+					{deletingId ? "Deleting..." : "Yes, Delete"}
+				</Button>
+			</div>
+		),
+		[deletingId, deletePassword, confirmDelete],
 	);
 
 	const sortLabel = `${SORT_OPTIONS.find((o) => o.field === sort.field)?.label} ${sort.direction === "asc" ? "↑" : "↓"}`;
@@ -690,9 +952,12 @@ export default function EventsPage() {
 				<div className="flex items-center gap-3 flex-wrap">
 					<SearchBar
 						placeholder="Search by title, category, or location…"
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						onClear={() => setSearch("")}
+						value={searchInput}
+						onChange={(e) => setSearchInput(e.target.value)}
+						onClear={() => {
+							setSearchInput("");
+							setSearch("");
+						}}
 						containerStyle={{ flex: 1, minWidth: 220 }}
 					/>
 
@@ -749,7 +1014,7 @@ export default function EventsPage() {
 						</DropdownItem>
 					</Dropdown>
 
-					{/* Filter dropdown */}
+					{/* filter dropdown */}
 					<Dropdown
 						trigger={
 							<Button
@@ -810,6 +1075,15 @@ export default function EventsPage() {
 							Clear all filters
 						</DropdownItem>
 					</Dropdown>
+
+					{/* export to csv */}
+					<Button
+						variant="ghost"
+						onClick={handleExportEvents}
+						title="Export all events to CSV"
+					>
+						<Upload size={15} /> Export CSV
+					</Button>
 
 					<Button
 						variant="primary"
@@ -898,6 +1172,7 @@ export default function EventsPage() {
 								variant="ghost"
 								size="sm"
 								onClick={() => {
+									setSearchInput("");
 									setSearch("");
 									clearAllFilters();
 								}}
@@ -936,38 +1211,32 @@ export default function EventsPage() {
 			{/* create modal */}
 			<Modal
 				open={createModalOpen}
-				onClose={() => setCreateModalOpen(false)}
+				onClose={handleCreateCancel}
 				title="Add Event"
-				modalStyle={{ maxWidth: 900 }}
+				modalStyle={MODAL_STYLE_LG}
 			>
 				<EventForm
 					mode="create"
-					onSuccess={() => {
-						setCreateModalOpen(false);
-						getEvents();
-					}}
-					onCancel={() => setCreateModalOpen(false)}
+					onSuccess={handleCreateSuccess}
+					onCancel={handleCreateCancel}
 				/>
 			</Modal>
 
 			{/* edit modal */}
 			<Modal
 				open={!!editTarget}
-				onClose={() => setEditTarget(null)}
+				onClose={handleEditCancel}
 				title="Edit Event"
 				subtitle={editTarget?.title}
-				modalStyle={{ maxWidth: 900 }}
+				modalStyle={MODAL_STYLE_LG}
 			>
 				{editTarget && (
 					<EventForm
 						key={editTarget.id}
 						mode="edit"
 						initialData={editTarget}
-						onSuccess={() => {
-							setEditTarget(null);
-							getEvents();
-						}}
-						onCancel={() => setEditTarget(null)}
+						onSuccess={handleEditSuccess}
+						onCancel={handleEditCancel}
 					/>
 				)}
 			</Modal>
@@ -977,8 +1246,8 @@ export default function EventsPage() {
 				open={!!detailEvent}
 				onClose={() => setDetailEvent(null)}
 				hideCloseButton
-				modalStyle={{ maxWidth: 960, padding: 0 }}
-				contentStyle={{ display: "flex", flexDirection: "column" }}
+				modalStyle={MODAL_STYLE_DETAIL}
+				contentStyle={MODAL_CONTENT_STYLE_DETAIL}
 			>
 				{detailEvent && (
 					<div className="flex flex-col min-h-0">
@@ -1005,15 +1274,15 @@ export default function EventsPage() {
 							<div className="absolute bottom-3 right-3 flex gap-2 z-10">
 								<Button
 									variant="primary"
-                                    size="sm"
+									size="sm"
 									onClick={handleExportCSV}
 									title="Export event details to CSV"
 								>
-									<Download size={15} /> Export CSV
+									<Upload size={15} /> Export CSV
 								</Button>
 								<Button
 									variant="primary"
-                                    size="sm"
+									size="sm"
 									onClick={() => {
 										setEditTarget(detailEvent);
 										setDetailEvent(null);
@@ -1238,7 +1507,7 @@ export default function EventsPage() {
 										setRegistrantSearch(e.target.value)
 									}
 									onClear={() => setRegistrantSearch("")}
-									containerStyle={{ width: "100%" }}
+									containerStyle={SEARCHBAR_FULL_WIDTH}
 								/>
 
 								{/* registrations panel */}
@@ -1355,6 +1624,9 @@ export default function EventsPage() {
 															user={user}
 															i={i}
 															showCheckbox
+															onToggle={
+																handleToggleAttendance
+															}
 														/>
 													),
 												)}
@@ -1480,6 +1752,9 @@ export default function EventsPage() {
 															user={user}
 															i={i}
 															showCheckbox={false}
+															onToggle={
+																handleToggleAttendance
+															}
 														/>
 													),
 												)}
@@ -1505,30 +1780,7 @@ export default function EventsPage() {
 				}}
 				title="Delete Event?"
 				subtitle="This action cannot be undone. All registrations and data tied to this event will be permanently removed."
-				footer={
-					<div className="flex gap-3 w-full">
-						<Button
-							variant="ghost"
-							className="flex-1"
-							onClick={() => {
-								setDeleteTarget(null);
-								setDeletePassword("");
-								setDeleteError(null);
-							}}
-							disabled={!!deletingId}
-						>
-							Cancel
-						</Button>
-						<Button
-							variant="primary"
-							className="flex-1 !bg-[var(--error)]"
-							onClick={confirmDelete}
-							disabled={!!deletingId || !deletePassword.trim()}
-						>
-							{deletingId ? "Deleting..." : "Yes, Delete"}
-						</Button>
-					</div>
-				}
+				footer={deleteModalFooter}
 			>
 				{deleteTarget && (
 					<div className="space-y-4">
