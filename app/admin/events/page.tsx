@@ -214,6 +214,7 @@ export default function EventsPage() {
 	const [loadingRegs, setLoadingRegs] = useState(false);
 	const [copied, setCopied] = useState(false);
 	const [togglingId, setTogglingId] = useState<string | null>(null); // tracks which row is being saved
+    const editFromDetailRef = useRef<EventFormData | null>(null);
 
 	// for searching registrants inside event detail modal
 	const [registrantSearch, setRegistrantSearch] = useState("");
@@ -692,7 +693,7 @@ export default function EventsPage() {
 		} else {
 			// avoids a full refetch after delete
 			setEvents((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-			showToast("success", "Event deleted successfully");
+			showToast("success", "Event deleted successfully.");
 			setDeleteTarget(null);
 			setDeletePassword("");
 			setDeleteError(null);
@@ -711,8 +712,9 @@ export default function EventsPage() {
 				getEvents();
 			}
 			setCreateModalOpen(false);
+			showToast("success", "Event created successfully!");
 		},
-		[getEvents],
+		[getEvents, showToast],
 	);
 
 	const handleEditSuccess = useCallback(
@@ -721,16 +723,29 @@ export default function EventsPage() {
 				setEvents((prev) =>
 					prev.map((e) => (e.id === updated.id ? updated : e)),
 				);
+				// reopen detail with fresh data if edit was from detail modal
+				if (editFromDetailRef.current) {
+					setDetailEvent(updated);
+					editFromDetailRef.current = null;
+				}
 			} else {
 				getEvents();
 			}
 			setEditTarget(null);
+			showToast("success", "Event updated successfully!");
 		},
-		[getEvents],
+		[getEvents, showToast],
 	);
 
 	const handleCreateCancel = useCallback(() => setCreateModalOpen(false), []);
-	const handleEditCancel = useCallback(() => setEditTarget(null), []);
+	const handleEditCancel = useCallback(() => {
+		// reopen detail modal if edit was triggered from it
+		if (editFromDetailRef.current) {
+			setDetailEvent(editFromDetailRef.current);
+			editFromDetailRef.current = null;
+		}
+		setEditTarget(null);
+	}, []);
 
 	const activeFilterCount = categoryFilters.size + statusFilters.size;
 	const hasActiveFilters = activeFilterCount > 0;
@@ -1284,6 +1299,7 @@ export default function EventsPage() {
 									variant="primary"
 									size="sm"
 									onClick={() => {
+                                        editFromDetailRef.current = detailEvent;
 										setEditTarget(detailEvent);
 										setDetailEvent(null);
 									}}
