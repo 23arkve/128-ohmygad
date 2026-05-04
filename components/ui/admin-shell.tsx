@@ -94,40 +94,42 @@ function AdminSidebarPanel() {
 
 	return (
 		<motion.div
-			animate={{ width: open ? EXPANDED : COLLAPSED }}
-			transition={SPRING}
-			style={{ position: "relative", flexShrink: 0 }}
-		>
-			<aside
-				data-state={open ? "expanded" : "collapsed"}
-				className="group/sidebar flex flex-col h-full bg-[var(--primary-dark)] overflow-hidden"
-			>
-				{/* logo */}
-				<div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
-					<div
-						className="flex shrink-0 items-center"
-						style={{ width: COLLAPSED, height: "100%" }}
-					>
-						<Image
-							src="/kasarian-upb-logo.svg"
-							alt="Kasarian UP Baguio"
-							width={55}
-							height={55}
-						/>
-					</div>
-					<motion.div
-						animate={{ opacity: open ? 1 : 0 }}
-						transition={FADE}
-						className="flex flex-col justify-center overflow-hidden pr-3"
-					>
-						<span className="body-dark whitespace-nowrap">
-							UP BAGUIO
-						</span>
-						<span className="heading-md-dark uppercase whitespace-nowrap">
-							Kasarian
-						</span>
-					</motion.div>
-				</div>
+            animate={{ width: open ? EXPANDED : COLLAPSED }}
+            transition={SPRING}
+            style={{ position: "relative", flexShrink: 0 }}
+            className="hidden md:block"
+        >
+            <aside
+                data-state={open ? "expanded" : "collapsed"}
+                className="group/sidebar flex h-full flex-col overflow-hidden pr-2"
+                style={{ background: "var(--primary-dark)" }}
+            >
+                {/* logo */}
+                <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
+                    <div
+                        className="flex shrink-0 items-center"
+                        style={{ width: COLLAPSED, height: "100%" }}
+                    >
+                        <Image
+                            src="/kasarian-upb-logo.svg"
+                            alt="Kasarian UP Baguio"
+                            width={55}
+                            height={55}
+                        />
+                    </div>
+                    <motion.div
+                        animate={{ opacity: open ? 1 : 0 }}
+                        transition={FADE}
+                        className="flex flex-col justify-center overflow-hidden pr-3"
+                    >
+                        <span className="body-dark whitespace-nowrap">
+                            UP BAGUIO
+                        </span>
+                        <span className="heading-md-dark uppercase whitespace-nowrap">
+                            Kasarian
+                        </span>
+                    </motion.div>
+                </div>
 
 				{/* nav */}
 				<nav className="flex flex-col flex-1 gap-3 py-3 overflow-y-auto overflow-x-hidden mr-2">
