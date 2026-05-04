@@ -3,182 +3,333 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Calendar, BookOpen, ClipboardList,
-  ChevronLeft, ChevronRight,
+	LayoutDashboard,
+	Calendar,
+	BookOpen,
+	ClipboardList,
+	ChevronLeft,
+	ChevronRight,
+	X,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { motion, AnimatePresence } from "framer-motion";
+import { useMobileMenu } from "@/components/ui/mobile-menu-context";
+
+const SPRING = { type: "spring", stiffness: 400, damping: 38 } as const;
+const FADE = { duration: 0.15, ease: "easeInOut" } as const;
 
 const NAV_ITEMS = [
-  { href: "/faculty",         label: "Dashboard", icon: LayoutDashboard, exact: true  },
-  { href: "/faculty/events",  label: "Events",    icon: Calendar,        exact: false },
-  { href: "/faculty/courses", label: "I've GAD to Know",   icon: BookOpen,        exact: false },
-  { href: "/faculty/surveys", label: "Surveys",   icon: ClipboardList,   exact: false },
+	{
+		href: "/faculty",
+		label: "Dashboard",
+		icon: LayoutDashboard,
+		exact: true,
+	},
+	{ href: "/faculty/events", label: "Events", icon: Calendar, exact: false },
+	{
+		href: "/faculty/courses",
+		label: "I've GAD to Know",
+		icon: BookOpen,
+		exact: false,
+	},
+	{
+		href: "/faculty/surveys",
+		label: "Surveys",
+		icon: ClipboardList,
+		exact: false,
+	},
 ];
 
 function isActive(pathname: string, href: string, exact = false) {
-  return exact ? pathname === href : pathname.startsWith(href);
+	return exact ? pathname === href : pathname.startsWith(href);
 }
 
 function MobileNav() {
-  const pathname = usePathname();
-  return (
-    <nav
-      aria-label="Mobile navigation"
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around"
-      style={{
-        background: "var(--primary-dark)",
-        borderTop:  "1px solid rgba(255,255,255,0.10)",
-        padding:    "8px 4px",
-        boxShadow:  "0 -4px 24px rgba(45,42,74,0.18)",
-      }}
-    >
-      {NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
-        const active = isActive(pathname, href, exact);
-        return (
-          <Link
-            key={href}
-            href={href}
-            className="relative flex flex-1 flex-col items-center gap-0.5 rounded-xl px-1 py-1.5 transition-all duration-200"
-            style={{ background: active ? "rgba(255,255,255,0.12)" : "transparent" }}
-          >
-            {active && (
-              <span
-                className="absolute left-1/2 top-0 h-0.5 w-6 -translate-x-1/2 rounded-b-full"
-                style={{ background: "var(--soft-pink)" }}
-              />
-            )}
-            <Icon size={22} style={{ color: active ? "white" : "rgba(255,255,255,0.45)" }} />
-            <span style={{ fontSize: 9, fontWeight: active ? 700 : 500, color: active ? "white" : "rgba(255,255,255,0.45)", lineHeight: 1, letterSpacing: "0.02em" }}>
-              {label}
-            </span>
-          </Link>
-        );
-      })}
-    </nav>
-  );
+	const pathname = usePathname();
+	const { isOpen, setIsOpen } = useMobileMenu(); // hook into global context
+
+	// close the mobile menu automatically when the route changes
+	useEffect(() => {
+		setIsOpen(false);
+	}, [pathname, setIsOpen]);
+
+	// lock body scroll when the menu is open
+	useEffect(() => {
+		if (isOpen) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "";
+		}
+		return () => {
+			document.body.style.overflow = "";
+		};
+	}, [isOpen]);
+
+	return (
+		<AnimatePresence>
+			{isOpen && (
+				<>
+					{/* backdrop */}
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.2 }}
+						onClick={() => setIsOpen(false)}
+						className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
+						aria-hidden="true"
+					/>
+
+					{/* sidebar Drawer */}
+					<motion.nav
+						initial={{ x: "-100%" }}
+						animate={{ x: 0 }}
+						exit={{ x: "-100%" }}
+						transition={{
+							type: "spring",
+							stiffness: 300,
+							damping: 30,
+						}}
+						className="fixed bottom-0 left-0 top-0 z-50 flex w-[280px] max-w-[80vw] flex-col shadow-2xl md:hidden"
+						style={{ background: "var(--primary-dark)" }}
+						aria-label="Mobile navigation"
+					>
+						{/* header inside mobile drawer */}
+						<div className="flex h-[100px] shrink-0 items-center justify-between border-b border-white/[0.07] px-4">
+							<div className="flex items-center gap-3">
+								<Image
+									src="/kasarian-upb-logo.svg"
+									alt="UPB Kasarian"
+									width={50}
+									height={50}
+								/>
+								<div className="flex flex-col justify-center">
+									<span className="body-dark">UP BAGUIO</span>
+									<span className="heading-md-dark uppercase">
+										Kasarian
+									</span>
+								</div>
+							</div>
+							<button
+								onClick={() => setIsOpen(false)}
+								className="rounded-full p-2 text-white/50 transition-colors bg-white/10 hover:bg-[var(--periwinkle)] hover:text-[var(--primary-dark)]"
+								aria-label="Close menu"
+							>
+								<X size={20} />
+							</button>
+						</div>
+
+						{/* navigation Links */}
+						<div className="flex flex-1 flex-col gap-2 overflow-y-auto px-3 py-4">
+							{NAV_ITEMS.map(
+								({ href, label, icon: Icon, exact }) => {
+									const active = isActive(
+										pathname,
+										href,
+										exact,
+									);
+									return (
+										<Link
+											key={href}
+											href={href}
+											className="flex items-center gap-3 rounded-[10px] px-3 py-3 text-[15px] font-medium transition-colors"
+											style={{
+												background: active
+													? "rgba(255,255,255,0.18)"
+													: "transparent",
+												color: active
+													? "white"
+													: "rgba(255,255,255,0.5)",
+											}}
+										>
+											<Icon size={20} />
+											<span>{label}</span>
+										</Link>
+									);
+								},
+							)}
+						</div>
+					</motion.nav>
+				</>
+			)}
+		</AnimatePresence>
+	);
 }
 
 export default function FacultySidebar() {
-  const pathname = usePathname();
+	const pathname = usePathname();
 
-  const [open,     setOpen]     = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+	const [open, setOpen] = useState(true);
+	const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const check = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) setOpen(false);
-    };
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
+	// read local storage and check window width only after mount
+	useEffect(() => {
+		// hydrate from localStorage if available
+		const saved = window.localStorage.getItem("faculty-sidebar-expanded");
+		if (saved !== null) {
+			setOpen(JSON.parse(saved));
+		}
 
-  if (isMobile) return <MobileNav />;
+		// check if on mobile
+		const checkMobile = () => {
+			const mobile = window.innerWidth < 768;
+			setIsMobile(mobile);
+			if (mobile) setOpen(false);
+		};
 
-  const state = open ? "expanded" : "collapsed";
+		checkMobile();
+		window.addEventListener("resize", checkMobile);
+		return () => window.removeEventListener("resize", checkMobile);
+	}, []);
 
-  return (
-    <div style={{ position: "relative", flexShrink: 0, display: "flex" }}>
-    <aside
-      data-state={state}
-      className={[
-        "group/sidebar relative shrink-0 hidden md:flex flex-col",
-        "w-[--sidebar-width] data-[state=collapsed]:w-[--sidebar-width-icon]",
-        "transition-[width] duration-200 ease-linear",
-        "bg-[var(--primary-dark)] overflow-hidden md:pr-2",
-      ].join(" ")}
-      style={{
-        "--sidebar-width":      "224px",
-        "--sidebar-width-icon": "64px",
-      } as React.CSSProperties}
-    >
-        {/* logo ------------------------------------------------ */}
-        <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[65px] py-3.5 gap-[6px] overflow-hidden">
-          <div className="relative shrink-0 flex items-center justify-center rounded-[10px]" style={{ width: 44, height: 44 }}>
-            <Image src="/kasarian-upb-logo.svg" alt="UPB Kasarian" width={44} height={44} />
-          </div>
+	// save to localStorage whenever 'open' state changes
+	useEffect(() => {
+		window.localStorage.setItem(
+			"faculty-sidebar-expanded",
+			JSON.stringify(open),
+		);
+	}, [open]);
 
-          {/* title fades + clips via overflow on the sidebar itself */}
-          <div
-            className={[
-              "flex flex-col justify-center overflow-hidden shrink-0",
-              "w-[112px] opacity-100",
-              "group-data-[state=collapsed]/sidebar:w-0 group-data-[state=collapsed]/sidebar:opacity-0",
-              "transition-[width,opacity] duration-200 ease-linear",
-            ].join(" ")}
-          >
-            <span className="caption-dark">UP BAGUIO</span>
-            <span className="heading-sm-dark uppercase">Kasarian</span>
-          </div>
+	if (isMobile) return <MobileNav />;
 
-        </div>
+	const EXPANDED = 224;
+	const COLLAPSED = 64;
+	const BTN = 28;
 
-        {/* nav ------------------------------------------------ */}
-        <nav className="flex flex-col flex-1 gap-1 py-2 overflow-y-auto overflow-x-hidden">
-          {NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
-            const active = isActive(pathname, href, exact);
-            return (
-              <Link
-                key={href}
-                href={href}
-                title={!open ? label : undefined}
-                className={[
-                  "flex items-center w-full h-[40px] rounded-[10px]",
-                  "justify-start px-1 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:px-0",
-                  "text-[15px] font-medium transition-colors duration-150",
-                  active
-                    ? "bg-white/[0.18] text-[var(--white)]"
-                    : "text-white/50 hover:bg-white/[0.08] hover:text-white/80",
-                ].join(" ")}
-              >
-                <div className="w-[24px] flex justify-center shrink-0">
-                  <Icon size={18} />
-                </div>
-                <span
-                  className={[
-                    "overflow-hidden",
-                    "w-[140px] opacity-100",
-                    "group-data-[state=collapsed]/sidebar:w-0 group-data-[state=collapsed]/sidebar:opacity-0",
-                    "transition-[width,opacity] duration-200 ease-linear",
-                  ].join(" ")}
-                >
-                  <span className="block truncate pl-[10px] whitespace-nowrap text-left">
-                    {label}
-                  </span>
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
+	return (
+		<motion.div
+			animate={{ width: open ? EXPANDED : COLLAPSED }}
+			transition={SPRING}
+			style={{ position: "relative", flexShrink: 0 }}
+			className="hidden md:block"
+		>
+			<aside
+				data-state={open ? "expanded" : "collapsed"}
+				className="group/sidebar flex h-full flex-col overflow-hidden pr-2"
+				style={{ background: "var(--primary-dark)" }}
+			>
+				{/* logo */}
+				<div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
+					<div
+						className="flex shrink-0 items-center"
+						style={{ width: COLLAPSED, height: "100%" }}
+					>
+						<Image
+							src="/kasarian-upb-logo.svg"
+							alt="Kasarian UP Baguio"
+							width={55}
+							height={55}
+						/>
+					</div>
+					<motion.div
+						animate={{ opacity: open ? 1 : 0 }}
+						transition={FADE}
+						className="flex flex-col justify-center overflow-hidden pr-3"
+					>
+						<span className="body-dark whitespace-nowrap">
+							UP BAGUIO
+						</span>
+						<span className="heading-md-dark uppercase whitespace-nowrap">
+							Kasarian
+						</span>
+					</motion.div>
+				</div>
 
-    </aside>
-    <button
-      onClick={() => setOpen(o => !o)}
-      aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
-      style={{
-        position: "absolute",
-        right: -14,
-        top: "50%",
-        transform: "translateY(-50%)",
-        width: 35,
-          height: 35,
-          borderRadius: "50%",
-          background: "var(--primary-dark)",
-          border: "2px solid var(--white)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer",
-        zIndex: 20,
-        color: "white",
-        flexShrink: 0,
-      }}
-    >
-      {open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-    </button>
-    </div>
-  );
+				{/* nav */}
+				<nav className="flex flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden py-3">
+					<TooltipProvider delayDuration={70}>
+						{NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
+							const active = isActive(pathname, href, exact);
+							const linkClass = [
+								"flex items-center w-full h-[40px] rounded-[10px] px-1",
+								"text-[15px] font-medium transition-colors duration-150",
+								active
+									? "bg-white/[0.18] text-[var(--white)]"
+									: "text-white/50 hover:bg-white/[0.08] hover:text-white/80",
+							].join(" ");
+
+							const linkContent = (
+								<>
+									<motion.div
+										animate={{ width: open ? 24 : "100%" }}
+										transition={SPRING}
+										className="flex shrink-0 justify-center"
+									>
+										<Icon size={18} />
+									</motion.div>
+									<motion.span
+										animate={{
+											opacity: open ? 1 : 0,
+											width: open ? 140 : 0,
+										}}
+										transition={FADE}
+										className="block overflow-hidden truncate whitespace-nowrap pl-[10px] text-left"
+									>
+										{label}
+									</motion.span>
+								</>
+							);
+
+							return open ? (
+								<Link
+									key={href}
+									href={href}
+									className={linkClass}
+								>
+									{linkContent}
+								</Link>
+							) : (
+								<Tooltip key={href}>
+									<TooltipTrigger asChild>
+										<Link href={href} className={linkClass}>
+											{linkContent}
+										</Link>
+									</TooltipTrigger>
+									<TooltipContent
+										side="right"
+										sideOffset={10}
+									>
+										{label}
+									</TooltipContent>
+								</Tooltip>
+							);
+						})}
+					</TooltipProvider>
+				</nav>
+			</aside>
+
+			<motion.button
+				onClick={() => setOpen((o: boolean) => !o)}
+				aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+				animate={{ x: (open ? EXPANDED : COLLAPSED) - BTN / 2 }}
+				transition={SPRING}
+				style={{
+					position: "absolute",
+					left: 0,
+					top: "50%",
+					marginTop: -(BTN / 2),
+					width: BTN,
+					height: BTN,
+					borderRadius: "50%",
+					background: "var(--primary-dark)",
+					border: "2px solid var(--white)",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					cursor: "pointer",
+					zIndex: 20,
+					color: "white",
+				}}
+			>
+				{open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+			</motion.button>
+		</motion.div>
+	);
 }

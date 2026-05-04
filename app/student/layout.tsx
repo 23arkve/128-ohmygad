@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import StudentSidebar from '@/components/student-sidebar';
 import { getCurrentUserWithRole } from '@/lib/auth/get-current-user';
 import DashboardHeader from '@/components/shared/dashboard-header';
+import { MobileMenuProvider } from '@/components/ui/mobile-menu-context';
 
 const PAGE_LABELS: Record<string, string> = {
   dashboard: "Dashboard",
@@ -26,7 +27,8 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
   return (
     <div className="flex h-screen w-full p-0 md:p-2 bg-[var(--primary-dark)]">
 
-      {/* outer card that hugs sidebar + content */}
+    <MobileMenuProvider>
+        {/* outer card that hugs sidebar + content */}
       <div className="bg-[var(--primary-dark)]" style={{ position:'relative', zIndex:1, display:'flex', flex:1, overflow:'hidden' }}>
         <StudentSidebar />
 
@@ -55,6 +57,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
             
         </div>
       </div>
+    </MobileMenuProvider>
     </div>
   );
 }
