@@ -253,19 +253,27 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     {
       key: "full_name",
       header: "User",
-      width: "46%",
+      width: "20%",
       render: (p) => (
         <span 
         title={p.full_name}>
-        <div className="flex items-center gap-3">
-          <div>
+        <div className="flex items-center gap-2">
             <div className="font-semibold text-[13px] text-primary-dark">{p.full_name ?? "—"}</div>
-            <div className="text-[11px] text-gray-500">{p.email}</div>
-          </div>
         </div>
         </span>
       ),
     },
+    {key: "email",
+    header: "Email", 
+    width: "20%",
+    render: (p) => (
+      <span 
+      title={p.email}>
+      <div className="flex items-center gap-2">
+        <div className="text-[13px] text-primary-dark">{p.email ?? "—"}</div>
+      </div>
+      </span>
+    ),},
     {
       key: "role",
       header: "Role",
