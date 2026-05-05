@@ -334,6 +334,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 
   const sortLabel = `${SORT_OPTIONS.find((o) => o.field === sort.field)?.label ?? "Full name"} ${sort.direction === "asc" ? "↑" : "↓"}`;
 
+
   return (
     <div className="flex flex-col gap-3">
       {/* toolbar */}
@@ -409,23 +410,6 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
                   label={r.charAt(0).toUpperCase() + r.slice(1)}
                   checked={roleFilters.has(r)}
                   onChange={() => toggleRole(r)}
-                />
-              </DropdownItem>
-            ))}
-
-            <DropdownDivider />
-
-            <div style={{ padding: "6px 12px 4px" }}>
-              <p className="label" style={{ marginBottom: 4 }}>
-                Events Attended
-              </p>
-            </div>
-            {GSO_STATUSES.map((g) => (
-              <DropdownItem key={g}>
-                <Checkbox
-                  label={g === "attended" ? "Attended" : "Pending"}
-                  checked={gsoFilters.has(g)}
-                  onChange={() => toggleGso(g)}
                 />
               </DropdownItem>
             ))}

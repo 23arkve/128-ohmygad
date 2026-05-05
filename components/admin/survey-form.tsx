@@ -222,8 +222,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
       }
 
       if (questions.length > 0) {
-        const questionsPayload = questions.map((q, i) => ({
-          ...(q.id ? { id: q.id } : {}),
+        const basePayload = questions.map((q, i) => ({
           survey_id:     surveyId,
           question_text: q.question_text.trim(),
           question_type: q.question_type,
@@ -233,8 +232,25 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
           is_required:   q.is_required,
           order_index:   i,
         }));
-        const { error: qError } = await supabase.from("survey_questions").upsert(questionsPayload);
-        if (qError) throw qError;
+
+        const toInsert = basePayload.filter((_, i) => !questions[i].id);
+        const toUpdate = basePayload
+          .map((p, i) => questions[i].id ? { ...p, id: questions[i].id } : null)
+          .filter(Boolean) as typeof basePayload & { id: string }[];
+
+        if (toInsert.length > 0) {
+          const { error: insertErr } = await supabase.from("survey_questions").insert(toInsert);
+          if (insertErr) throw insertErr;
+        }
+
+        for (const q of toUpdate) {
+          const { id, ...fields } = q as any;
+          const { error: updateErr } = await supabase
+            .from("survey_questions")
+            .update(fields)
+            .eq("id", id);
+          if (updateErr) throw updateErr;
+        }
       }
 
       if (onSuccess) {
