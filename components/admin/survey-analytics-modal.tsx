@@ -259,7 +259,7 @@ function QuestionCard({
           </p>
           <h3 className="heading-md">{question.question_text}</h3>
         </div>
-        <Badge variant="periwinkle">
+        <Badge variant="periwinkle" className="shrink-0 whitespace-nowrap">
           {responses.length} response{responses.length !== 1 ? "s" : ""}
         </Badge>
       </div>
