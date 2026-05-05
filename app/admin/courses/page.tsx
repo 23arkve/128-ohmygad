@@ -393,7 +393,7 @@ const confirmDelete = async () => {
 				open={!!modalContent}
 				onClose={() => setModalContent(null)}
 				title={modalContent?.label}
-				modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", wordBreak: "break-word", hyphens: "auto" }}
+				modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", hyphens: "auto", overflowWrap: "break-word",}}
 			>
 			
 				<p
@@ -403,7 +403,6 @@ const confirmDelete = async () => {
 						color: "var(--primary-dark)",
 						whiteSpace: "pre-wrap",
 						overflowWrap: "break-word",
-						wordBreak: "break-word",
 						hyphens: "auto"
 					}}
 				>
