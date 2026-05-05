@@ -559,6 +559,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
         ) : editUser ? (
           <UserForm
             initialData={editUser}
+            onCancel={closeEditModal}
             onSuccess={() => {
               closeEditModal();
               router.refresh();
