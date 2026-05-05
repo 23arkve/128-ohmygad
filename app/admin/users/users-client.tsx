@@ -287,7 +287,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     {
       key: "role",
       header: "Role",
-      width: "16%",
+      width: "13%",
       render: (p) => (
         <Badge variant={ROLE_VARIANT[p.role?.toLowerCase() ?? ""] ?? "dark"}>
           <span className="capitalize">{p.role ?? "—"}</span>
@@ -297,11 +297,11 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     {
       key: "total_events_attended",
       header: "Total Events Attended",
-      width: "20%",
+      width: "11%",
       render: (p) => (
-        <span className="text-[13px] text-primary-dark">
+        <div className="text-center text-[13px] text-primary-dark">
           {getTotalEventsAttended(p)}
-        </span>
+        </div>
       ),
     },
     {
