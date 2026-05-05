@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
 	User,
 	Mail,
@@ -58,6 +58,7 @@ interface UserFormProps {
 	onSuccess?: () => void;
 	onCancel?: () => void;
 	layout?: "modal" | "page";
+	onRoleChangeRequest?: (role: string) => void;
 }
 
 // options
@@ -85,6 +86,7 @@ export default function UserForm({
 	onSuccess,
 	onCancel,
 	layout = "modal",
+	onRoleChangeRequest,
 }: UserFormProps) {
 	const router = useRouter();
 	const isEdit = !!initialData;
@@ -93,6 +95,7 @@ export default function UserForm({
 		throw new Error("Cannot edit user: missing user ID");
 
 	// state
+	const [pendingRole, setPendingRole] = useState<string | null>(null);
 	const [full_name, setFullName] = useState(initialData?.full_name ?? "");
 	const [email, setEmail] = useState(initialData?.email ?? "");
 	const [password, setPassword] = useState("");
@@ -143,18 +146,62 @@ export default function UserForm({
 		setContactNum(digits);
 	};
 
+	const handleRoleSelect = (value: string) => {
+		if (onRoleChangeRequest) {
+			setPendingRole(value);
+			onRoleChangeRequest(value);
+		} else {
+			setRole(value);
+		}
+	};
+
 	const handleSessionChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
 		setter: (val: string) => void,
 	) => {
-		const digits = e.target.value.replace(/\D/g, "");
-		setter(digits);
+		// Strip non-digits, take only the first character, clamp 0-5
+		const raw = e.target.value.replace(/\D/g, "");
+		if (raw === "") { setter(""); return; }
+		const num = Math.min(5, parseInt(raw, 10));
+		setter(String(num));
 	};
 
 	const handleCancel = () => {
 		if (onCancel) onCancel();
 		else router.push("/admin/users");
 	};
+
+	const cancelRoleChange = () => {
+		setPendingRole(null);
+	};
+
+	// listen for role confirmation and cancel events from parent modal
+	useEffect(() => {
+		const handleRoleConfirmed = (event: Event) => {
+			if (event instanceof CustomEvent) {
+				setPendingRole(null);
+				setRole(event.detail);
+				// reset role-specific fields to avoid invalid data carryover
+				setCollege("");
+				setProgram("");
+				setStudentNum("");
+				setYearLevel("");
+				setOffice("");
+				setDepartment("");
+			}
+		};
+
+		const handleRoleChangeCancelled = () => {
+			setPendingRole(null);
+		};
+
+		window.addEventListener("role-confirmed", handleRoleConfirmed);
+		window.addEventListener("role-change-cancelled", handleRoleChangeCancelled);
+		return () => {
+			window.removeEventListener("role-confirmed", handleRoleConfirmed);
+			window.removeEventListener("role-change-cancelled", handleRoleChangeCancelled);
+		};
+	}, []);
 
 	// submit
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -163,7 +210,7 @@ export default function UserForm({
 		setError(null);
 
 		try {
-			if (!full_name || !email || !role || (!isEdit && !password)) {
+			if (!full_name || !email || !role || (!isEdit && !password) || !sex_at_birth || !gender_identity) {
 				throw new Error("Please fill in all required fields.");
 			}
 
@@ -187,9 +234,7 @@ export default function UserForm({
 			if (contactErr) throw new Error(contactErr);
 
 			if (role === "student" || !role) {
-				if (!college) throw new Error("Please select a College.");
-				if (!program) throw new Error("Please select a Program.");
-				if (!student_num) throw new Error("Please provide a Student Number.");
+				if (!college || !program || !student_num) throw new Error("Please fill in all required fields.");
 				
 				const studentErr = validateStudentNum(student_num);
 				if (studentErr) throw new Error(studentErr);
@@ -249,7 +294,7 @@ export default function UserForm({
 					: {}),
 				...(role === "admin" ? { office: office } : {}),
 				...(role === "staff" ? { office: office } : {}),
-				...(role === "faculty" ? { college, department } : {}),
+				...(role === "faculty" ? { college, department, gso_attended: gsoNum, asho_attended: ashoNum } : {}),
 			};
 
 			if (isEdit) (payload as any).id = initialData!.id;
@@ -352,14 +397,16 @@ export default function UserForm({
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 							<Select
-								label="Role"
-								required
-								value={role}
-								onChange={(e) => setRole(e.target.value)}
-								options={[
-									{ value: "", label: "Select role…" },
-									...ROLE_OPTIONS,
-								]}
+							label="Role"
+							required
+							value={pendingRole ?? role}
+							onChange={(e) => {
+								handleRoleSelect(e.target.value);
+							}}
+							options={[
+								{ value: "", label: "Select role…" },
+								...ROLE_OPTIONS,
+							]}
 							/>
 						</div>
 
@@ -374,7 +421,7 @@ export default function UserForm({
 								maxLength={32}
 							/>
 							<Input
-								label="Contact Number"
+								label="Contact Number (optional)"
 								prefixIcon={<Phone size={15} />}
 								maxLength={11}
 								placeholder="e.g. 09123456789"
@@ -476,7 +523,7 @@ export default function UserForm({
 							)}
 							<div className="col-span-full">
 								<Input
-									label="Address"
+									label="Address (optional)"
 									prefixIcon={<MapPin size={15} />}
 									placeholder="City, Province"
 									value={address}
@@ -505,7 +552,8 @@ export default function UserForm({
 								]}
 							/>
 							<Select
-								label="Sex at Birth"
+								label="Sex at Birth *"
+								required
 								value={sex_at_birth}
 								onChange={(e) => setSexAtBirth(e.target.value)}
 								options={[
@@ -514,7 +562,8 @@ export default function UserForm({
 								]}
 							/>
 							<Select
-								label="Gender Identity"
+								label="Gender Identity *"
+								required
 								value={gender_identity}
 								onChange={(e) =>
 									setGenderIdentity(e.target.value)
@@ -529,7 +578,8 @@ export default function UserForm({
 								!role) && (
 								<Input
 									label="GSO Sessions Attended"
-									maxLength={1}
+									type="text"
+									inputMode="numeric"
 									placeholder="0"
 									value={gso_attended.toString()}
 									onChange={(e) =>
@@ -542,7 +592,8 @@ export default function UserForm({
 								!role) && (
 								<Input
 									label="ASHO Sessions Attended"
-									maxLength={1}
+									type="text"
+									inputMode="numeric"
 									placeholder="0"
 									value={asho_attended.toString()}
 									onChange={(e) =>
@@ -663,14 +714,16 @@ export default function UserForm({
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 				<Select
-					label="Role"
-					required
-					value={role}
-					onChange={(e) => setRole(e.target.value)}
-					options={[
-						{ value: "", label: "Select role…" },
-						...ROLE_OPTIONS,
-					]}
+				label="Role"
+				required
+				value={pendingRole ?? role}
+				onChange={(e) => {
+					handleRoleSelect(e.target.value);
+				}}
+				options={[
+					{ value: "", label: "Select role…" },
+					...ROLE_OPTIONS,
+				]}
 				/>
 			</div>
 
@@ -769,7 +822,7 @@ export default function UserForm({
 					/>
 				)}
 				<Input
-					label="Contact Number"
+					label="Contact Number (optional)"
 					prefixIcon={<Phone size={15} />}
 					maxLength={11}
 					placeholder="e.g. 09123456789"
@@ -777,7 +830,7 @@ export default function UserForm({
 					onChange={handleContactNumChange}
 				/>
 				<Input
-					label="Address"
+					label="Address (optional)"
 					prefixIcon={<MapPin size={15} />}
 					placeholder="City, Province"
 					value={address}
@@ -793,13 +846,15 @@ export default function UserForm({
 					]}
 				/>
 				<Select
-					label="Sex at Birth"
+					label="Sex at Birth *"
+					required
 					value={sex_at_birth}
 					onChange={(e) => setSexAtBirth(e.target.value)}
 					options={[{ value: "", label: "Select…" }, ...SEX_OPTIONS]}
 				/>
 				<Select
-					label="Gender Identity"
+					label="Gender Identity *"
+					required
 					value={gender_identity}
 					onChange={(e) => setGenderIdentity(e.target.value)}
 					options={[
@@ -813,7 +868,6 @@ export default function UserForm({
 							label="GSO Sessions Attended"
 							type="text"
 							inputMode="numeric"
-							pattern="[0-5]*"
 							placeholder="0"
 							value={gso_attended.toString()}
 							onChange={(e) => handleSessionChange(e, setGsoAttended)}
@@ -822,7 +876,6 @@ export default function UserForm({
 							label="ASHO Sessions Attended"
 							type="text"
 							inputMode="numeric"
-							pattern="[0-5]*"
 							placeholder="0"
 							value={asho_attended.toString()}
 							onChange={(e) => handleSessionChange(e, setAshoAttended)}

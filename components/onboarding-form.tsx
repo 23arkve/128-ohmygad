@@ -317,8 +317,7 @@ export function OnboardingForm({
             )}
 
             <Input
-              label="Contact Number"
-              required
+              label="Contact Number (optional)"
               placeholder="09XX XXX XXXX"
               prefixIcon={<Phone size={15} />}
               value={contact_num}

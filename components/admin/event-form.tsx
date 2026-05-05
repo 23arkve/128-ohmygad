@@ -148,7 +148,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
     }
 
     // validation Logic
-    if (!title || !location || !start_date || !registration_open || !registration_close || !capacity || !category) {
+    if (!title || !location || !start_date || !end_date || !registration_open || !registration_close || capacity === null || !category) {
       setError("Please fill in all required fields.");
       setIsLoading(false);
       return;
@@ -158,6 +158,12 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
     const end = end_date ? new Date(end_date) : null;
     const regOpen = new Date(registration_open);
     const regClose = new Date(registration_close);
+
+    if (description && description.trim().length > 0 && description.trim().length < 10) {
+      setError("Description must be at least 10 characters if provided.");
+      setIsLoading(false);
+      return;
+    }
 
     if (end && start >= end) {
       setError("End date must be after the start date.");
@@ -188,6 +194,12 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
 
     if (capacity !== null && capacity <= 0) {
       setError("Capacity must be greater than 0.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (capacity !== null && !Number.isInteger(capacity)) {
+      setError("Capacity must be a whole number.");
       setIsLoading(false);
       return;
     }
@@ -264,6 +276,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
+                    minLength={10}
                     maxLength={250}
                   />
                 </div>
@@ -369,8 +382,9 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
               />
 
               <DateTimePicker
-                label="End Date & Time"
+                label="End Date & Time *"
                 mode="datetime"
+                required
                 value={end_date}
                 onChange={setEndDate}
               />
