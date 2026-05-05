@@ -159,6 +159,12 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
     const regOpen = new Date(registration_open);
     const regClose = new Date(registration_close);
 
+    if (description && description.trim().length > 0 && description.trim().length < 10) {
+      setError("Description must be at least 10 characters if provided.");
+      setIsLoading(false);
+      return;
+    }
+
     if (end && start >= end) {
       setError("End date must be after the start date.");
       setIsLoading(false);
@@ -270,6 +276,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
+                    minLength={10}
                     maxLength={250}
                   />
                 </div>
