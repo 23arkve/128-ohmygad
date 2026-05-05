@@ -148,7 +148,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
     }
 
     // validation Logic
-    if (!title || !location || !start_date || !registration_open || !registration_close || !capacity || !category) {
+    if (!title || !location || !start_date || !end_date || !registration_open || !registration_close || capacity === null || !category) {
       setError("Please fill in all required fields.");
       setIsLoading(false);
       return;
@@ -370,8 +370,9 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
               />
 
               <DateTimePicker
-                label="End Date & Time"
+                label="End Date & Time *"
                 mode="datetime"
+                required
                 value={end_date}
                 onChange={setEndDate}
               />

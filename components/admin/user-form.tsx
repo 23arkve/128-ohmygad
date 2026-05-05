@@ -161,7 +161,7 @@ export default function UserForm({
 		setError(null);
 
 		try {
-			if (!full_name || !email || !role || (!isEdit && !password)) {
+			if (!full_name || !email || !role || (!isEdit && !password) || !sex_at_birth || !gender_identity) {
 				throw new Error("Please fill in all required fields.");
 			}
 
@@ -180,9 +180,7 @@ export default function UserForm({
 			if (contactErr) throw new Error(contactErr);
 
 			if (role === "student" || !role) {
-				if (!college) throw new Error("Please select a College.");
-				if (!program) throw new Error("Please select a Program.");
-				if (!student_num) throw new Error("Please provide a Student Number.");
+				if (!college || !program || !student_num) throw new Error("Please fill in all required fields.");
 				
 				const studentErr = validateStudentNum(student_num);
 				if (studentErr) throw new Error(studentErr);
@@ -367,7 +365,7 @@ export default function UserForm({
 								maxLength={32}
 							/>
 							<Input
-								label="Contact Number"
+								label="Contact Number (optional)"
 								prefixIcon={<Phone size={15} />}
 								maxLength={11}
 								placeholder="e.g. 09123456789"
@@ -469,7 +467,7 @@ export default function UserForm({
 							)}
 							<div className="col-span-full">
 								<Input
-									label="Address"
+									label="Address (optional)"
 									prefixIcon={<MapPin size={15} />}
 									placeholder="City, Province"
 									value={address}
@@ -498,7 +496,8 @@ export default function UserForm({
 								]}
 							/>
 							<Select
-								label="Sex at Birth"
+								label="Sex at Birth *"
+								required
 								value={sex_at_birth}
 								onChange={(e) => setSexAtBirth(e.target.value)}
 								options={[
@@ -507,7 +506,8 @@ export default function UserForm({
 								]}
 							/>
 							<Select
-								label="Gender Identity"
+								label="Gender Identity *"
+								required
 								value={gender_identity}
 								onChange={(e) =>
 									setGenderIdentity(e.target.value)
@@ -762,7 +762,7 @@ export default function UserForm({
 					/>
 				)}
 				<Input
-					label="Contact Number"
+					label="Contact Number (optional)"
 					prefixIcon={<Phone size={15} />}
 					maxLength={11}
 					placeholder="e.g. 09123456789"
@@ -770,7 +770,7 @@ export default function UserForm({
 					onChange={handleContactNumChange}
 				/>
 				<Input
-					label="Address"
+					label="Address (optional)"
 					prefixIcon={<MapPin size={15} />}
 					placeholder="City, Province"
 					value={address}
@@ -786,13 +786,15 @@ export default function UserForm({
 					]}
 				/>
 				<Select
-					label="Sex at Birth"
+					label="Sex at Birth *"
+					required
 					value={sex_at_birth}
 					onChange={(e) => setSexAtBirth(e.target.value)}
 					options={[{ value: "", label: "Select…" }, ...SEX_OPTIONS]}
 				/>
 				<Select
-					label="Gender Identity"
+					label="Gender Identity *"
+					required
 					value={gender_identity}
 					onChange={(e) => setGenderIdentity(e.target.value)}
 					options={[
