@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { validateAddress, validateStudentNum } from "@/lib/validation";
+import { validateAddress, validateStudentNum, validateGsoSessions, validateAshoSessions } from "@/lib/validation";
 
 export async function PATCH(req: Request) {
     try {
@@ -41,6 +41,20 @@ export async function PATCH(req: Request) {
             const addressErr = validateAddress(address);
             if (addressErr) {
                 return NextResponse.json({ error: addressErr }, { status: 400 });
+            }
+        }
+
+        if (gso_attended !== undefined) {
+            const gsoErr = validateGsoSessions(gso_attended);
+            if (gsoErr) {
+                return NextResponse.json({ error: gsoErr }, { status: 400 });
+            }
+        }
+
+        if (asho_attended !== undefined) {
+            const ashoErr = validateAshoSessions(asho_attended);
+            if (ashoErr) {
+                return NextResponse.json({ error: ashoErr }, { status: 400 });
             }
         }
 

@@ -60,14 +60,20 @@ export function validateEmail(email: string): string | null {
 }
 
 export function validateGsoSessions(value: string | number): string | null {
-  const num = value === "" ? 0 : Number(value);
-  if (isNaN(num) || num < 0 || num > 5) return "GSO Sessions Attended must be between 0 and 5.";
+  if (value === "") return null;
+  const str = String(value);
+  if (!/^\d+$/.test(str)) return "GSO Sessions Attended must be a whole number.";
+  const num = Number(str);
+  if (num < 0 || num > 5) return "GSO Sessions Attended must be between 0 and 5.";
   return null;
 }
 
 export function validateAshoSessions(value: string | number): string | null {
-  const num = value === "" ? 0 : Number(value);
-  if (isNaN(num) || num < 0 || num > 5) return "ASHO Sessions Attended must be between 0 and 5.";
+  if (value === "") return null;
+  const str = String(value);
+  if (!/^\d+$/.test(str)) return "ASHO Sessions Attended must be a whole number.";
+  const num = Number(str);
+  if (num < 0 || num > 5) return "ASHO Sessions Attended must be between 0 and 5.";
   return null;
 }
 

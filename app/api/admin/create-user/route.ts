@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { validateFullName, validateEmail, validatePassword, validateContactNum, validateStudentNum, validateAddress } from "@/lib/validation";
+import { validateFullName, validateEmail, validatePassword, validateContactNum, validateStudentNum, validateAddress, validateGsoSessions, validateAshoSessions } from "@/lib/validation";
 
 export async function POST(req: Request) {
     try {
@@ -61,6 +61,16 @@ export async function POST(req: Request) {
         const addressErr = validateAddress(address);
         if (addressErr) {
             return NextResponse.json({ error: addressErr }, { status: 400 });
+        }
+
+        const gsoErr = validateGsoSessions(gso_attended);
+        if (gsoErr) {
+            return NextResponse.json({ error: gsoErr }, { status: 400 });
+        }
+
+        const ashoErr = validateAshoSessions(asho_attended);
+        if (ashoErr) {
+            return NextResponse.json({ error: ashoErr }, { status: 400 });
         }
 
         // 1. Create the auth user with email auto-confirmed

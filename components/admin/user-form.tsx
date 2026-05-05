@@ -141,6 +141,14 @@ export default function UserForm({
 		setContactNum(digits);
 	};
 
+	const handleSessionChange = (
+		e: React.ChangeEvent<HTMLInputElement>,
+		setter: (val: string) => void,
+	) => {
+		const digits = e.target.value.replace(/\D/g, "");
+		setter(digits);
+	};
+
 	const handleCancel = () => {
 		if (onSuccess) onSuccess();
 		else router.push("/admin/users");
@@ -522,7 +530,7 @@ export default function UserForm({
 									placeholder="0"
 									value={gso_attended.toString()}
 									onChange={(e) =>
-										setGsoAttended(e.target.value)
+										handleSessionChange(e, setGsoAttended)
 									}
 								/>
 							)}
@@ -535,7 +543,7 @@ export default function UserForm({
 									placeholder="0"
 									value={asho_attended.toString()}
 									onChange={(e) =>
-										setAshoAttended(e.target.value)
+										handleSessionChange(e, setAshoAttended)
 									}
 								/>
 							)}
@@ -799,49 +807,45 @@ export default function UserForm({
 				{(role === "student" || !role) && (
 					<Input
 						label="GSO Sessions Attended"
-						type="number"
-						min="0"
-						max="5"
-						step="1"
+						type="text"
+						inputMode="numeric"
+						pattern="[0-5]*"
 						placeholder="0"
 						value={gso_attended.toString()}
-						onChange={(e) => setGsoAttended(e.target.value)}
+						onChange={(e) => handleSessionChange(e, setGsoAttended)}
 					/>
 				)}
 				{(role === "faculty" || !role) && (
 					<Input
 						label="GSO Sessions Attended"
-						type="number"
-						min="0"
-						max="5"
-						step="1"
+						type="text"
+						inputMode="numeric"
+						pattern="[0-5]*"
 						placeholder="0"
 						value={gso_attended.toString()}
-						onChange={(e) => setGsoAttended(e.target.value)}
+						onChange={(e) => handleSessionChange(e, setGsoAttended)}
 					/>
 				)}
 				{(role === "student" || !role) && (
 					<Input
 						label="ASHO Sessions Attended"
-						type="number"
-						min="0"
-						max="5"
-						step="1"
+						type="text"
+						inputMode="numeric"
+						pattern="[0-5]*"
 						placeholder="0"
 						value={asho_attended.toString()}
-						onChange={(e) => setAshoAttended(e.target.value)}
+						onChange={(e) => handleSessionChange(e, setAshoAttended)}
 					/>
 				)}
 				{(role === "faculty" || !role) && (
 					<Input
 						label="ASHO Sessions Attended"
-						type="number"
-						min="0"
-						max="5"
-						step="1"
+						type="text"
+						inputMode="numeric"
+						pattern="[0-5]*"
 						placeholder="0"
 						value={asho_attended.toString()}
-						onChange={(e) => setAshoAttended(e.target.value)}
+						onChange={(e) => handleSessionChange(e, setAshoAttended)}
 					/>
 				)}
 
