@@ -145,8 +145,11 @@ export default function UserForm({
 		e: React.ChangeEvent<HTMLInputElement>,
 		setter: (val: string) => void,
 	) => {
-		const digits = e.target.value.replace(/\D/g, "");
-		setter(digits);
+		// Strip non-digits, take only the first character, clamp 0-5
+		const raw = e.target.value.replace(/\D/g, "");
+		if (raw === "") { setter(""); return; }
+		const num = Math.min(5, parseInt(raw, 10));
+		setter(String(num));
 	};
 
 	const handleCancel = () => {
@@ -522,7 +525,8 @@ export default function UserForm({
 								!role) && (
 								<Input
 									label="GSO Sessions Attended"
-									maxLength={1}
+									type="text"
+									inputMode="numeric"
 									placeholder="0"
 									value={gso_attended.toString()}
 									onChange={(e) =>
@@ -535,7 +539,8 @@ export default function UserForm({
 								!role) && (
 								<Input
 									label="ASHO Sessions Attended"
-									maxLength={1}
+									type="text"
+									inputMode="numeric"
 									placeholder="0"
 									value={asho_attended.toString()}
 									onChange={(e) =>
@@ -808,7 +813,6 @@ export default function UserForm({
 							label="GSO Sessions Attended"
 							type="text"
 							inputMode="numeric"
-							pattern="[0-5]*"
 							placeholder="0"
 							value={gso_attended.toString()}
 							onChange={(e) => handleSessionChange(e, setGsoAttended)}
@@ -817,7 +821,6 @@ export default function UserForm({
 							label="ASHO Sessions Attended"
 							type="text"
 							inputMode="numeric"
-							pattern="[0-5]*"
 							placeholder="0"
 							value={asho_attended.toString()}
 							onChange={(e) => handleSessionChange(e, setAshoAttended)}
