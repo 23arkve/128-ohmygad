@@ -280,7 +280,7 @@ export default function CoursesPage() {
         onClose={() => setDetailCourse(null)}
         title={detailCourse?.title}
         subtitle={detailCourse?.semester ?? undefined}
-        modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto" }}
+        modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", wordBreak: "break-word" }}
       >
         {detailCourse && (
           <div className="flex flex-col gap-2 p-2">
