@@ -41,9 +41,21 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: contactErr }, { status: 400 });
         }
 
-        const studentErr = validateStudentNum(student_num);
-        if (studentErr) {
-            return NextResponse.json({ error: studentErr }, { status: 400 });
+        if (role === "student") {
+            if (!college) return NextResponse.json({ error: "College is required for students." }, { status: 400 });
+            if (!program) return NextResponse.json({ error: "Program is required for students." }, { status: 400 });
+            if (!student_num) return NextResponse.json({ error: "Student Number is required for students." }, { status: 400 });
+
+            const studentErr = validateStudentNum(student_num);
+            if (studentErr) {
+                return NextResponse.json({ error: studentErr }, { status: 400 });
+            }
+        } else if (student_num) {
+            // Optional student_num validation for non-student roles if provided
+            const studentErr = validateStudentNum(student_num);
+            if (studentErr) {
+                return NextResponse.json({ error: studentErr }, { status: 400 });
+            }
         }
 
         const addressErr = validateAddress(address);

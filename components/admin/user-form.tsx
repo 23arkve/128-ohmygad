@@ -172,6 +172,10 @@ export default function UserForm({
 			if (contactErr) throw new Error(contactErr);
 
 			if (role === "student" || !role) {
+				if (!college) throw new Error("Please select a College.");
+				if (!program) throw new Error("Please select a Program.");
+				if (!student_num) throw new Error("Please provide a Student Number.");
+				
 				const studentErr = validateStudentNum(student_num);
 				if (studentErr) throw new Error(studentErr);
 			}
@@ -368,7 +372,8 @@ export default function UserForm({
 							/>
 							{(role === "student" || !role) && (
 								<Input
-									label="Student Number"
+									label="Student Number *"
+									required
 									prefixIcon={<Hash size={15} />}
 									placeholder="e.g. 2021-12345"
 									value={student_num}
@@ -392,7 +397,8 @@ export default function UserForm({
 								role === "faculty" ||
 								!role) && (
 								<Select
-									label="College"
+									label={role === "student" || !role ? "College *" : "College"}
+									required={role === "student" || !role}
 									value={college}
 									onChange={(e) => setCollege(e.target.value)}
 									options={[
@@ -403,7 +409,8 @@ export default function UserForm({
 							)}
 							{(role === "student" || !role) && (
 								<Select
-									label="Program"
+									label="Program *"
+									required
 									value={program}
 									onChange={(e) => setProgram(e.target.value)}
 									options={
@@ -668,7 +675,8 @@ export default function UserForm({
 				/>
 				{(role === "student" || !role) && (
 					<Input
-						label="Student Number"
+						label="Student Number *"
+						required
 						prefixIcon={<Hash size={15} />}
 						placeholder="e.g. 2021-12345"
 						value={student_num}
@@ -688,7 +696,8 @@ export default function UserForm({
 				)}
 				{(role === "student" || role === "faculty" || !role) && (
 					<Select
-						label="College"
+						label={role === "student" || !role ? "College *" : "College"}
+						required={role === "student" || !role}
 						value={college}
 						onChange={(e) => setCollege(e.target.value)}
 						options={[
@@ -699,7 +708,8 @@ export default function UserForm({
 				)}
 				{(role === "student" || !role) && (
 					<Select
-						label="Program"
+						label="Program *"
+						required
 						value={program}
 						onChange={(e) => setProgram(e.target.value)}
 						options={

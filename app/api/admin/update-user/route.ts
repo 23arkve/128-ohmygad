@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { validateAddress } from "@/lib/validation";
+import { validateAddress, validateStudentNum } from "@/lib/validation";
 
 export async function PATCH(req: Request) {
     try {
@@ -19,6 +19,22 @@ export async function PATCH(req: Request) {
                 { error: "User ID is required." },
                 { status: 400 },
             );
+        }
+
+        if (role === "student") {
+            if (!college) return NextResponse.json({ error: "College is required for students." }, { status: 400 });
+            if (!program) return NextResponse.json({ error: "Program is required for students." }, { status: 400 });
+            if (!student_num) return NextResponse.json({ error: "Student Number is required for students." }, { status: 400 });
+
+            const studentErr = validateStudentNum(student_num);
+            if (studentErr) {
+                return NextResponse.json({ error: studentErr }, { status: 400 });
+            }
+        } else if (student_num) {
+            const studentErr = validateStudentNum(student_num);
+            if (studentErr) {
+                return NextResponse.json({ error: studentErr }, { status: 400 });
+            }
         }
 
         if (address !== undefined) {

@@ -83,6 +83,18 @@ export function OnboardingForm({
       return;
     }
 
+    if (role === "student" && !program) {
+      setError("Please select a Program.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (role === "student" && !student_num) {
+      setError("Please provide a Student Number.");
+      setIsLoading(false);
+      return;
+    }
+
     if (full_name) {
       const nameErr = validateFullName(full_name);
       if (nameErr) {
@@ -228,7 +240,8 @@ export function OnboardingForm({
             {(role === "student" || !role) && (
               <>
                 <Input
-                  label="Student Number"
+                  label="Student Number *"
+                  required
                   placeholder="202112345"
                   prefixIcon={<Hash size={15} />}
                   value={student_num}
