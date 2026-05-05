@@ -251,6 +251,14 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
     }
   };
 
+  const hasChanges = 
+    title !== (initialData?.title ?? "") ||
+    description !== (initialData?.description ?? "") ||
+    event_id !== (initialData?.event_id ?? "") ||
+    open_at !== (initialData?.open_at?.slice(0, 16) ?? "") ||
+    close_at !== (initialData?.close_at?.slice(0, 16) ?? "") ||
+    JSON.stringify(questions) !== JSON.stringify(initialQuestions);
+
   return (
     <form onSubmit={handleSubmit} className="flex h-full lg:h-auto w-full min-h-0 relative justify-center">
 
@@ -463,7 +471,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
             <Button
               type="submit"
               variant="primary"
-              disabled={isLoading}
+              disabled={isLoading || (isEdit && !hasChanges)}
               className="px-8"
             >
               {isLoading

@@ -23,6 +23,7 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isEdit = mode === "edit"
 
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
@@ -67,6 +68,10 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
       setIsLoading(false);
     }
   };
+
+  const hasChanges = 
+    title !== (initialData?.title ?? "") ||
+    description !== (initialData?.description ?? "");
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-full lg:h-auto w-full min-h-0 relative">
@@ -131,7 +136,7 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
         <Button
           type="submit"
           variant="primary"
-          disabled={isLoading}
+          disabled={isLoading || (isEdit && !hasChanges)}
           className="px-8"
         >
           {isLoading
