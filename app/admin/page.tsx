@@ -826,14 +826,14 @@ export default function DashboardPage() {
 													radius={[6, 0, 0, 6]}
 													barSize={24}
 												>
-													<LabelList
+													{/*--<LabelList
 														dataKey="completedPct"
 														position="right"
 														formatter={(value) =>
 															`${value}%`
 														}
 														fill="var(--primary-dark)"
-													/>
+													/>--*/}
 												</Bar>
 												<Bar
 													dataKey="incompletePct"
@@ -845,7 +845,7 @@ export default function DashboardPage() {
 													radius={[0, 6, 6, 0]}
 													barSize={24}
 												>
-													<LabelList
+													{/*--<LabelList
 														dataKey="incompletePct"
 														position="insideRight"
 														formatter={(value) =>
@@ -856,7 +856,7 @@ export default function DashboardPage() {
 																: ""
 														}
 														fill="var(--primary-dark)"
-													/>
+													/>--*/}
 												</Bar>
 											</BarChart>
 										</ResponsiveContainer>
