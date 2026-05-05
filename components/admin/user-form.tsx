@@ -261,30 +261,26 @@ export default function UserForm({
 		}
 	};
 
-  const hasChanges = 
-    full_name !== (initialData?.full_name ?? "") ||
-    email !== (initialData?.email ?? "") ||
-    password !== (initialData?.password ?? "") ||
-    role !== (initialData?.role ?? "") ||
-    display_name !== (initialData?.display_name ?? "") ||
-	student_num !== (initialData?.student_num ?? "") ||
-	year_level !== (initialData?.year_level ?? "") ||
-	college !== (initialData?.college ?? "") ||
-	display_name !== (initialData?.display_name ?? "") ||
-	student_num !== (initialData?.student_num != null ? String(initialData.student_num) : "") ||
-	year_level !== (initialData?.year_level ?? "") ||
-	college !== (initialData?.college ?? "") ||
-	program !== (initialData?.program ?? "") ||
-	contact_num !== (initialData?.contact_num ?? "") ||
-	address !== (initialData?.address?? "") ||
-	pronouns !== (initialData?.pronouns ?? "") ||
-	sex_at_birth !== (initialData?.sex_at_birth ?? "") ||
-	gender_identity !== (initialData?.gender_identity ?? "") ||
-	gso_attended !== (initialData?.gso_attended ?? "") ||
-	asho_attended !== (initialData?.asho_attended ?? "") ||
-	office !== (initialData?.office ?? "") ||             
-  	department !== (initialData?.department ?? "") ||
-	is_onboarded !== (initialData?.is_onboarded ?? true);
+  const hasChanges =
+    full_name      !== (initialData?.full_name      ?? "")  ||
+    email          !== (initialData?.email          ?? "")  ||
+    password       !== ""                                   ||
+    role           !== (initialData?.role           ?? "")  ||
+    display_name   !== (initialData?.display_name   ?? "")  ||
+    contact_num    !== (initialData?.contact_num    ?? "")  ||
+    address        !== (initialData?.address        ?? "")  ||
+    pronouns       !== (initialData?.pronouns       ?? "")  ||
+    sex_at_birth   !== (initialData?.sex_at_birth   ?? "")  ||
+    gender_identity !== (initialData?.gender_identity ?? "") ||
+    college        !== (initialData?.college        ?? "")  ||
+    program        !== (initialData?.program        ?? "")  ||
+    student_num    !== (initialData?.student_num != null ? String(initialData.student_num) : "") ||
+    year_level     !== (initialData?.year_level     ?? "")  ||
+    String(gso_attended)  !== String(initialData?.gso_attended  ?? "") ||
+    String(asho_attended) !== String(initialData?.asho_attended ?? "") ||
+    office         !== (initialData?.office         ?? "")  ||
+    department     !== (initialData?.department     ?? "")  ||
+    is_onboarded   !== (initialData?.is_onboarded   ?? true);
 
 	// page layout
 	if (layout === "page") {
