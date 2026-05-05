@@ -280,14 +280,10 @@ export default function CoursesPage() {
         onClose={() => setDetailCourse(null)}
         title={detailCourse?.title}
         subtitle={detailCourse?.semester ?? undefined}
-        hideCloseButton
         modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto" }}
       >
         {detailCourse && (
           <div className="flex flex-col gap-2 p-2">
-            <div className="flex justify-end items-center">
-              <button onClick={() => setDetailCourse(null)}><X size={20} /></button>
-            </div>
             <div className="divider" />
             <div className="space-y-3">
               <p className="label">Description</p>

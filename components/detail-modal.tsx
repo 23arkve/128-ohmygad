@@ -36,12 +36,12 @@ export default function DetailModal({ label, text, onClose }: DetailModalProps) 
       onClick={onClose}
     >
       <div
-        className="relative bg-white rounded-lg border-2 border-fractal-border-default shadow-brutal-1 p-6 max-w-lg w-[90%] mx-4"
+        className="relative bg-white rounded-t-[24px] sm:rounded-lg border-2 border-fractal-border-default shadow-brutal-1 p-4 sm:p-6 max-w-lg w-[90%] mx-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 p-1 hover:bg-fractal-decorative-yellow-90 border-2 border-fractal-border-default rounded-s shadow-brutal-1 transition-colors"
+          className="absolute top-3 right-3 p-1 hover:bg-fractal-decorative-yellow-90 border-2 border-fractal-border-default rounded-s shadow-brutal-1 transition-colors z-20"
           title="Close"
         >
           <X size={16} />
