@@ -208,20 +208,33 @@ export default function SurveyTakePage() {
       if (surveyResult.error || !surveyResult.data) {
         setError("Survey not found.");
       } else {
-        setSurvey(surveyResult.data);
-        const qs = (questionsResult.data ?? []).map((q) => ({
-          id: q.id,
-          question_text: q.question_text,
-          question_type: q.question_type as QuestionType,
-          options: Array.isArray(q.options)
-            ? q.options
-            : typeof q.options === "string"
-            ? JSON.parse(q.options)
-            : [],
-          is_required: q.is_required ?? false,
-          order_index: q.order_index,
-        }));
-        setQuestions(qs);
+        const s = surveyResult.data;
+        const now = new Date();
+        const open = s.open_at ? new Date(s.open_at) : null;
+        const close = s.close_at ? new Date(s.close_at) : null;
+
+        if (s.status === "closed") {
+          setError("This survey is currently closed.");
+        } else if (open && now < open) {
+          setError(`This survey is not yet open. It will open on ${open.toLocaleString("en-PH")}.`);
+        } else if (close && now > close) {
+          setError("This survey has ended.");
+        } else {
+          setSurvey(s);
+          const qs = (questionsResult.data ?? []).map((q) => ({
+            id: q.id,
+            question_text: q.question_text,
+            question_type: q.question_type as QuestionType,
+            options: Array.isArray(q.options)
+              ? q.options
+              : typeof q.options === "string"
+              ? JSON.parse(q.options)
+              : [],
+            is_required: q.is_required ?? false,
+            order_index: q.order_index,
+          }));
+          setQuestions(qs);
+        }
       }
       setIsLoading(false);
     };

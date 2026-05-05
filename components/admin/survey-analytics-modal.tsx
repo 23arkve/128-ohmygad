@@ -249,7 +249,7 @@ function QuestionCard({
   const type = question.question_type;
   const typeLabel = TYPE_LABELS[type] ?? "Open-ended Text";
 
-  return (
+  return ( 
     <Card variant="no-shadow" className="flex flex-col gap-4">
       {/* question header */}
       <div className="flex items-start justify-between gap-3 border-b border-[rgba(45,42,74,0.08)] pb-3">

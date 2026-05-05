@@ -163,6 +163,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
     setError(null);
 
     if (!title.trim()) { setError("Title is required."); setIsLoading(false); return; }
+    if (!event_id) { setError("Linked Event is required."); setIsLoading(false); return; }
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
