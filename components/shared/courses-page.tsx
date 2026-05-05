@@ -275,76 +275,30 @@ export default function CoursesPage() {
       )}
 
       {/* Detail Modal */}
-      <Modal open={!!detailCourse} onClose={() => setDetailCourse(null)} hideCloseButton modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto" }}>
+      <Modal
+        open={!!detailCourse}
+        onClose={() => setDetailCourse(null)}
+        title={detailCourse?.title}
+        subtitle={detailCourse?.semester ?? undefined}
+        hideCloseButton
+        modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto" }}
+      >
         {detailCourse && (
           <div className="flex flex-col gap-2 p-2">
             <div className="flex justify-end items-center">
               <button onClick={() => setDetailCourse(null)}><X size={20} /></button>
             </div>
-            <h2 className="heading-md">{detailCourse.title}</h2>
             <div className="divider" />
             <div className="space-y-3">
               <p className="label">Description</p>
-              <p className="body text-gray-600" style={{wordBreak:"break-word", margin: "1rem"}}>{detailCourse.description || "No description provided."}</p>
+              <p className="body text-gray-600" style={{ wordBreak: "break-word", margin: "1rem" }}>
+                {detailCourse.description || "No description provided."}
+              </p>
             </div>
-
-
           </div>
-
         )}
       </Modal>
 
-      {detailCourse && (
-        <div className="flex flex-col min-h-0">
-          <div
-            className="h-[200px] sm:h-[180px] relative shrink-0 rounded-t-[var(--radius-xl)]"
-       
-          >
-            {/* close button inside cover */}
-            <button
-              onClick={() => { setDetailCourse(null); }}
-              aria-label="Close"
-              className="absolute top-3 right-3 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-none cursor-pointer flex items-center justify-center text-[var(--primary-dark)] z-10 backdrop-blur-sm bg-white/80"
-            >
-              <X size={14} />
-            </button>
-
-            {/* category badge bottom-left of cover */}
-            <div className="absolute bottom-3 left-3 flex gap-2 items-center">
-              <span className="badge badge-pink">{detailCourse.semester ?? "Uncategorized"}</span>
-            </div>
-          </div>
-
-          {/* body - overflow-y-auto here so only body scrolls, cover + footer stay fixed */}
-          <div className="flex flex-col gap-3 p-3 sm:p-5 overflow-y-auto">
-            {/* title */}
-            <h2 className="heading-md m-0">{detailCourse.title}</h2>
-
-            {/* details row */}
-            <div className="flex flex-col gap-1.5">
-              {/* ---------- date ---------- */}
-              <div className="flex items-start gap-2 caption sm:text-sm text-[var(--gray)]">
-                <Clock size={15} className="shrink-0 mt-0.5" />
-                <span>
-                  {detailCourse.start_time ? new Date(detailCourse.start_time).toLocaleDateString("en-PH", { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : "—"}
-                  {detailCourse.end_time && detailCourse.end_time !== detailCourse.start_time && (
-                    <> — {new Date(detailCourse.end_time).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}</>
-                  )}
-                </span>
-              </div>
-            </div>
-
-            {/* divider */}
-            <div className="divider" />
-
-            {/* full description */}
-            <div className="flex flex-col gap-2 pb-2">
-              <p className="label">Click to Open</p>
-              <p className="body whitespace-pre-wrap">{detailCourse.description || "No description provided."}</p>
-            </div>
-          </div>{/* end body */}
-        </div>
-      )}
     </div>
   );
 }
