@@ -213,7 +213,6 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
       banner_url: finalBannerUrl || null,
     };
 
-    console.log("payload", payload);
     const result = await submitFormData("event", payload, mode, initialData?.id);
 
     if (result.success) {
