@@ -66,6 +66,38 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 
   const [sort, setSort] = useState<SortState>({ field: "full_name", direction: "asc" });
 
+  // Role change confirmation state
+  const [pendingRole, setPendingRole] = useState<string | null>(null);
+  const [showRoleConfirm, setShowRoleConfirm] = useState(false);
+
+  const cancelRoleChange = () => {
+    if (pendingRole) {
+      window.dispatchEvent(new CustomEvent("role-change-cancelled"));
+    }
+    setPendingRole(null);
+    setShowRoleConfirm(false);
+  };
+
+  const handleRoleChangeRequest = (newRole: string) => {
+    setPendingRole(newRole);
+    setShowRoleConfirm(true);
+  };
+
+  const confirmRoleChange = () => {
+    if (!pendingRole) return;
+
+    setShowRoleConfirm(false);
+
+    // send back to form via callback OR update editUser if needed
+    window.dispatchEvent(
+      new CustomEvent("role-confirmed", {
+        detail: pendingRole,
+      })
+    );
+
+    setPendingRole(null);
+  };
+
   // Filters
   const [roleFilters, setRoleFilters] = useState<Set<string>>(new Set());
   const [gsoFilters, setGsoFilters] = useState<Set<string>>(new Set());
@@ -564,6 +596,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
               router.refresh();
               showToast("success", "User updated successfully");
             }}
+            onRoleChangeRequest={handleRoleChangeRequest}
           />
         ) : null}
       </Modal>
@@ -635,6 +668,31 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
           </div>
         )}
       </Modal>
+
+      {showRoleConfirm && (
+        <Modal open={showRoleConfirm} onClose={cancelRoleChange}>
+          <div className="p-5 flex flex-col gap-4">
+            <h3 className="text-lg font-semibold">
+              Confirm Role Change
+            </h3>
+
+            <p className="text-sm text-gray-600">
+              Changing the role may reset or affect related fields (e.g., student info,
+              office, department). Do you want to continue?
+            </p>
+
+            <div className="flex justify-end gap-3 mt-2">
+              <Button variant="ghost" onClick={cancelRoleChange}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={confirmRoleChange}>
+                Confirm
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
 
       {/* floating toast notification */}
       {toast && (

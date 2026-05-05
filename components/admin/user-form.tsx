@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
 	User,
 	Mail,
@@ -57,6 +57,7 @@ interface UserFormProps {
 	initialData?: EditUserData;
 	onSuccess?: () => void;
 	layout?: "modal" | "page";
+	onRoleChangeRequest?: (role: string) => void;
 }
 
 // options
@@ -83,6 +84,7 @@ export default function UserForm({
 	initialData,
 	onSuccess,
 	layout = "modal",
+	onRoleChangeRequest,
 }: UserFormProps) {
 	const router = useRouter();
 	const isEdit = !!initialData;
@@ -91,6 +93,7 @@ export default function UserForm({
 		throw new Error("Cannot edit user: missing user ID");
 
 	// state
+	const [pendingRole, setPendingRole] = useState<string | null>(null);
 	const [full_name, setFullName] = useState(initialData?.full_name ?? "");
 	const [email, setEmail] = useState(initialData?.email ?? "");
 	const [password, setPassword] = useState("");
@@ -141,6 +144,15 @@ export default function UserForm({
 		setContactNum(digits);
 	};
 
+	const handleRoleSelect = (value: string) => {
+		if (onRoleChangeRequest) {
+			setPendingRole(value);
+			onRoleChangeRequest(value);
+		} else {
+			setRole(value);
+		}
+	};
+
 	const handleSessionChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
 		setter: (val: string) => void,
@@ -156,6 +168,38 @@ export default function UserForm({
 		if (onSuccess) onSuccess();
 		else router.push("/admin/users");
 	};
+
+	const cancelRoleChange = () => {
+		setPendingRole(null);
+	};
+
+	// listen for role confirmation and cancel events from parent modal
+	useEffect(() => {
+		const handleRoleConfirmed = (event: Event) => {
+			if (event instanceof CustomEvent) {
+				setPendingRole(null);
+				setRole(event.detail);
+				// reset role-specific fields to avoid invalid data carryover
+				setCollege("");
+				setProgram("");
+				setStudentNum("");
+				setYearLevel("");
+				setOffice("");
+				setDepartment("");
+			}
+		};
+
+		const handleRoleChangeCancelled = () => {
+			setPendingRole(null);
+		};
+
+		window.addEventListener("role-confirmed", handleRoleConfirmed);
+		window.addEventListener("role-change-cancelled", handleRoleChangeCancelled);
+		return () => {
+			window.removeEventListener("role-confirmed", handleRoleConfirmed);
+			window.removeEventListener("role-change-cancelled", handleRoleChangeCancelled);
+		};
+	}, []);
 
 	// submit
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -346,14 +390,16 @@ export default function UserForm({
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 							<Select
-								label="Role"
-								required
-								value={role}
-								onChange={(e) => setRole(e.target.value)}
-								options={[
-									{ value: "", label: "Select role…" },
-									...ROLE_OPTIONS,
-								]}
+							label="Role"
+							required
+							value={pendingRole ?? role}
+							onChange={(e) => {
+								handleRoleSelect(e.target.value);
+							}}
+							options={[
+								{ value: "", label: "Select role…" },
+								...ROLE_OPTIONS,
+							]}
 							/>
 						</div>
 
@@ -661,14 +707,16 @@ export default function UserForm({
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 				<Select
-					label="Role"
-					required
-					value={role}
-					onChange={(e) => setRole(e.target.value)}
-					options={[
-						{ value: "", label: "Select role…" },
-						...ROLE_OPTIONS,
-					]}
+				label="Role"
+				required
+				value={pendingRole ?? role}
+				onChange={(e) => {
+					handleRoleSelect(e.target.value);
+				}}
+				options={[
+					{ value: "", label: "Select role…" },
+					...ROLE_OPTIONS,
+				]}
 				/>
 			</div>
 
