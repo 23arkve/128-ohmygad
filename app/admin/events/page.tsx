@@ -793,7 +793,7 @@ export default function EventsPage() {
 			{
 				key: "title",
 				header: "Title",
-				width: "22%",
+				width: "18%",
 				render: (event) => (
 					<span
 						className="font-semibold truncate block"
@@ -807,7 +807,7 @@ export default function EventsPage() {
 			{
 				key: "category",
 				header: "Category",
-				width: "14%",
+				width: "11%",
 				render: (event) => (
 					<span
 						className="font-semibold"
@@ -820,7 +820,7 @@ export default function EventsPage() {
 			{
 				key: "status",
 				header: "Status",
-				width: "12%",
+				width: "9%",
 				render: (event) => {
 					const computedStatus = deriveStatus(
 						event.start_date ?? "",
@@ -837,8 +837,8 @@ export default function EventsPage() {
 			},
 			{
 				key: "start_date",
-				header: "Date",
-				width: "14%",
+				header: "Start Date",
+				width: "12%",
 				render: (event) => (
 					<span className="caption whitespace-nowrap">
 						{event.start_date
@@ -855,9 +855,28 @@ export default function EventsPage() {
 				),
 			},
 			{
+				key: "end_date",
+				header: "End Date",
+				width: "12%",
+				render: (event) => (
+					<span className="caption whitespace-nowrap">
+						{event.end_date
+							? new Date(event.end_date).toLocaleDateString(
+									"en-PH",
+									{
+										month: "short",
+										day: "numeric",
+										year: "numeric",
+									},
+								)
+							: "—"}
+					</span>
+				),
+			},
+			{
 				key: "capacity",
 				header: "Capacity",
-				width: "10%",
+				width: "8%",
 				render: (event) => (
 					<span className="caption">{event.capacity}</span>
 				),
@@ -865,10 +884,10 @@ export default function EventsPage() {
 			{
 				key: "location",
 				header: "Location",
-				width: "17%",
+				width: "20%",
 				render: (event) => (
 					<span
-						className="caption text-left max-w-[150px] truncate block"
+						className="caption text-left max-w-[200px] truncate block"
 						title={event.location}
 					>
 						{event.location}
@@ -878,7 +897,7 @@ export default function EventsPage() {
 			{
 				key: "actions",
 				header: <div className="text-center">Actions</div>,
-				width: "8%",
+				width: "10%",
 				render: (event) => (
 					<div
 						style={{

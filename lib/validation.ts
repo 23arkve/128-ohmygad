@@ -59,8 +59,8 @@ export function validateEmail(email: string): string | null {
   return null;
 }
 
-export function validateGsoSessions(value: string | number): string | null {
-  if (value === "") return null;
+export function validateGsoSessions(value: string | number | undefined | null): string | null {
+  if (value === "" || value === undefined || value === null) return null;
   const str = String(value);
   if (!/^\d+$/.test(str)) return "GSO Sessions Attended must be a whole number.";
   const num = Number(str);
@@ -68,8 +68,8 @@ export function validateGsoSessions(value: string | number): string | null {
   return null;
 }
 
-export function validateAshoSessions(value: string | number): string | null {
-  if (value === "") return null;
+export function validateAshoSessions(value: string | number | undefined | null): string | null {
+  if (value === "" || value === undefined || value === null) return null;
   const str = String(value);
   if (!/^\d+$/.test(str)) return "ASHO Sessions Attended must be a whole number.";
   const num = Number(str);
