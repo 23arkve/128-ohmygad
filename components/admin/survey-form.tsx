@@ -234,7 +234,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
         }));
         const { error: qError } = await supabase.from("survey_questions").upsert(questionsPayload);
         if (qError) throw qError;
-      }
+      };
 
       if (onSuccess) {
         onSuccess();
