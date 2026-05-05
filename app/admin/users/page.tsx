@@ -9,7 +9,9 @@ async function getProfiles() {
   await connection();
   const { data, error } = await supabaseAdmin
     .from("profile")
-    .select("id, full_name, email, role, gso_attended, asho_attended, created_at")
+    .select(
+      "id, full_name, email, role, gso_attended, asho_attended, forum_attended, research_attended, training_attended, workshop_attended, created_at"
+    )
     .order("created_at", { ascending: false });
 
   return { data: (data as Profile[]) ?? [], error: error?.message ?? null };

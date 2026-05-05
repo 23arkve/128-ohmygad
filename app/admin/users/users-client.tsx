@@ -111,7 +111,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 
     if (gsoFilters.size > 0) {
       result = result.filter((p) => {
-        const status = p.gso_attended ? "attended" : "pending";
+        const status = getTotalEventsAttended(p) > 0 ? "attended" : "pending";
         return gsoFilters.has(status);
       });
     }
@@ -121,6 +121,16 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 
   const paginatedProfiles = paginate(filtered, page, PER_PAGE);
   const pageCount = totalPages(filtered.length, PER_PAGE);
+
+  const getTotalEventsAttended = (profile: Profile) =>
+    [
+      profile.gso_attended,
+      profile.asho_attended,
+      profile.forum_attended,
+      profile.research_attended,
+      profile.training_attended,
+      profile.workshop_attended,
+    ].reduce((sum, value) => sum + (value ?? 0), 0);
 
   // Filter toggle helpers
   function toggleRole(r: string) {
@@ -285,13 +295,13 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
       ),
     },
     {
-      key: "gso_attended",
-      header: "GSO",
+      key: "total_events_attended",
+      header: "Total Events Attended",
       width: "20%",
       render: (p) => (
-        <Badge variant={p.gso_attended ? "success" : "warning"}>
-          {p.gso_attended ? "Attended" : "Pending"}
-        </Badge>
+        <span className="text-[13px] text-primary-dark">
+          {getTotalEventsAttended(p)}
+        </span>
       ),
     },
     {
@@ -407,7 +417,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 
             <div style={{ padding: "6px 12px 4px" }}>
               <p className="label" style={{ marginBottom: 4 }}>
-                GSO Attended
+                Events Attended
               </p>
             </div>
             {GSO_STATUSES.map((g) => (

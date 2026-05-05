@@ -7,6 +7,10 @@ export interface Profile {
   role: UserRole | null;
   gso_attended: number;
   asho_attended: number;
+  forum_attended: number;
+  research_attended: number;
+  training_attended: number;
+  workshop_attended: number;
   created_at: string;
   display_name?: string | null;
   contact_num?: string | null;
