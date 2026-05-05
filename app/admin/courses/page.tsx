@@ -393,7 +393,7 @@ const confirmDelete = async () => {
 				open={!!modalContent}
 				onClose={() => setModalContent(null)}
 				title={modalContent?.label}
-				modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto" }}
+				modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", wordBreak: "break-word", hyphens: "auto" }}
 			>
 			
 				<p
@@ -404,6 +404,7 @@ const confirmDelete = async () => {
 						whiteSpace: "pre-wrap",
 						overflowWrap: "break-word",
 						wordBreak: "break-word",
+						hyphens: "auto"
 					}}
 				>
 					{modalContent?.text || "No description provided."}

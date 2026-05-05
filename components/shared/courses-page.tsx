@@ -280,14 +280,14 @@ export default function CoursesPage() {
         onClose={() => setDetailCourse(null)}
         title={detailCourse?.title}
         subtitle={detailCourse?.semester ?? undefined}
-        modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto" }}
+        modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", wordBreak: "break-word", hyphens: "auto" }}
       >
         {detailCourse && (
           <div className="flex flex-col gap-2 p-2">
             <div className="divider" />
             <div className="space-y-3">
               <p className="label">Description</p>
-              <p className="body text-gray-600" style={{ wordBreak: "break-word", margin: "1rem" }}>
+              <p className="body text-gray-600" style={{ wordBreak: "break-word", margin: "1rem", hyphens: "auto" }}>
                 {detailCourse.description || "No description provided."}
               </p>
             </div>
