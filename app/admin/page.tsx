@@ -147,7 +147,7 @@ function CustomTooltip({
 						style={{ background: e.color ?? e.payload?.fill }}
 					/>
 					<span className="caption capitalize">
-						{e.name ?? e.dataKey}: {e.value}
+						{e.name ?? e.dataKey}: {e.value}{(e.name === "Completed" || e.name === "Incomplete") ? "%" : ""}
 					</span>
 				</div>
 			))}
