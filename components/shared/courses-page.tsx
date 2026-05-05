@@ -281,6 +281,7 @@ export default function CoursesPage() {
         title={detailCourse?.title}
         subtitle={detailCourse?.semester ?? undefined}
         modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", overflowWrap: "break-word", hyphens: "auto" }}
+        contentStyle={{wordBreak: "break-word", hyphens: "auto" }}
       >
         {detailCourse && (
           <div className="flex flex-col gap-1 p-1">
