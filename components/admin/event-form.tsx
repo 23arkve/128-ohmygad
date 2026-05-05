@@ -171,6 +171,21 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
       return;
     }
 
+    // New logic: Registration must open before the event ends
+    const effectiveEnd = end ?? start;
+    if (regOpen >= effectiveEnd) {
+      setError("Registration must open before the event ends.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Registration should typically close before or at the end of the event
+    if (regClose > effectiveEnd) {
+      setError("Registration must close before or when the event ends.");
+      setIsLoading(false);
+      return;
+    }
+
     if (capacity !== null && capacity <= 0) {
       setError("Capacity must be greater than 0.");
       setIsLoading(false);
@@ -312,7 +327,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                   onChange={(e) => setCapacity(e.target.value === "" ? null : Number(e.target.value))}
                 />
 
-                <Select
+                <Select 
                   label="Category *"
                   required
                   options={[{ value: "", label: "Select category" }, ...EVENT_CATEGORY_OPTIONS]}

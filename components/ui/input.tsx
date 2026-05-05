@@ -162,7 +162,7 @@ export function Input({ label, hint, error, success, prefixIcon, className = "",
 // Select
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; disabled?: boolean }[];
 }
 
 export function Select({ label, options, className = "", ...props }: SelectProps) {
@@ -170,8 +170,14 @@ export function Select({ label, options, className = "", ...props }: SelectProps
     <div className="input-wrap">
       {label && <label className="label">{label}</label>}
       <select className={`select ${className}`.trim()} {...props}>
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
+        {options.map((o, idx) => (
+          <option 
+            key={o.value} 
+            value={o.value} 
+            disabled={o.disabled || (idx === 0 && o.value === "")}
+          >
+            {o.label}
+          </option>
         ))}
       </select>
     </div>
