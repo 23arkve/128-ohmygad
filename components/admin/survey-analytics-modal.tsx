@@ -119,7 +119,7 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
           <div className="flex items-center gap-3 min-w-0">
             <BarChart3 size={22} className="text-[var(--periwinkle)] shrink-0" />
             <div className="min-w-0">
-              <h2 className="heading-lg truncate">{survey.title}</h2>
+              <h2 className="heading-lg" style={{wordBreak: "break-word", hyphens: "auto"}}>{survey.title}</h2>
               <p className="body mt-0.5">Survey Analytics</p>
             </div>
           </div>
