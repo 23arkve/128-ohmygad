@@ -312,9 +312,9 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                 <label className="label">Status</label>
                 <div className="input flex items-center gap-2 bg-[rgba(45,42,74,0.04)] cursor-default select-none">
                   {status ? (
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                      ${status === "open"     ? "bg-green-100 text-green-700" :
-                        status === "upcoming" ? "bg-blue-100 text-blue-700"  :
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full
+                      ${status === "open"     ? "" :
+                        status === "upcoming" ? "" :
                                                 "bg-gray-100 text-gray-500"}`}>
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </span>
