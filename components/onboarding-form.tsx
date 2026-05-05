@@ -284,7 +284,7 @@ export function OnboardingForm({
                     prefixIcon={<Building2 size={15} />}
                     placeholder="e.g. Dept. of Math and Computer Science"
                     value={department}
-                    onChange={(e) => setDepartment("department")}
+                    onChange={(e) => setDepartment(e.target.value)}
                     maxLength={64}
                   />
               </>
@@ -296,8 +296,8 @@ export function OnboardingForm({
                     label="Office / Unit"
                     prefixIcon={<Building2 size={15} />}
                     placeholder="e.g. Office of the Chancellor"
-                    value={department}
-                    onChange={(e) => setDepartment("department")}
+                    value={office}
+                    onChange={(e) => setOffice(e.target.value)}
                     maxLength={64}
                   />
               </>

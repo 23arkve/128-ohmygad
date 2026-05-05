@@ -77,11 +77,11 @@ export function validateAddress(address: string): string | null {
 }
 
 export function validateOffice(office: string): string | null {
-  if (office && office.length > 64) return "Office cannot exceed 100 characters.";
+  if (office && office.length > 64) return "Office cannot exceed 64 characters.";
   return null;
 }
 
 export function validateDepartment(department: string): string | null {
-  if (department && department.length > 64) return "Department cannot exceed 100 characters.";
+  if (department && department.length > 64) return "Department cannot exceed 64 characters.";
   return null;
 }

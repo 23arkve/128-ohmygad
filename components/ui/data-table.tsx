@@ -104,7 +104,7 @@ import React from "react";
 // types
 export interface Column<T> {
 	key: string;
-	header: string;
+	header: React.ReactNode;
 	render: (row: T, index: number) => React.ReactNode;
 	width?: string;
 }

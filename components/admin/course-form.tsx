@@ -94,6 +94,7 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
                 prefixIcon={<Type size={15} />}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                maxLength={100}
               />
 
               <div className="input-wrap">
@@ -107,6 +108,7 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
+                    maxLength={1000}
                   />
                 </div>
               </div>
