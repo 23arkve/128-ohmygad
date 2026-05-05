@@ -56,6 +56,7 @@ interface EditUserData extends Partial<CreateUserData> {
 interface UserFormProps {
 	initialData?: EditUserData;
 	onSuccess?: () => void;
+	onCancel?: () => void;
 	layout?: "modal" | "page";
 }
 
@@ -82,6 +83,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export default function UserForm({
 	initialData,
 	onSuccess,
+	onCancel,
 	layout = "modal",
 }: UserFormProps) {
 	const router = useRouter();
@@ -150,7 +152,7 @@ export default function UserForm({
 	};
 
 	const handleCancel = () => {
-		if (onSuccess) onSuccess();
+		if (onCancel) onCancel();
 		else router.push("/admin/users");
 	};
 
@@ -167,6 +169,11 @@ export default function UserForm({
 
 			const nameErr = validateFullName(full_name);
 			if (nameErr) throw new Error(nameErr);
+
+			const emailDomain = email.trim().split("@")[1]?.toLowerCase();
+			if (!emailDomain || !["gmail.com", "up.edu.ph"].includes(emailDomain)) {
+				throw new Error("Email must end with @gmail.com or @up.edu.ph.");
+			}
 
 			const displayErr = validateDisplayName(display_name);
 			if (displayErr) throw new Error(displayErr);
