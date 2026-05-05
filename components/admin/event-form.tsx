@@ -192,6 +192,12 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
       return;
     }
 
+    if (capacity !== null && !Number.isInteger(capacity)) {
+      setError("Capacity must be a whole number.");
+      setIsLoading(false);
+      return;
+    }
+
     if (capacity !== null && capacity > 300) {
       setError("Capacity must be at most 300.");
       setIsLoading(false);
