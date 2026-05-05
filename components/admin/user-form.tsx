@@ -243,7 +243,7 @@ export default function UserForm({
 					: {}),
 				...(role === "admin" ? { office: office } : {}),
 				...(role === "staff" ? { office: office } : {}),
-				...(role === "faculty" ? { college, department } : {}),
+				...(role === "faculty" ? { college, department, gso_attended: gsoNum, asho_attended: ashoNum } : {}),
 			};
 
 			if (isEdit) (payload as any).id = initialData!.id;
