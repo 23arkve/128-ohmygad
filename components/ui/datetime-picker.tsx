@@ -388,7 +388,7 @@ export function DateTimePicker({
               <div className="dtp-spinner-row">
                 <Spinner value={hours} onUp={() => { const nh = hours === 12 ? 1 : hours + 1; setHours(nh); emit(selDate, nh, minutes, ampm); }} onDn={() => { const nh = hours === 1 ? 12 : hours - 1; setHours(nh); emit(selDate, nh, minutes, ampm); }} format={pad} />
                 <span className="dtp-colon">:</span>
-                <Spinner value={minutes} onUp={() => { const nm = (minutes + 30) % 60; setMinutes(nm); emit(selDate, hours, nm, ampm); }} onDn={() => { const nm = minutes === 0 ? 55 : minutes - 5; setMinutes(nm); emit(selDate, hours, nm, ampm); }} format={pad} />
+                <Spinner value={minutes} onUp={() => { const nm = (minutes + 30) % 60; setMinutes(nm); emit(selDate, hours, nm, ampm); }} onDn={() => { const nm = minutes === 0 ? 55 : minutes - 30; setMinutes(nm); emit(selDate, hours, nm, ampm); }} format={pad} />
                 <div className="dtp-ampm-toggle">
                   {(["AM", "PM"] as const).map(ap => (
                     <button type="button" key={ap} className={`dtp-ampm-btn${ampm === ap ? " active" : ""}`} onClick={() => { setAmpm(ap); emit(selDate, hours, minutes, ap); }}>
