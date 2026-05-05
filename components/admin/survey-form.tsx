@@ -252,6 +252,14 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
     }
   };
 
+  const hasChanges = 
+    title !== (initialData?.title ?? "") ||
+    description !== (initialData?.description ?? "") ||
+    event_id !== (initialData?.event_id ?? "") ||
+    open_at !== (initialData?.open_at?.slice(0, 16) ?? "") ||
+    close_at !== (initialData?.close_at?.slice(0, 16) ?? "") ||
+    JSON.stringify(questions) !== JSON.stringify(initialQuestions);
+
   return (
     <form onSubmit={handleSubmit} className="flex h-full lg:h-auto w-full min-h-0 relative justify-center">
 
@@ -305,9 +313,9 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                 <label className="label">Status</label>
                 <div className="input flex items-center gap-2 bg-[rgba(45,42,74,0.04)] cursor-default select-none">
                   {status ? (
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                      ${status === "open"     ? "bg-green-100 text-green-700" :
-                        status === "upcoming" ? "bg-blue-100 text-blue-700"  :
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full
+                      ${status === "open"     ? "" :
+                        status === "upcoming" ? "" :
                                                 "bg-gray-100 text-gray-500"}`}>
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </span>
@@ -464,7 +472,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
             <Button
               type="submit"
               variant="primary"
-              disabled={isLoading}
+              disabled={isLoading || (isEdit && !hasChanges)}
               className="px-8"
             >
               {isLoading

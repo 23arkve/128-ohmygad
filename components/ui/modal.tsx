@@ -107,7 +107,6 @@ export function Modal({ open, onClose, title, subtitle, children, footer, modalS
               background: "var(--white)",
               zIndex: 1,
               paddingTop: 0,
-              borderBottom: "1px solid rgba(45, 42, 74, 0.08)",
             }}
           >
             {title    && <p className="heading-md" style={{ marginBottom: 6 }}>{title}</p>}
