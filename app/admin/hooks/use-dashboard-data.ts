@@ -175,7 +175,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
         setLoading(true);
         setError(null);
 
-        const { count: gadCount,    error: e1 } = await supabase.from("event").select("id", { count: "exact", head: true }).ilike("category", "%GAD%");
+        const { count: gadCount,    error: e1 } = await supabase.from("event").select("id", { count: "exact", head: true }).in("category", ["GSO", "ASHO", "Forum", "Research", "Training", "Workshop" ]);
         const { count: surveyCount, error: e2 } = await supabase.from("survey").select("id", { count: "exact", head: true });
         if (e1) throw e1;
         if (e2) throw e2;
