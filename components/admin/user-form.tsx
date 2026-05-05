@@ -800,49 +800,27 @@ export default function UserForm({
 						...GENDER_OPTIONS,
 					]}
 				/>
-				{(role === "student" || !role) && (
-					<Input
-						label="GSO Sessions Attended"
-						type="text"
-						inputMode="numeric"
-						pattern="[0-5]*"
-						placeholder="0"
-						value={gso_attended.toString()}
-						onChange={(e) => handleSessionChange(e, setGsoAttended)}
-					/>
-				)}
-				{(role === "faculty" || !role) && (
-					<Input
-						label="GSO Sessions Attended"
-						type="text"
-						inputMode="numeric"
-						pattern="[0-5]*"
-						placeholder="0"
-						value={gso_attended.toString()}
-						onChange={(e) => handleSessionChange(e, setGsoAttended)}
-					/>
-				)}
-				{(role === "student" || !role) && (
-					<Input
-						label="ASHO Sessions Attended"
-						type="text"
-						inputMode="numeric"
-						pattern="[0-5]*"
-						placeholder="0"
-						value={asho_attended.toString()}
-						onChange={(e) => handleSessionChange(e, setAshoAttended)}
-					/>
-				)}
-				{(role === "faculty" || !role) && (
-					<Input
-						label="ASHO Sessions Attended"
-						type="text"
-						inputMode="numeric"
-						pattern="[0-5]*"
-						placeholder="0"
-						value={asho_attended.toString()}
-						onChange={(e) => handleSessionChange(e, setAshoAttended)}
-					/>
+				{(role === "student" || role === "faculty" || !role) && (
+					<>
+						<Input
+							label="GSO Sessions Attended"
+							type="text"
+							inputMode="numeric"
+							pattern="[0-5]*"
+							placeholder="0"
+							value={gso_attended.toString()}
+							onChange={(e) => handleSessionChange(e, setGsoAttended)}
+						/>
+						<Input
+							label="ASHO Sessions Attended"
+							type="text"
+							inputMode="numeric"
+							pattern="[0-5]*"
+							placeholder="0"
+							value={asho_attended.toString()}
+							onChange={(e) => handleSessionChange(e, setAshoAttended)}
+						/>
+					</>
 				)}
 
 				{(role === "student" || role === "faculty" || !role) && (
