@@ -880,10 +880,12 @@ export default function DashboardPage() {
 				<aside className="flex flex-col gap-5 xl:w-[268px] shrink-0 pb-8">
 					{/* calendar */}
 					<Card variant="no-hover" className="p-4">
+						<div className="[&_button]:cursor-default [&_*]:cursor-default">
 						<MiniCalendar
 							eventDays={new Set([3, 10, 14])}
 							onDayClick={(date) => console.log(date)}
 						/>
+						</div>
 					</Card>
 
 					{/* timeline */}
