@@ -383,13 +383,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                 value={close_at}
                 onChange={setCloseAt}
               />
-              
-            {/* error toast */}
-            {error && (
-              <div className="toast toast-error">
-                <span className="font-semibold text-[var(--error)]">{error}</span>
-              </div>
-            )}
+            
           </div>
 
           <Card variant="no-shadow" className="flex flex-col gap-4 p-2">
@@ -499,6 +493,13 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
               <Plus size={15} /> {questions.length >= MAX_QUESTIONS ? `Max ${MAX_QUESTIONS} questions reached` : "Add Question"}
             </button>
           </Card>
+
+          {/* error toast */}
+          {error && (
+            <div className="toast toast-error">
+              <span className="font-semibold text-[var(--error)]">{error}</span>
+            </div>
+          )}
 
           {/* footer actions */}
           <div className="mt-4 flex gap-3 justify-end shrink-0 z-10">
