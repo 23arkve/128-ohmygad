@@ -269,7 +269,7 @@ export default function SurveysPage() {
     {
       key: "actions",
       header: <div className="text-center">Actions</div>,
-      width: "8%",
+      width: "12%",
       render: (survey) => (
         <div className="text-center">
           <Button

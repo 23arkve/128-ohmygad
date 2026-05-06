@@ -364,7 +364,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     {
       key: "actions",
       header: <div className="text-center">Actions</div>,
-      width: "7%",
+      width: "12%",
       render: (p) => (
         <div className="text-center">
           <Button variant="icon" title="Edit user" onClick={(e) => { e.stopPropagation(); openEditModal(p.id); }}>

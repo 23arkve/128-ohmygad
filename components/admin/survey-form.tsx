@@ -383,6 +383,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                 value={close_at}
                 onChange={setCloseAt}
               />
+            
           </div>
 
           <Card variant="no-shadow" className="flex flex-col gap-4 p-2">
