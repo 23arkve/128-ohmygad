@@ -807,7 +807,7 @@ export default function EventsPage() {
 			{
 				key: "category",
 				header: "Category",
-				width: "11%",
+				width: "9%",
 				render: (event) => (
 					<span
 						className="font-semibold"
@@ -884,7 +884,7 @@ export default function EventsPage() {
 			{
 				key: "location",
 				header: "Location",
-				width: "20%",
+				width: "17%",
 				render: (event) => (
 					<span
 						className="caption text-left max-w-[200px] truncate block"
@@ -897,7 +897,7 @@ export default function EventsPage() {
 			{
 				key: "actions",
 				header: <div className="text-center">Actions</div>,
-				width: "10%",
+				width: "13%",
 				render: (event) => (
 					<div
 						className="text-center"
@@ -1402,50 +1402,44 @@ export default function EventsPage() {
 												)}
 										</span>
 									</div>
-									<div className="flex items-start gap-3 caption sm:text-sm text-[var(--gray)]">
-										<Clock
-											size={15}
-											className="shrink-0 mt-0.5"
-										/>
-										<span>
-											{detailEvent.start_date
-												? new Date(
-														detailEvent.start_date,
-													).toLocaleTimeString(
-														"en-PH",
-														{
-															hour: "numeric",
-															minute: "2-digit",
-														},
-													)
-												: "—"}
-											{detailEvent.end_date &&
-												detailEvent.end_date !==
-													detailEvent.start_date && (
-													<>
-														{" "}
-														—{" "}
-														{new Date(
-															detailEvent.end_date,
+									<div className="flex items-center gap-x-4 gap-y-1.5 flex-wrap caption sm:text-sm text-[var(--gray)]">
+										<div className="flex items-center gap-2">
+											<Clock size={15} className="shrink-0" />
+											<span>
+												{detailEvent.start_date
+													? new Date(
+															detailEvent.start_date,
 														).toLocaleTimeString(
 															"en-PH",
 															{
 																hour: "numeric",
 																minute: "2-digit",
 															},
-														)}{" "}
-													</>
-												)}
-										</span>
-									</div>
-									<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
-										<MapPin
-											size={15}
-											className="shrink-0"
-										/>
-										<span>
-											{detailEvent.location ?? "—"}
-										</span>
+														)
+													: "—"}
+												{detailEvent.end_date &&
+													detailEvent.end_date !==
+														detailEvent.start_date && (
+														<>
+															{" "}
+															—{" "}
+															{new Date(
+																detailEvent.end_date,
+															).toLocaleTimeString(
+																"en-PH",
+																{
+																	hour: "numeric",
+																	minute: "2-digit",
+																},
+															)}{" "}
+														</>
+													)}
+											</span>
+										</div>
+										<div className="flex items-center gap-2 min-w-0">
+											<MapPin size={15} className="shrink-0" />
+											<span className="truncate">{detailEvent.location ?? "—"}</span>
+										</div>
 									</div>
 									<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
 										<Users size={15} className="shrink-0" />
