@@ -113,9 +113,11 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const MAX_QUESTIONS = 50;
+
   // ── Question helpers ──
   const addQuestion = () =>
-    setQuestions((prev) => [...prev, newQuestion(prev.length)]);
+    setQuestions((prev) => prev.length >= MAX_QUESTIONS ? prev : [...prev, newQuestion(prev.length)]);
 
   const removeQuestion = (index: number) =>
     setQuestions((prev) =>
@@ -164,6 +166,18 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
 
     if (!title.trim()) { setError("Title is required."); setIsLoading(false); return; }
     if (!event_id) { setError("Linked Event is required."); setIsLoading(false); return; }
+    if (!open_at) { setError("Open time is required."); setIsLoading(false); return; }
+    if (!close_at) { setError("Close time is required."); setIsLoading(false); return; }
+
+    if (!isEdit) {
+      const now = new Date();
+      const openTime = new Date(open_at);
+      if (openTime <= now) {
+        setError("Open time must be in the future.");
+        setIsLoading(false);
+        return;
+      }
+    }
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
@@ -176,6 +190,15 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
         setError(`Question ${i + 1} needs at least 2 choices.`);
         setIsLoading(false);
         return;
+      }
+      if (["multiple_choice"].includes(q.question_type)) {
+        const trimmed = q.options.map((o) => o.trim().toLowerCase()).filter(Boolean);
+        const unique = new Set(trimmed);
+        if (unique.size !== trimmed.length) {
+          setError(`Question ${i + 1} has duplicate choices.`);
+          setIsLoading(false);
+          return;
+        }
       }
     }
 
@@ -372,7 +395,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
           <Card variant="no-shadow" className="flex flex-col gap-4 p-2">
             <div className="border-b border-[rgba(45,42,74,0.08)] pb-2 flex items-center justify-between">
               <h3 className="heading-md">Questions</h3>
-              <span className="caption">{questions.length} question{questions.length !== 1 ? "s" : ""}</span>
+              <span className="caption">{questions.length}/{MAX_QUESTIONS} question{questions.length !== 1 ? "s" : ""}</span>
             </div>
 
             {questions.length === 0 && (
@@ -470,9 +493,10 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
             <button
               type="button"
               onClick={addQuestion}
-              className="flex items-center justify-center gap-2 border border-dashed border-[rgba(45,42,74,0.15)] rounded-[var(--radius-md)] px-4 py-3 caption text-[var(--gray)] hover:text-[var(--primary-dark)] hover:bg-[var(--lavender)] transition-colors"
+              disabled={questions.length >= MAX_QUESTIONS}
+              className="flex items-center justify-center gap-2 border border-dashed border-[rgba(45,42,74,0.15)] rounded-[var(--radius-md)] px-4 py-3 caption text-[var(--gray)] hover:text-[var(--primary-dark)] hover:bg-[var(--lavender)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[var(--gray)] disabled:hover:bg-transparent"
             >
-              <Plus size={15} /> Add Question
+              <Plus size={15} /> {questions.length >= MAX_QUESTIONS ? `Max ${MAX_QUESTIONS} questions reached` : "Add Question"}
             </button>
           </Card>
 
