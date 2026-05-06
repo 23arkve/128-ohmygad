@@ -353,8 +353,8 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     },
     {
       key: "total_events_attended",
-      header: "Total Events Attended",
-      width: "11%",
+      header: <div className="text-center">Total Events Attended</div>,
+      width: "15%",
       render: (p) => (
         <div className="text-center text-[13px] text-primary-dark">
           {getTotalEventsAttended(p)}
@@ -366,7 +366,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
       header: <div className="text-center">Actions</div>,
       width: "7%",
       render: (p) => (
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
+        <div className="text-center">
           <Button variant="icon" title="Edit user" onClick={(e) => { e.stopPropagation(); openEditModal(p.id); }}>
             <Pencil size={14} />
           </Button>

@@ -900,11 +900,7 @@ export default function EventsPage() {
 				width: "10%",
 				render: (event) => (
 					<div
-						style={{
-							display: "flex",
-							justifyContent: "flex-end",
-							gap: 4,
-						}}
+						className="text-center"
 					>
 						<Button
 							variant="icon"
