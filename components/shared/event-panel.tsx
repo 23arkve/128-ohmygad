@@ -231,33 +231,19 @@ export const EventPanel = (): JSX.Element => {
 																			</Badge>
 																		)}
 																	</div>
-																	<span className="caption text-[var(--gray)] flex items-center gap-1">
-																		<Clock
-																			size={
-																				11
-																			}
-																		/>
-																		{
-																			event.time
-																		}
-																	</span>
-																	<h3 className="heading-sm leading-snug m-0 line-clamp-2 truncate">
-																		{
-																			event.title
-																		}
-																	</h3>
-																	<span className="caption text-[var(--gray)] flex items-center gap-1">
-																		<MapPin
-																			size={
-																				11
-																			}
-																		/>
-																		<span className="truncate">
-																			{
-																				event.location
-																			}
+																	<div className="flex items-center gap-x-3 gap-y-1 flex-wrap caption text-[var(--gray)]">
+																		<span className="flex items-center gap-1 shrink-0">
+																			<Clock size={11} />
+																			{event.time}
 																		</span>
-																	</span>
+																		<span className="flex items-center gap-1 min-w-0">
+																			<MapPin size={11} className="shrink-0" />
+																			<span className="truncate">{event.location}</span>
+																		</span>
+																	</div>
+																	<h3 className="heading-sm leading-snug m-0 line-clamp-2 truncate">
+																		{event.title}
+																	</h3>
 																	<div>
 																		{event.registrationStatus && (
 																			<Badge
@@ -448,15 +434,16 @@ export const EventPanel = (): JSX.Element => {
 										{detailEvent.title}
 									</h2>
 									<div className="flex flex-col gap-1.5">
-										<span className="caption text-[var(--gray)] flex items-center gap-2">
+									<div className="flex items-center gap-x-4 gap-y-1 flex-wrap caption text-[var(--gray)]">
+										<span className="flex items-center gap-2 shrink-0">
 											<Clock size={13} />
-											{detailEvent.date} ·{" "}
-											{detailEvent.time}
+											{detailEvent.date} · {detailEvent.time}
 										</span>
-										<span className="caption text-[var(--gray)] flex items-center gap-2">
-											<MapPin size={13} />
-											{detailEvent.location}
+										<span className="flex items-center gap-2 min-w-0">
+											<MapPin size={13} className="shrink-0" />
+											<span className="truncate">{detailEvent.location}</span>
 										</span>
+									</div>
 									</div>
 									{detailEvent.registrationStatus && (
 										<Badge

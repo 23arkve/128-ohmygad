@@ -89,14 +89,15 @@ export function EventCard({
       <div className="event-info">
         <div className="event-title truncate" title={title}>{title}</div>
         <div className="event-meta" style={{ marginBottom: 12 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
             <CalendarDays size={12} color="var(--primary-dark)" className="opacity-70" /> {date}
           </span>
-          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
             <Clock size={12} color="var(--primary-dark)" className="opacity-70" /> {time}
           </span>
-          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <MapPin size={12} color="var(--primary-dark)" className="opacity-70" /> {location}
+          <span className="truncate" style={{ display: "flex", alignItems: "center", gap: 4, minWidth: 0 }}>
+            <MapPin size={12} color="var(--primary-dark)" className="opacity-70" style={{ flexShrink: 0 }} /> 
+            <span className="truncate">{location}</span>
           </span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
