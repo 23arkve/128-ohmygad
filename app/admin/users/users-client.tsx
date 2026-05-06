@@ -368,343 +368,405 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* toolbar */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-3 flex-wrap">
-          <SearchBar
-            placeholder="Search by name, email or role…"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            onClear={() => {
-              setSearch("");
-              setPage(1);
-            }}
-            containerStyle={{ flex: 1, minWidth: 220 }}
-          />
+		<div className="flex flex-col gap-3">
+			{/* toolbar */}
+			<div className="flex flex-col gap-3">
+				<div className="flex items-center gap-3 flex-wrap">
+					<SearchBar
+						placeholder="Search by name, email or role…"
+						value={search}
+						onChange={(e) => {
+							setSearch(e.target.value);
+							setPage(1);
+						}}
+						onClear={() => {
+							setSearch("");
+							setPage(1);
+						}}
+						containerStyle={{ flex: 1, minWidth: 220 }}
+					/>
 
-          <Dropdown
-            trigger={
-              <Button variant="ghost">
-                <ArrowUpDown size={15} />
-                <span className="hidden md:inline"> {sortLabel}</span>
-              </Button>
-            }
-          >
-            {SORT_OPTIONS.map(({ label, field }) => {
-              const isActive = sort.field === field;
-              return (
-                <DropdownItem key={field} onClick={() => handleSort(field)}>
-                  <span className="flex items-center gap-2">
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 border-[1.5px] ${isActive ? "bg-[var(--primary-dark)] border-[var(--primary-dark)]" : "bg-transparent border-[rgba(45,42,74,0.20)]"}`} />
-                    <span>{isActive ? <strong>{label} {sort.direction === "asc" ? "↑" : "↓"}</strong> : label}</span>
-                  </span>
-                </DropdownItem>
-              );
-            })}
-            <DropdownDivider />
-            <DropdownItem
-              onClick={() => {
-                setSort({ field: "full_name", direction: "asc" });
-                setPage(1);
-              }}
-            >
-              Reset sort
-            </DropdownItem>
-          </Dropdown>
+					<Dropdown
+						trigger={
+							<Button variant="ghost">
+								<ArrowUpDown size={15} />
+								<span className="hidden md:inline">
+									{" "}
+									{sortLabel}
+								</span>
+							</Button>
+						}
+					>
+						{SORT_OPTIONS.map(({ label, field }) => {
+							const isActive = sort.field === field;
+							return (
+								<DropdownItem
+									key={field}
+									onClick={() => handleSort(field)}
+								>
+									<span className="flex items-center gap-2">
+										<span
+											className={`w-1.5 h-1.5 rounded-full shrink-0 border-[1.5px] ${isActive ? "bg-[var(--primary-dark)] border-[var(--primary-dark)]" : "bg-transparent border-[rgba(45,42,74,0.20)]"}`}
+										/>
+										<span>
+											{isActive ? (
+												<strong>
+													{label}{" "}
+													{sort.direction === "asc"
+														? "↑"
+														: "↓"}
+												</strong>
+											) : (
+												label
+											)}
+										</span>
+									</span>
+								</DropdownItem>
+							);
+						})}
+						<DropdownDivider />
+						<DropdownItem
+							onClick={() => {
+								setSort({
+									field: "full_name",
+									direction: "asc",
+								});
+								setPage(1);
+							}}
+						>
+							Reset sort
+						</DropdownItem>
+					</Dropdown>
 
-          <Dropdown
-            trigger={
-              <Button variant={hasActiveFilters ? "pink" : "ghost"}>
-                <SlidersHorizontal size={15} /> Filter
-                {hasActiveFilters && (
-                  <span
-                    className="inline-flex items-center justify-center min-w-[20px] h-5 rounded-full px-1 text-[11px] font-bold text-white"
-                    style={{ background: "var(--primary-dark)", marginLeft: 2 }}
-                  >
-                    {activeFilterCount}
-                  </span>
-                )}
-              </Button>
-            }
-          >
-            <div style={{ padding: "4px 12px 6px" }}>
-              <p className="label" style={{ marginBottom: 4 }}>
-                Role
-              </p>
-            </div>
-            {ROLES.map((r) => (
-              <DropdownItem key={r}>
-                <Checkbox
-                  label={r.charAt(0).toUpperCase() + r.slice(1)}
-                  checked={roleFilters.has(r)}
-                  onChange={() => toggleRole(r)}
-                />
-              </DropdownItem>
-            ))}
+					<Dropdown
+						trigger={
+							<Button
+								variant={hasActiveFilters ? "pink" : "ghost"}
+							>
+								<SlidersHorizontal size={15} /> Filter
+								{hasActiveFilters && (
+									<span
+										className="inline-flex items-center justify-center min-w-[20px] h-5 rounded-full px-1 text-[11px] font-bold text-white"
+										style={{
+											background: "var(--primary-dark)",
+											marginLeft: 2,
+										}}
+									>
+										{activeFilterCount}
+									</span>
+								)}
+							</Button>
+						}
+					>
+						<div style={{ padding: "4px 12px 6px" }}>
+							<p className="label" style={{ marginBottom: 4 }}>
+								Role
+							</p>
+						</div>
+						{ROLES.map((r) => (
+							<DropdownItem key={r}>
+								<Checkbox
+									label={
+										r.charAt(0).toUpperCase() + r.slice(1)
+									}
+									checked={roleFilters.has(r)}
+									onChange={() => toggleRole(r)}
+								/>
+							</DropdownItem>
+						))}
 
-            <DropdownDivider />
-            <DropdownItem onClick={clearAllFilters}>
-              Clear all filters
-            </DropdownItem>
-          </Dropdown>
+						<DropdownDivider />
+						<DropdownItem onClick={clearAllFilters}>
+							Clear all filters
+						</DropdownItem>
+					</Dropdown>
 
-          <Button variant="primary" onClick={() => setCreateModalOpen(true)}>
-            <UserPlus size={16} /> Add User
-          </Button>
-        </div>
-      </div>
+					<Button
+						variant="primary"
+						onClick={() => setCreateModalOpen(true)}
+					>
+						<UserPlus size={16} /> Add User
+					</Button>
+				</div>
+			</div>
 
-      {hasActiveFilters && (
-        <div className="flex items-center gap-2 flex-wrap -mt-2">
-          <span className="caption">Active filters:</span>
+			{hasActiveFilters && (
+				<div className="flex items-center gap-2 flex-wrap -mt-2">
+					<span className="caption">Active filters:</span>
 
-          {[...roleFilters].map((r) => (
-            <Badge key={r} variant={ROLE_VARIANT[r] ?? "dark"} dot>
-              <span className="capitalize">{r}</span>
-              <button
-                onClick={() => {
-                  toggleRole(r);
-                  setActiveChip("All");
-                }}
-                style={{ marginLeft: 6 }}
-              >
-                ×
-              </button>
-            </Badge>
-          ))}
+					{[...roleFilters].map((r) => (
+						<Badge key={r} variant={ROLE_VARIANT[r] ?? "dark"} dot>
+							<span className="capitalize">{r}</span>
+							<button
+								onClick={() => {
+									toggleRole(r);
+									setActiveChip("All");
+								}}
+								style={{ marginLeft: 6 }}
+							>
+								×
+							</button>
+						</Badge>
+					))}
 
-          {[...gsoFilters].map((g) => (
-            <Badge key={g} variant={GSO_VARIANT[g] ?? "dark"} dot>
-              <span className="capitalize">
-                {g === "attended" ? "Attended" : "Pending"}
-              </span>
-              <button onClick={() => toggleGso(g)} style={{ marginLeft: 6 }}>
-                ×
-              </button>
-            </Badge>
-          ))}
+					{[...gsoFilters].map((g) => (
+						<Badge key={g} variant={GSO_VARIANT[g] ?? "dark"} dot>
+							<span className="capitalize">
+								{g === "attended" ? "Attended" : "Pending"}
+							</span>
+							<button
+								onClick={() => toggleGso(g)}
+								style={{ marginLeft: 6 }}
+							>
+								×
+							</button>
+						</Badge>
+					))}
 
-          <Button variant="soft" size="sm" onClick={clearAllFilters}>
-            Clear all
-          </Button>
-        </div>
-      )}
+					<Button variant="soft" size="sm" onClick={clearAllFilters}>
+						Clear all
+					</Button>
+				</div>
+			)}
 
-      {fetchError && (
-        <Toast
-          variant="error"
-          title="Failed to load users"
-          message={fetchError}
-        />
-      )}
+			{fetchError && (
+				<Toast
+					variant="error"
+					title="Failed to load users"
+					message={fetchError}
+				/>
+			)}
 
-      {/* table / empty */}
-      {!fetchError &&
-        (filtered.length === 0 ? (
-          <Card>
-            <div className="flex flex-col items-center justify-center gap-3 py-12">
-              <p className="caption">
-                {search || hasActiveFilters
-                  ? "No users match your search or filters."
-                  : "No users found."}
-              </p>
-              {(search || hasActiveFilters) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSearch("");
-                    clearAllFilters();
-                  }}
-                >
-                  Clear search & filters
-                </Button>
-              )}
-            </div>
-          </Card>
-        ) : (
-          <DataTable
-            columns={columns}
-            rows={paginatedProfiles}
-            keyExtractor={(p) => p.id}
-            onRowClick={(p) => openEditModal(p.id)}
-          />
-        ))}
+			{/* table / empty */}
+			{!fetchError &&
+				(filtered.length === 0 ? (
+					<Card>
+						<div className="flex flex-col items-center justify-center gap-3 py-12">
+							<p className="caption">
+								{search || hasActiveFilters
+									? "No users match your search or filters."
+									: "No users found."}
+							</p>
+							{(search || hasActiveFilters) && (
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => {
+										setSearch("");
+										clearAllFilters();
+									}}
+								>
+									Clear search & filters
+								</Button>
+							)}
+						</div>
+					</Card>
+				) : (
+					<DataTable
+						columns={columns}
+						rows={paginatedProfiles}
+						keyExtractor={(p) => p.id}
+						onRowClick={(p) => openEditModal(p.id)}
+					/>
+				))}
 
-      {/* pagination */}
-      {filtered.length > 0 && (
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <span className="caption">
-            Showing {Math.min((page - 1) * PER_PAGE + 1, filtered.length)}–
-            {Math.min(page * PER_PAGE, filtered.length)} of {filtered.length}{" "}
-            users
-          </span>
-          <Pagination
-            page={page}
-            total={totalPages(filtered.length, PER_PAGE)}
-            onChange={setPage}
-          />
-        </div>
-      )}
+			{/* pagination */}
+			{filtered.length > 0 && (
+				<div className="flex items-center justify-between flex-wrap gap-3">
+					<span className="caption">
+						Showing{" "}
+						{Math.min((page - 1) * PER_PAGE + 1, filtered.length)}–
+						{Math.min(page * PER_PAGE, filtered.length)} of{" "}
+						{filtered.length} users
+					</span>
+					<Pagination
+						page={page}
+						total={totalPages(filtered.length, PER_PAGE)}
+						onChange={setPage}
+					/>
+				</div>
+			)}
 
-      {/* create modal */}
-      <Modal
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        title="Add User"
-      >
-        <UserForm
-          onSuccess={() => {
-            setCreateModalOpen(false);
-            router.refresh();
-          }}
-        />
-      </Modal>
+			{/* create modal */}
+			<Modal
+				open={createModalOpen}
+				onClose={() => setCreateModalOpen(false)}
+				title="Add User"
+			>
+				<UserForm
+					onSuccess={() => {
+						setCreateModalOpen(false);
+						router.refresh();
+					}}
+				/>
+			</Modal>
 
-      {/* edit modal */}
-      <Modal
-        open={editModalOpen}
-        onClose={closeEditModal}
-        title="Edit User"
-        subtitle={editUser ? (editUser.full_name ?? editUser.email) : undefined}
-      >
-        {editLoading ? (
-          <div className="flex items-center justify-center gap-3 py-8 text-gray-400">
-            <Loader2 size={20} className="animate-spin" />
-            <span className="caption">Loading user data…</span>
-          </div>
-        ) : editError ? (
-          <div className="flex flex-col gap-4">
-            <Toast
-              variant="error"
-              title="Failed to load user"
-              message={editError}
-            />
-            <Button variant="ghost" className="w-full" onClick={closeEditModal}>
-              Close
-            </Button>
-          </div>
-        ) : editUser ? (
-          <UserForm
-            initialData={editUser}
-            onCancel={closeEditModal}
-            onSuccess={() => {
-              closeEditModal();
-              router.refresh();
-              showToast("success", "User updated successfully");
-            }}
-            onRoleChangeRequest={handleRoleChangeRequest}
-          />
-        ) : null}
-      </Modal>
+			{/* edit modal */}
+			<Modal
+				open={editModalOpen}
+				onClose={closeEditModal}
+				title="Edit User"
+				subtitle={
+					editUser
+						? (editUser.full_name ?? editUser.email)
+						: undefined
+				}
+			>
+				{editLoading ? (
+					<div className="flex items-center justify-center gap-3 py-8 text-gray-400">
+						<Loader2 size={20} className="animate-spin" />
+						<span className="caption">Loading user data…</span>
+					</div>
+				) : editError ? (
+					<div className="flex flex-col gap-4">
+						<Toast
+							variant="error"
+							title="Failed to load user"
+							message={editError}
+						/>
+						<Button
+							variant="ghost"
+							className="w-full"
+							onClick={closeEditModal}
+						>
+							Close
+						</Button>
+					</div>
+				) : editUser ? (
+					<UserForm
+						initialData={editUser}
+						onCancel={closeEditModal}
+						onSuccess={() => {
+							closeEditModal();
+							router.refresh();
+							showToast("success", "User updated successfully");
+						}}
+						onRoleChangeRequest={handleRoleChangeRequest}
+					/>
+				) : null}
+			</Modal>
 
-      {/* delete modal */}
-      <Modal
-        open={deleteModalOpen}
-        onClose={() => {
-          if (!isDeleting) {
-            closeDeleteModal();
-          }
-        }}
-        title="Delete User?"
-        subtitle="This action cannot be undone. All data about this user will be permanently removed."
-        footer={
-          <div className="flex gap-3 w-full">
-            <Button
-              variant="ghost"
-              style={{ flex: 1 }}
-              disabled={isDeleting}
-              onClick={closeDeleteModal}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              style={{ flex: 1, background: "var(--error)" }}
-              disabled={isDeleting || !deletePassword.trim()}
-              onClick={handleDelete}
-            >
-              {isDeleting ? "Deleting..." : "Yes, Delete"}
-            </Button>
-          </div>
-        }
-      >
-        {deleteTarget && (
-          <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
-              <p className="text-sm text-[var(--error)] font-bold mb-1">
-                Warning
-              </p>
-              <p className="text-sm text-[var(--primary-dark)]">
-                You are about to delete:{" "}
-                <strong className="break-words">
-                  {deleteTarget.full_name}
-                </strong>
-              </p>
-            </div>
+			{/* delete modal */}
+			<Modal
+				open={deleteModalOpen}
+				onClose={() => {
+					if (!isDeleting) {
+						closeDeleteModal();
+					}
+				}}
+				title="Delete User?"
+				subtitle="This action cannot be undone. All data about this user will be permanently removed."
+				footer={
+					<div className="flex gap-3 w-full">
+						<Button
+							variant="ghost"
+							style={{ flex: 1 }}
+							disabled={isDeleting}
+							onClick={closeDeleteModal}
+						>
+							Cancel
+						</Button>
+						<Button
+							variant="primary"
+							style={{ flex: 1, background: "var(--error)" }}
+							disabled={isDeleting || !deletePassword.trim()}
+							onClick={handleDelete}
+						>
+							{isDeleting ? "Deleting..." : "Yes, Delete"}
+						</Button>
+					</div>
+				}
+			>
+				{deleteTarget && (
+					<div className="space-y-4">
+						<div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
+							<p className="text-sm text-[var(--error)] font-bold mb-1">
+								Warning
+							</p>
+							<p className="text-sm text-[var(--primary-dark)]">
+								You are about to delete:{" "}
+								<strong className="break-words">
+									{deleteTarget.full_name}
+								</strong>
+							</p>
+						</div>
 
-            {deleteError && (
-              <div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
-                <p className="text-sm text-[var(--error)]">{deleteError}</p>
-              </div>
-            )}
+						{deleteError && (
+							<div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
+								<p className="text-sm text-[var(--error)]">
+									{deleteError}
+								</p>
+							</div>
+						)}
 
-            <div>
-              <label className="label block mb-2">
-                Enter your password to confirm deletion
-              </label>
-              <Input
-                type="password"
-                value={deletePassword}
-                onChange={(e) => setDeletePassword(e.target.value)}
-                placeholder="Password"
-                autoComplete="new-password"
-                className="input input-bordered w-full"
-              />
-            </div>
-          </div>
-        )}
-      </Modal>
+						<div>
+							<label className="label block mb-2">
+								Enter your password to confirm deletion
+							</label>
+							<Input
+								type="password"
+								value={deletePassword}
+								onChange={(e) =>
+									setDeletePassword(e.target.value)
+								}
+								placeholder="Password"
+								autoComplete="new-password"
+								className="input input-bordered w-full"
+							/>
+						</div>
+					</div>
+				)}
+			</Modal>
 
-      {showRoleConfirm && (
-        <Modal open={showRoleConfirm} onClose={cancelRoleChange}>
-          <div className="p-5 flex flex-col gap-4">
-            <h3 className="text-lg font-semibold">
-              Confirm Role Change
-            </h3>
+			{showRoleConfirm && (
+				<Modal
+					open={showRoleConfirm}
+					onClose={cancelRoleChange}
+					title="Confirm Role Change"
+					footer={
+						<div className="flex gap-3 w-full">
+							<Button
+								variant="ghost"
+								style={{ flex: 1 }}
+								onClick={cancelRoleChange}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="primary"
+								style={{ flex: 1 }}
+								onClick={confirmRoleChange}
+							>
+								Yes, Change role
+							</Button>
+						</div>
+					}
+				>
+					<div className="space-y-4">
+						<div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
+							<p className="text-sm text-[var(--error)] font-bold mb-1">
+								Warning
+							</p>
+							<p className="text-sm text-[var(--primary-dark)]">
+								Changing the role may reset or affect related
+								fields (e.g., student info, office, department).
+								Do you want to continue?
+							</p>
+						</div>
+					</div>
+				</Modal>
+			)}
 
-            <p className="text-sm text-gray-600">
-              Changing the role may reset or affect related fields (e.g., student info,
-              office, department). Do you want to continue?
-            </p>
-
-            <div className="flex justify-end gap-3 mt-2">
-              <Button variant="ghost" onClick={cancelRoleChange}>
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={confirmRoleChange}>
-                Confirm
-              </Button>
-            </div>
-          </div>
-        </Modal>
-      )}
-
-
-      {/* floating toast notification */}
-      {toast && (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[9999] animate-in fade-in-50">
-          <Toast
-            variant={toast.variant}
-            title={toast.title}
-            message={toast.message}
-          />
-        </div>
-      )}
-    </div>
+			{/* floating toast notification */}
+			{toast && (
+				<div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[9999] animate-in fade-in-50">
+					<Toast
+						variant={toast.variant}
+						title={toast.title}
+						message={toast.message}
+					/>
+				</div>
+			)}
+		</div>
   );
 };
