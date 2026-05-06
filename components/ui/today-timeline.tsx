@@ -77,7 +77,7 @@ export function TodayTimeline({ events, loading }: TodayTimelineProps) {
                   {item.title}
                 </p>
                 {item.location && (
-                  <p className="caption flex items-center gap-1 mt-0.5">
+                  <p title={item.location} className="caption flex items-center gap-1 mt-0.5">
                     <MapPin size={12} className="shrink-0" />
                     <span className="truncate">{item.location}</span>
                   </p>
