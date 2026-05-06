@@ -70,6 +70,30 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
   const [pendingRole, setPendingRole] = useState<string | null>(null);
   const [showRoleConfirm, setShowRoleConfirm] = useState(false);
 
+  // discard changes confirm state
+  const [showUnsavedConfirm, setShowUnsavedConfirm] = useState(false);
+  const [pendingClose, setPendingClose] = useState<(() => void) | null>(null);
+  const [isFormDirty, setIsFormDirty] = useState(false);
+  const requestClose = (closeFn: () => void) => {
+        if (isFormDirty) {
+            setPendingClose(() => closeFn);
+            setShowUnsavedConfirm(true);
+        } else {
+            closeFn();
+        }
+    };
+
+  const confirmDiscard = () => {
+		setShowUnsavedConfirm(false);
+		pendingClose?.();
+		setPendingClose(null);
+  };
+
+  const cancelDiscard = () => {
+		setShowUnsavedConfirm(false);
+		setPendingClose(null);
+  };
+
   const cancelRoleChange = () => {
     if (pendingRole) {
       window.dispatchEvent(new CustomEvent("role-change-cancelled"));
@@ -227,9 +251,10 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
   };
 
   const closeEditModal = () => {
-    setEditModalOpen(false);
-    setEditUser(null);
-    setEditError(null);
+		setEditModalOpen(false);
+		setEditUser(null);
+		setEditError(null);
+		setIsFormDirty(false);
   };
 
   const openDeleteModal = (profile: Profile) => {
@@ -328,8 +353,8 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     },
     {
       key: "total_events_attended",
-      header: "Total Events Attended",
-      width: "11%",
+      header: <div className="text-center">Total Events Attended</div>,
+      width: "15%",
       render: (p) => (
         <div className="text-center text-[13px] text-primary-dark">
           {getTotalEventsAttended(p)}
@@ -341,7 +366,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
       header: <div className="text-center">Actions</div>,
       width: "7%",
       render: (p) => (
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
+        <div className="text-center">
           <Button variant="icon" title="Edit user" onClick={(e) => { e.stopPropagation(); openEditModal(p.id); }}>
             <Pencil size={14} />
           </Button>
@@ -590,7 +615,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 			{/* create modal */}
 			<Modal
 				open={createModalOpen}
-				onClose={() => setCreateModalOpen(false)}
+				onClose={() => requestClose(() => setCreateModalOpen(false))}
 				title="Add User"
 			>
 				<UserForm
@@ -598,13 +623,19 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 						setCreateModalOpen(false);
 						router.refresh();
 					}}
+					onCancel={() =>
+						requestClose(() => setCreateModalOpen(false))
+					}
+					onDirtyChange={setIsFormDirty}
 				/>
 			</Modal>
 
 			{/* edit modal */}
 			<Modal
 				open={editModalOpen}
-				onClose={closeEditModal}
+				onClose={() =>
+					editUser ? requestClose(closeEditModal) : closeEditModal()
+				}
 				title="Edit User"
 				subtitle={
 					editUser
@@ -635,13 +666,14 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 				) : editUser ? (
 					<UserForm
 						initialData={editUser}
-						onCancel={closeEditModal}
+						onCancel={() => requestClose(closeEditModal)}
 						onSuccess={() => {
 							closeEditModal();
 							router.refresh();
 							showToast("success", "User updated successfully");
 						}}
 						onRoleChangeRequest={handleRoleChangeRequest}
+						onDirtyChange={setIsFormDirty}
 					/>
 				) : null}
 			</Modal>
@@ -756,6 +788,42 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 					</div>
 				</Modal>
 			)}
+
+			<Modal
+				open={showUnsavedConfirm}
+				onClose={cancelDiscard}
+				title="Discard Changes?"
+				footer={
+					<div className="flex gap-3 w-full">
+						<Button
+							variant="ghost"
+							style={{ flex: 1 }}
+							onClick={cancelDiscard}
+						>
+							Keep Editing
+						</Button>
+						<Button
+							variant="primary"
+							style={{ flex: 1 }}
+							onClick={confirmDiscard}
+						>
+							Discard
+						</Button>
+					</div>
+				}
+			>
+				<div className="space-y-4">
+					<div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
+						<p className="text-sm text-[var(--error)] font-bold mb-1">
+							Warning
+						</p>
+						<p className="text-sm text-[var(--primary-dark)]">
+							You have unsaved changes. Are you sure you want to
+							discard them?
+						</p>
+					</div>
+				</div>
+			</Modal>
 
 			{/* floating toast notification */}
 			{toast && (

@@ -76,7 +76,7 @@ const GENDER_COLORS: Record<string, string> = {
 	Woman: "#F4A7B9",
 	"Non-binary": "#6DC5A0",
 	Genderqueer: "#F4C97A",
-	Genderfluid: "#9B9BB4",
+	Genderfluid: "#f4a97a",
 	"Prefer not to say": "#9B9BB4",
 };
 

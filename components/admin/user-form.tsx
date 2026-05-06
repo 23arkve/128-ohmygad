@@ -59,6 +59,7 @@ interface UserFormProps {
 	onCancel?: () => void;
 	layout?: "modal" | "page";
 	onRoleChangeRequest?: (role: string) => void;
+	onDirtyChange?: (dirty: boolean) => void;
 }
 
 // options
@@ -120,6 +121,7 @@ export default function UserForm({
 	onCancel,
 	layout = "modal",
 	onRoleChangeRequest,
+	onDirtyChange,
 }: UserFormProps) {
 	const router = useRouter();
 	const isEdit = !!initialData;
@@ -218,27 +220,25 @@ export default function UserForm({
 		setPendingRole(null);
 	};
 
-    // for matching student number and year level,  derive the ear level from the student number
-    // and show a warning if it doesnt match the selected year level
-    const derivedYear =
+	// for matching student number and year level,  derive the ear level from the student number
+	// and show a warning if it doesnt match the selected year level
+	const derivedYear =
 		student_num.length >= 4 ? deriveYearLevel(student_num) : null;
 	const derivedYearString =
 		student_num.length >= 4 ? deriveYearLevelString(student_num) : null;
 
-    const admissionYearRaw =
-        student_num.length >= 4
-            ? parseInt(student_num.slice(0, 4), 10)
-            : NaN;
-    const academicStart = getAcademicYearStart();
+	const admissionYearRaw =
+		student_num.length >= 4 ? parseInt(student_num.slice(0, 4), 10) : NaN;
+	const academicStart = getAcademicYearStart();
 
-    const studentNumError =
-        student_num.length >= 4 && derivedYear === null
-            ? !isNaN(admissionYearRaw) &&
-                admissionYearRaw >= 1900 &&
-                admissionYearRaw <= academicStart
-                ? "Admission year has not started yet."
-                : "Please check the student number format."
-            : null;
+	const studentNumError =
+		student_num.length >= 4 && derivedYear === null
+			? !isNaN(admissionYearRaw) &&
+				admissionYearRaw >= 1900 &&
+				admissionYearRaw <= academicStart
+				? "Admission year has not started yet."
+				: "Please check the student number format."
+			: null;
 
 	const yearMismatch =
 		derivedYearString !== null &&
@@ -452,6 +452,10 @@ export default function UserForm({
 		department !== (initialData?.department ?? "") ||
 		is_onboarded !== (initialData?.is_onboarded ?? true);
 
+	useEffect(() => {
+		onDirtyChange?.(hasChanges);
+	}, [hasChanges]); // eslint-disable-line react-hooks/exhaustive-deps
+
 	// page layout
 	if (layout === "page") {
 		return (
@@ -557,7 +561,7 @@ export default function UserForm({
 							{(role === "student" || !role) && (
 								<div className="flex flex-col gap-1">
 									<Select
-                                        required
+										required
 										label="Year Level"
 										value={year_level}
 										onChange={(e) =>
@@ -893,7 +897,7 @@ export default function UserForm({
 				{(role === "student" || !role) && (
 					<div className="flex flex-col gap-1">
 						<Select
-                            required
+							required
 							label="Year Level"
 							value={year_level}
 							onChange={(e) => setYearLevel(e.target.value)}
