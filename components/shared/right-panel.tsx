@@ -37,21 +37,18 @@ export default function RightPanel() {
 					setAshoCount(data.asho_attended ?? 0);
 				}
 
-				// Fetch pending surveys
-				const { data: responses } = await supabase
-					.from("survey_responses")
-					.select("survey_id")
-					.eq("response_token", user.id);
-				
-				const respondedIds = new Set(responses?.map((r) => r.survey_id) || []);
+				// ── Fetch surveys already responded to by this user ──
+				// Mirrors the same dual-check logic used in surveys-take-page.tsx:
+				// 1) localStorage (fast, user-specific key)  2) DB (source of truth)
 
+				// Step 1: Get all surveys for attended events
 				const { data: attended } = await supabase
 					.from("event_registration")
 					.select("event_id")
 					.eq("user_id", user.id)
 					.eq("attended", true);
-				
-				const attendedEventIds = (attended ?? []).map((r) => r.event_id);
+
+				const attendedEventIds = (attended ?? []).map((r) => r.event_id as string);
 
 				if (attendedEventIds.length > 0) {
 					const { data: surveys } = await supabase
@@ -60,14 +57,33 @@ export default function RightPanel() {
 						.in("event_id", attendedEventIds);
 
 					if (surveys) {
-						let pendingCount = 0;
-						surveys.forEach((s) => {
-							const isResponded = respondedIds.has(s.id);
+						// Step 2: For each open survey, check localStorage then DB
+						// (same key format as surveys-take-page.tsx)
+						const { data: responses } = await supabase
+							.from("survey_responses")
+							.select("survey_id")
+							.eq("response_token", user.id);
+
+						const dbSubmittedIds = new Set<string>(
+							(responses ?? []).map((r) => r.survey_id as string)
+						);
+
+						const pendingCount = surveys.filter((s) => {
 							const currentStatus = deriveStatus(s.open_at, s.close_at);
-							if (!isResponded && currentStatus === "open") {
-								pendingCount++;
-							}
-						});
+							if (currentStatus !== "open") return false;
+
+							// Check localStorage first (same key format as take page)
+							const localKey = `survey_${s.id}_submitted_${user.id}`;
+							const locallySubmitted =
+								typeof window !== "undefined" &&
+								localStorage.getItem(localKey) === "true";
+
+							// Check DB
+							const dbSubmitted = dbSubmittedIds.has(s.id as string);
+
+							return !locallySubmitted && !dbSubmitted;
+						}).length;
+
 						setPendingSurveysCount(pendingCount);
 					}
 				}
@@ -128,7 +144,7 @@ export default function RightPanel() {
 				<div className="flex flex-col items-center justify-center gap-2 py-2">
 					<div className="w-28 h-28 shrink-0">
 						<CircularProgressbarWithChildren
-							value={gsoCount}
+							value={ashoCount}
 							maxValue={2}
 							styles={buildStyles({
 								pathColor: "var(--periwinkle)",
