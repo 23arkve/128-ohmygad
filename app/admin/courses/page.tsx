@@ -200,7 +200,7 @@ const confirmDelete = async () => {
     {
       key: "description",
       header: "Description",
-      width: "70%",
+      width: "65%",
       render: (course) => (
         <span
           style={{ color: "var(--primary-dark)", fontSize: 13 }}
@@ -214,7 +214,7 @@ const confirmDelete = async () => {
     {
       key: "actions",
       header: <div className="text-center">Actions</div>,
-      width: "8%",
+      width: "15%",
       render: (course) => (
         <div className="text-center">
           <Button
