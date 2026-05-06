@@ -241,7 +241,7 @@ export const EventPanel = (): JSX.Element => {
 																			<span className="truncate">{event.location}</span>
 																		</span>
 																	</div>
-																	<h3 className="heading-sm leading-snug m-0 line-clamp-2 truncate">
+																	<h3 className="heading-sm leading-snug m-0 line-clamp-2">
 																		{event.title}
 																	</h3>
 																	<div>
