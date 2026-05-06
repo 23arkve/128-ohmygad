@@ -278,7 +278,7 @@ export default function DashboardPage() {
 					<div className="flex flex-col gap-5">
 						<GlobalSearch
 							role="staff"
-							placeholder="Search events, courses, surveys..."
+							placeholder="Search events, guidelines, surveys..."
 						/>
 						<div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
 							<StatCard
