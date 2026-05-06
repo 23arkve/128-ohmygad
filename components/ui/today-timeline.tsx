@@ -73,7 +73,7 @@ export function TodayTimeline({ events, loading }: TodayTimelineProps) {
                 {item.time}
               </span>
               <div className="flex-1 min-w-0 rounded-[8px] border border-black/[0.06] bg-white/60 px-2.5 py-2">
-                <p className="caption-bold truncate">
+                <p title={item.title} className="caption-bold truncate">
                   {item.title}
                 </p>
                 {item.location && (
