@@ -11,6 +11,7 @@ import {
 	X,
 	ArrowUpDown,
 	ClipboardList,
+    Calendar,
 } from "lucide-react";
 import {
 	deriveStatus,
@@ -118,7 +119,6 @@ export default function EventsPage() {
 // PAGE -----------------------------------------------------------------------
 	return (
 		<div className="flex flex-col gap-4">
-
 			{/* search, sort, filter */}
 			<div className="flex flex-col gap-3">
 				<div className="flex items-center gap-3 flex-wrap overflow-visible">
@@ -304,9 +304,15 @@ export default function EventsPage() {
 					</div>
 				</Card>
 			) : filtered.length === 0 ? (
-				<Card>
-					<div className="flex flex-col items-center justify-center gap-3 py-12">
-						<p className="caption">
+				<Card className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4">
+					{/* Decorative Icon Circle */}
+					<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+						<Calendar size={26} className="text-[var(--periwinkle)]" />
+					</div>
+
+					{/* Text Content */}
+					<div>
+						<p className="label text-[var(--primary-dark)] text-center">
 							{hasActiveFilters
 								? "No events match your filters."
 								: search
@@ -317,19 +323,20 @@ export default function EventsPage() {
 											? "No upcoming events."
 											: "No past events."}
 						</p>
-						{(hasActiveFilters || search) && (
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => {
-									clearFilters();
-									setSearch("");
-								}}
-							>
-								Clear search &amp; filters
-							</Button>
-						)}
 					</div>
+
+					{/* Action Button */}
+					{(hasActiveFilters || search) && (
+						<Button
+							variant="ghost"
+							onClick={() => {
+								clearFilters();
+								setSearch("");
+							}}
+						>
+							Clear search &amp; filters
+						</Button>
+					)}
 				</Card>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -597,10 +604,13 @@ export default function EventsPage() {
 											{detailEvent.start_date
 												? new Date(
 														detailEvent.start_date,
-													).toLocaleTimeString("en-PH", {
-														hour: "numeric",
-														minute: "2-digit",
-													})
+													).toLocaleTimeString(
+														"en-PH",
+														{
+															hour: "numeric",
+															minute: "2-digit",
+														},
+													)
 												: "—"}
 											{detailEvent.end_date &&
 												detailEvent.end_date !==
@@ -622,8 +632,13 @@ export default function EventsPage() {
 										</span>
 									</div>
 									<div className="flex items-center gap-2 min-w-0">
-										<MapPin size={15} className="shrink-0" />
-										<span className="truncate">{detailEvent.location ?? "—"}</span>
+										<MapPin
+											size={15}
+											className="shrink-0"
+										/>
+										<span className="truncate">
+											{detailEvent.location ?? "—"}
+										</span>
 									</div>
 								</div>
 								<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">

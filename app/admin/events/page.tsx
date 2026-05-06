@@ -807,7 +807,7 @@ export default function EventsPage() {
 			{
 				key: "category",
 				header: "Category",
-				width: "11%",
+				width: "9%",
 				render: (event) => (
 					<span
 						className="font-semibold"
@@ -884,7 +884,7 @@ export default function EventsPage() {
 			{
 				key: "location",
 				header: "Location",
-				width: "20%",
+				width: "17%",
 				render: (event) => (
 					<span
 						className="caption text-left max-w-[200px] truncate block"
@@ -897,7 +897,7 @@ export default function EventsPage() {
 			{
 				key: "actions",
 				header: <div className="text-center">Actions</div>,
-				width: "10%",
+				width: "13%",
 				render: (event) => (
 					<div
 						className="text-center"

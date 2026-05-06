@@ -59,14 +59,14 @@ export function MiniCalendar({
           <button
             onClick={prevMonth}
             aria-label="Previous month"
-            className="w-4 h-4 rounded-full flex items-center justify-center text-[var(--gray)] hover:bg-[var(--periwinkle-light)] hover:text-[var(--primary-dark)] transition-colors cursor-pointer border-none bg-transparent"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[var(--gray)] hover:bg-[var(--periwinkle-light)] hover:text-[var(--primary-dark)] transition-colors cursor-pointer border-none bg-transparent"
           >
             <ChevronLeft size={13} />
           </button>
           <button
             onClick={nextMonth}
             aria-label="Next month"
-            className="w-4 h-4 rounded-full flex items-center justify-center text-[var(--gray)] hover:bg-[var(--periwinkle-light)] hover:text-[var(--primary-dark)] transition-colors cursor-pointer border-none bg-transparent"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[var(--gray)] hover:bg-[var(--periwinkle-light)] hover:text-[var(--primary-dark)] transition-colors cursor-pointer border-none bg-transparent"
           >
             <ChevronRight size={13} />
           </button>
@@ -92,7 +92,7 @@ export function MiniCalendar({
                   "w-full h-full rounded-full flex items-center justify-center text-[12px] font-medium transition-all duration-100 cursor-pointer border-none relative",
                   isToday(d)
                     ? "bg-[var(--periwinkle)] text-white font-bold"
-                    : "text-[var(--primary-dark)] hover:bg-[var(--periwinkle-light)]",
+                    : "text-[var(--primary-dark)]",
                 ].join(" ")}
               >
                 {d}

@@ -162,128 +162,213 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
     val ? new Date(val).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" }) : null;
 
   return (
-    <div className="flex flex-col gap-4 mt-2">
+		<div className="flex flex-col gap-4 mt-2">
+			{/* search + sort only */}
+			<div className="flex items-center gap-3 flex-wrap overflow-visible">
+				<SearchBar
+					placeholder="Search surveys…"
+					value={search}
+					onChange={(e) => setSearch(e.target.value)}
+					onClear={() => setSearch("")}
+					containerStyle={{ flex: 1, minWidth: 120 }}
+				/>
 
-      {/* search + sort only */}
-      <div className="flex items-center gap-3 flex-wrap overflow-visible">
-        <SearchBar
-          placeholder="Search surveys…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onClear={() => setSearch("")}
-          containerStyle={{ flex: 1, minWidth: 120 }}
-        />
+				<Dropdown
+					trigger={
+						<Button variant="ghost">
+							<ArrowUpDown size={15} />
+							<span className="hidden md:inline">
+								{" "}
+								{sortLabel}
+							</span>
+						</Button>
+					}
+				>
+					{SORT_OPTIONS.map(({ label, field }) => {
+						const isActive = sort.field === field;
+						return (
+							<DropdownItem
+								key={field}
+								onClick={() => handleSort(field)}
+							>
+								<span className="flex items-center gap-2">
+									<span
+										className={`w-1.5 h-1.5 rounded-full shrink-0 border-[1.5px] ${isActive ? "bg-[var(--primary-dark)] border-[var(--primary-dark)]" : "bg-transparent border-[rgba(45,42,74,0.20)]"}`}
+									/>
+									<span>
+										{isActive ? (
+											<strong>
+												{label}{" "}
+												{sort.direction === "asc"
+													? "↑"
+													: "↓"}
+											</strong>
+										) : (
+											label
+										)}
+									</span>
+								</span>
+							</DropdownItem>
+						);
+					})}
+					<DropdownDivider />
+					<DropdownItem
+						onClick={() =>
+							setSort({ field: "open_at", direction: "desc" })
+						}
+					>
+						Reset sort
+					</DropdownItem>
+				</Dropdown>
+			</div>
 
-        <Dropdown trigger={
-          <Button variant="ghost">
-            <ArrowUpDown size={15} />
-            <span className="hidden md:inline"> {sortLabel}</span>
-          </Button>
-        }>
-          {SORT_OPTIONS.map(({ label, field }) => {
-            const isActive = sort.field === field;
-            return (
-              <DropdownItem key={field} onClick={() => handleSort(field)}>
-                <span className="flex items-center gap-2">
-                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 border-[1.5px] ${isActive ? "bg-[var(--primary-dark)] border-[var(--primary-dark)]" : "bg-transparent border-[rgba(45,42,74,0.20)]"}`} />
-                  <span>{isActive ? <strong>{label} {sort.direction === "asc" ? "↑" : "↓"}</strong> : label}</span>
-                </span>
-              </DropdownItem>
-            );
-          })}
-          <DropdownDivider />
-          <DropdownItem onClick={() => setSort({ field: "open_at", direction: "desc" })}>Reset sort</DropdownItem>
-        </Dropdown>
-      </div>
+			{/* content */}
+			{isLoading ? (
+				<Card>
+					<div className="flex items-center justify-center gap-3 py-10 text-[var(--gray)]">
+						<Loader2 size={20} className="animate-spin" />
+						<span className="caption">Loading surveys…</span>
+					</div>
+				</Card>
+			) : error ? (
+				<Card>
+					<div className="flex flex-col items-center justify-center gap-3 py-10">
+						<p className="caption text-[var(--error)]">
+							Error: {error}
+						</p>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => window.location.reload()}
+						>
+							Retry
+						</Button>
+					</div>
+				</Card>
+			) : filtered.length === 0 ? (
+				<Card className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4">
+					{/* Decorative Icon Circle */}
+					<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+						<ClipboardList
+							size={26}
+							className="text-[var(--periwinkle)]"
+						/>
+					</div>
 
-      {/* content */}
-      {isLoading ? (
-        <Card>
-          <div className="flex items-center justify-center gap-3 py-10 text-[var(--gray)]">
-            <Loader2 size={20} className="animate-spin" />
-            <span className="caption">Loading surveys…</span>
-          </div>
-        </Card>
+					{/* Text Content */}
+					<div className="max-w-[280px] text-center">
+						<p className="label text-[var(--primary-dark)]">
+							{search
+								? "No surveys match your search."
+								: "No surveys available. Open surveys are shown for events you have attended."}
+						</p>
+					</div>
 
-      ) : error ? (
-        <Card>
-          <div className="flex flex-col items-center justify-center gap-3 py-10">
-            <p className="caption text-[var(--error)]">Error: {error}</p>
-            <Button variant="ghost" size="sm" onClick={() => window.location.reload()}>Retry</Button>
-          </div>
-        </Card>
+					{/* Action Button */}
+					{search && (
+						<Button variant="ghost" onClick={() => setSearch("")}>
+							Clear search
+						</Button>
+					)}
+				</Card>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+					{filtered.map((survey) => {
+						const responded = respondedIds.has(survey.id!);
+						const isClosed = survey.status === "closed";
+						const isDisabled = responded || isClosed;
 
-      ) : filtered.length === 0 ? (
-        <Card>
-          <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <ClipboardList size={28} className="text-[var(--gray)]" />
-            <p className="caption">
-            {search ? "No surveys match your search." : "No surveys available. Open surveys are shown for events you have attended."}</p>
-            {search && (
-              <Button variant="ghost" size="sm" onClick={() => setSearch("")}>Clear search</Button>
-            )}
-          </div>
-        </Card>
+						return (
+							<div
+								key={survey.id}
+								className={`relative cursor-pointer ${isDisabled ? "opacity-70" : ""}`}
+								onClick={() => {
+									// CHANGE: Navigate directly instead of setDetailSurvey(survey)
+									if (!isDisabled) {
+										router.push(`${basePath}/${survey.id}`);
+									}
+								}}
+							>
+								<Card
+									className={`flex flex-col gap-3 h-full transition-all ${!isDisabled ? "hover:shadow-md" : "cursor-default"}`}
+								>
+									<div className="flex items-start justify-between gap-2">
+										<h3 className="heading-sm flex-1">
+											{survey.title}
+										</h3>
+										<div className="flex items-center gap-1.5 shrink-0">
+											{responded && (
+												<Badge variant="success">
+													Done ✓
+												</Badge>
+											)}
+											<Badge
+												variant={
+													STATUS_VARIANT[
+														survey.status ?? ""
+													] ?? "dark"
+												}
+											>
+												<span className="capitalize">
+													{survey.status}
+												</span>
+											</Badge>
+										</div>
+									</div>
 
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filtered.map((survey) => {
-            const responded  = respondedIds.has(survey.id!);
-            const isClosed   = survey.status === "closed";
-            const isDisabled = responded || isClosed;
+									{survey.description && (
+										<p className="caption text-[var(--gray)] line-clamp-2">
+											{survey.description}
+										</p>
+									)}
 
-            return (
-                <div
-                  key={survey.id}
-                  className={`relative cursor-pointer ${isDisabled ? "opacity-70" : ""}`}
-                  onClick={() => {
-                    // CHANGE: Navigate directly instead of setDetailSurvey(survey)
-                    if (!isDisabled) {
-                      router.push(`${basePath}/${survey.id}`);
-                    }
-                  }}
-                >
-                <Card className={`flex flex-col gap-3 h-full transition-all ${!isDisabled ? "hover:shadow-md" : "cursor-default"}`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="heading-sm flex-1">{survey.title}</h3>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {responded && <Badge variant="success">Done ✓</Badge>}
-                      <Badge variant={STATUS_VARIANT[survey.status ?? ""] ?? "dark"}>
-                        <span className="capitalize">{survey.status}</span>
-                      </Badge>
-                    </div>
-                  </div>
+									{(survey.open_at || survey.close_at) && (
+										<div className="flex items-center gap-1.5 caption text-[var(--gray)] mt-auto">
+											<Clock size={12} />
+											{survey.open_at && (
+												<span>
+													Opens{" "}
+													{formatDate(survey.open_at)}
+												</span>
+											)}
+											{survey.open_at &&
+												survey.close_at && (
+													<span>·</span>
+												)}
+											{survey.close_at && (
+												<span>
+													Closes{" "}
+													{formatDate(
+														survey.close_at,
+													)}
+												</span>
+											)}
+										</div>
+									)}
+								</Card>
+							</div>
+						);
+					})}
+				</div>
+			)}
 
-                  {survey.description && (
-                    <p className="caption text-[var(--gray)] line-clamp-2">{survey.description}</p>
-                  )}
+			{!isLoading && !error && filtered.length > 0 && (
+				<p className="caption">
+					Showing {filtered.length} of {surveys.length} surveys
+				</p>
+			)}
 
-                  {(survey.open_at || survey.close_at) && (
-                    <div className="flex items-center gap-1.5 caption text-[var(--gray)] mt-auto">
-                      <Clock size={12} />
-                      {survey.open_at && <span>Opens {formatDate(survey.open_at)}</span>}
-                      {survey.open_at && survey.close_at && <span>·</span>}
-                      {survey.close_at && <span>Closes {formatDate(survey.close_at)}</span>}
-                    </div>
-                  )}
-                </Card>
-              </div>
-            );
-          })}
-        </div>
-      )}
+			{toast && (
+				<div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] w-max max-w-[90vw]">
+					<Toast
+						variant={toast.variant}
+						title={toast.title}
+						message={toast.message}
+					/>
+				</div>
+			)}
 
-      {!isLoading && !error && filtered.length > 0 && (
-        <p className="caption">Showing {filtered.length} of {surveys.length} surveys</p>
-      )}
-
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] w-max max-w-[90vw]">
-          <Toast variant={toast.variant} title={toast.title} message={toast.message} />
-        </div>
-      )}
-
-      <ScrollToTop hidden={!!detailSurvey} />
-    </div>
+			<ScrollToTop hidden={!!detailSurvey} />
+		</div>
   );
 }

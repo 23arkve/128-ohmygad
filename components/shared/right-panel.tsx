@@ -5,6 +5,7 @@ import "react-day-picker/dist/style.css";
 import { Card } from "@/components/ui";
 import { CalendarCheck, CheckCircle2, ClipboardList } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { deriveStatus } from "@/components/admin/survey-form";
 
 import {
 	CircularProgressbarWithChildren,
@@ -15,6 +16,7 @@ import "react-circular-progressbar/dist/styles.css";
 export default function RightPanel() {
 	const [gsoCount, setGsoCount] = useState<number>(0);
 	const [ashoCount, setAshoCount] = useState<number>(0);
+	const [pendingSurveysCount, setPendingSurveysCount] = useState<number>(0);
 
 	useEffect(() => {
 		async function fetchAttendance() {
@@ -33,6 +35,41 @@ export default function RightPanel() {
 				if (data) {
 					setGsoCount(data.gso_attended ?? 0);
 					setAshoCount(data.asho_attended ?? 0);
+				}
+
+				// Fetch pending surveys
+				const { data: responses } = await supabase
+					.from("survey_responses")
+					.select("survey_id")
+					.eq("response_token", user.id);
+				
+				const respondedIds = new Set(responses?.map((r) => r.survey_id) || []);
+
+				const { data: attended } = await supabase
+					.from("event_registration")
+					.select("event_id")
+					.eq("user_id", user.id)
+					.eq("attended", true);
+				
+				const attendedEventIds = (attended ?? []).map((r) => r.event_id);
+
+				if (attendedEventIds.length > 0) {
+					const { data: surveys } = await supabase
+						.from("survey")
+						.select("id, open_at, close_at")
+						.in("event_id", attendedEventIds);
+
+					if (surveys) {
+						let pendingCount = 0;
+						surveys.forEach((s) => {
+							const isResponded = respondedIds.has(s.id);
+							const currentStatus = deriveStatus(s.open_at, s.close_at);
+							if (!isResponded && currentStatus === "open") {
+								pendingCount++;
+							}
+						});
+						setPendingSurveysCount(pendingCount);
+					}
 				}
 			}
 		}
@@ -120,7 +157,7 @@ export default function RightPanel() {
 					/>
 					<p className="body">Pending Surveys</p>
 				</div>
-				<p className="heading-xl">3</p>
+				<p className="heading-xl">{pendingSurveysCount}</p>
 			</Card>
 		</aside>
 	);
