@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ChevronLeft, ChevronRight, CheckCircle2, Loader2 } from "lucide-react";
 import { Button, Card } from "@/components/ui";
@@ -30,9 +30,7 @@ function TextQuestion({
         maxLength={500}
       />
       <div className="flex justify-end mt-1">
-        <span className="caption text-[var(--gray)]">
-          {currentLength} / 500
-        </span>
+        <span className="caption text-[var(--gray)]">{currentLength} / 500</span>
       </div>
     </div>
   );
@@ -147,51 +145,65 @@ function YesNoQuestion({
 
 export default function SurveyTakePage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
+  const router   = useRouter();
+  const pathname = usePathname();
 
-  const [survey, setSurvey] = useState<SurveyFormData | null>(null);
-  const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
-  const [answers, setAnswers] = useState<Record<string, Answer>>({});
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const [survey, setSurvey]               = useState<SurveyFormData | null>(null);
+  const [questions, setQuestions]         = useState<SurveyQuestion[]>([]);
+  const [answers, setAnswers]             = useState<Record<string, Answer>>({});
+  const [currentIndex, setCurrentIndex]   = useState(0);
+  const [isLoading, setIsLoading]         = useState(true);
+  const [isSubmitting, setIsSubmitting]   = useState(false);
+  const [submitted, setSubmitted]         = useState(false);
+  const [error, setError]                 = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  // Holds the resolved user ID, used both for the on-load check and at submit time
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
-    const fetchSurvey = async () => {
 
-      // check browser memory for submit
-      // survives hard refresh and log out
-      if (typeof window !== "undefined" && localStorage.getItem(`survey_${id}_submitted`)) {
+    const fetchSurvey = async () => {
+      const supabase = createClient();
+
+      // ── Get user first ──
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id ?? null;
+      if (userId) setCurrentUserId(userId);
+
+      // ── Check localStorage with user-specific key ──
+      // Key includes userId so different users on the same browser are tracked separately
+      const localKey = userId ? `survey_${id}_submitted_${userId}` : null;
+      if (localKey && typeof window !== "undefined" && localStorage.getItem(localKey)) {
         setSubmitted(true);
         setIsLoading(false);
         return;
       }
 
-      const supabase = createClient();
+      // ── Check database for existing response ──
+      if (userId) {
+        const { data: existingResponse } = await supabase
+          .from("survey_responses")
+          .select("id")
+          .eq("survey_id", id)
+          .eq("response_token", userId)   // response_token = user.id (set at submit)
+          .limit(1);
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-            setCurrentUserId(user.id);
-            
-            const { data: existingResponse } = await supabase
-              .from("survey_responses")
-              .select("id")
-              .eq("survey_id", id)
-              .eq("response_token", user.id) 
-              .limit(1);
-
-            if (existingResponse && existingResponse.length > 0) {
-              setSubmitted(true); // Automatically show the Thank You page
-              setIsLoading(false);
-              return;
-            }
+        if (existingResponse && existingResponse.length > 0) {
+          console.log("DB check found existing response:", existingResponse, "for userId:", userId, "surveyId:", id);
+          // Already submitted, persist to localStorage so future loads are instant
+          if (localKey && typeof window !== "undefined") {
+            localStorage.setItem(localKey, "true");
           }
+          setSubmitted(true);
+          setIsLoading(false);
+          return;
+        }
+      }
 
+      // ── Fetch survey + questions ──
       const [surveyResult, questionsResult] = await Promise.all([
         supabase
           .from("survey")
@@ -208,9 +220,9 @@ export default function SurveyTakePage() {
       if (surveyResult.error || !surveyResult.data) {
         setError("Survey not found.");
       } else {
-        const s = surveyResult.data;
+        const s   = surveyResult.data;
         const now = new Date();
-        const open = s.open_at ? new Date(s.open_at) : null;
+        const open  = s.open_at  ? new Date(s.open_at)  : null;
         const close = s.close_at ? new Date(s.close_at) : null;
 
         if (s.status === "closed") {
@@ -222,7 +234,7 @@ export default function SurveyTakePage() {
         } else {
           setSurvey(s);
           const qs = (questionsResult.data ?? []).map((q) => ({
-            id: q.id,
+            id:            q.id,
             question_text: q.question_text,
             question_type: q.question_type as QuestionType,
             options: Array.isArray(q.options)
@@ -238,12 +250,13 @@ export default function SurveyTakePage() {
       }
       setIsLoading(false);
     };
+
     fetchSurvey();
   }, [id]);
 
   const currentQuestion = questions[currentIndex];
   const isFirst = currentIndex === 0;
-  const isLast = currentIndex === questions.length - 1;
+  const isLast  = currentIndex === questions.length - 1;
   const progress = questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0;
 
   const setAnswer = (questionId: string, value: Answer) => {
@@ -283,7 +296,7 @@ export default function SurveyTakePage() {
       if (q.is_required) {
         const ans = answers[q.id!];
         if (ans === null || ans === undefined || ans === "") {
-          setError(`Please answer all required questions before submitting.`);
+          setError("Please answer all required questions before submitting.");
           return;
         }
       }
@@ -293,7 +306,16 @@ export default function SurveyTakePage() {
     setError(null);
 
     const supabase = createClient();
-    const responseToken = currentUserId ?? crypto.randomUUID();
+
+    // Always use user.id as response_token, fetch fresh to avoid state race conditions
+    const { data: { user } } = await supabase.auth.getUser();
+    const responseToken = user?.id ?? currentUserId;
+
+    if (!responseToken) {
+      setError("You must be logged in to submit a survey.");
+      setIsSubmitting(false);
+      return;
+    }
 
     const responseRows = questions.map((q) => ({
       survey_id:      id,
@@ -302,7 +324,7 @@ export default function SurveyTakePage() {
         ? String(answers[q.id!])
         : null,
       submitted_at:   new Date().toISOString(),
-      response_token: responseToken,
+      response_token: responseToken,  // always user.id,  enables per-user tracking
     }));
 
     const { error: insertError } = await supabase
@@ -315,16 +337,17 @@ export default function SurveyTakePage() {
       return;
     }
 
-    // save completion flag to browser memory
+    // Save user-specific completion flag to localStorage for instant future loads
+    const localKey = `survey_${id}_submitted_${responseToken}`;
     if (typeof window !== "undefined") {
-      localStorage.setItem(`survey_${id}_submitted`, "true");
+      localStorage.setItem(localKey, "true");
     }
-    
+
     setSubmitted(true);
     setIsSubmitting(false);
   };
 
-  // Loading
+  // ── Loading ──
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -336,7 +359,7 @@ export default function SurveyTakePage() {
     );
   }
 
-  // Error
+  // ── Error ──
   if (error && !survey) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 min-h-[60vh]">
@@ -346,7 +369,7 @@ export default function SurveyTakePage() {
     );
   }
 
-  // Submit
+  // ── Already submitted / just submitted ──
   if (submitted) {
     return (
       <div className="flex flex-col items-center justify-center gap-5 min-h-[60vh] max-w-md mx-auto text-center px-4">
@@ -357,12 +380,15 @@ export default function SurveyTakePage() {
           <h2 className="heading-lg mb-1">Thank you!</h2>
           <p className="text-lg text-[var(--gray)]">Your responses have been recorded successfully.</p>
         </div>
-        <Button variant="primary" onClick={() => router.back()}>Back to Surveys</Button>
+        {/* Push to surveys list, not browser history — avoids landing on the detail modal */}
+        <Button variant="primary" onClick={() => router.back()}>
+          Back to Surveys
+        </Button>
       </div>
     );
   }
 
-  // No questions
+  // ── No questions ──
   if (!isLoading && questions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 min-h-[60vh]">
@@ -386,9 +412,7 @@ export default function SurveyTakePage() {
       {/* Progress bar */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <span className="body text-[var(--gray)]">
-            Question {currentIndex + 1} of {questions.length}
-          </span>
+          <span className="body text-[var(--gray)]">Question {currentIndex + 1} of {questions.length}</span>
           <span className="body text-[var(--gray)]">{Math.round(progress)}%</span>
         </div>
         <div className="h-2 w-full rounded-full bg-[rgba(45,42,74,0.08)]">
@@ -402,7 +426,6 @@ export default function SurveyTakePage() {
       {/* Question card */}
       {currentQuestion && (
         <Card className="flex flex-col gap-5">
-          {/* Question text */}
           <div>
             <p className="caption mb-1 text-[var(--gray)]">
               {currentQuestion.is_required ? "Required" : "Optional"}
@@ -410,7 +433,6 @@ export default function SurveyTakePage() {
             <h2 className="heading-lg">{currentQuestion.question_text}</h2>
           </div>
 
-          {/* Question input */}
           {currentQuestion.question_type === "text" && (
             <TextQuestion
               question={currentQuestion}
@@ -439,40 +461,27 @@ export default function SurveyTakePage() {
             />
           )}
 
-          {/* Validation error */}
           {validationError && (
             <p className="body text-[var(--error)]">{validationError}</p>
           )}
         </Card>
       )}
 
-      {/* Submit error */}
       {error && (
         <p className="body text-[var(--error)] text-center">{error}</p>
       )}
 
       {/* Navigation */}
       <div className="flex items-center justify-between gap-3">
-        <Button
-          variant="ghost"
-          onClick={handleBack}
-          disabled={isFirst}
-        >
+        <Button variant="ghost" onClick={handleBack} disabled={isFirst}>
           <ChevronLeft size={16} /> Back
         </Button>
 
         {isLast ? (
-          <Button
-            variant="primary"
-            className="px-8"
-            disabled={isSubmitting}
-            onClick={handleSubmit}
-          >
-            {isSubmitting ? (
-              <><Loader2 size={15} className="animate-spin" /> Submitting…</>
-            ) : (
-              "Submit Survey"
-            )}
+          <Button variant="primary" className="px-8" disabled={isSubmitting} onClick={handleSubmit}>
+            {isSubmitting
+              ? <><Loader2 size={15} className="animate-spin" /> Submitting…</>
+              : "Submit Survey"}
           </Button>
         ) : (
           <Button variant="primary" onClick={handleNext}>
@@ -487,10 +496,7 @@ export default function SurveyTakePage() {
           <button
             key={i}
             type="button"
-            onClick={() => {
-              setValidationError(null);
-              setCurrentIndex(i);
-            }}
+            onClick={() => { setValidationError(null); setCurrentIndex(i); }}
             className={`rounded-full transition-all ${
               i === currentIndex
                 ? "w-4 h-2 bg-[var(--primary-dark)]"
