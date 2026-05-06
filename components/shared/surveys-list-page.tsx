@@ -316,11 +316,11 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 										</div>
 									</div>
 
-									{survey.description && (
-										<p className="caption text-[var(--gray)] line-clamp-2">
+									{/*{survey.description && (
+										<p className="caption text-[var(--gray)] truncate">
 											{survey.description}
 										</p>
-									)}
+									)}*/}
 
 									{(survey.open_at || survey.close_at) && (
 										<div className="flex items-center gap-1.5 caption text-[var(--gray)] mt-auto">
