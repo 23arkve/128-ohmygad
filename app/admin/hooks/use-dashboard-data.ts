@@ -19,18 +19,20 @@ export interface TimelineEvent {
 }
 
 export interface DashboardData {
-  eventAttendanceData:  { month: string; attendees: number }[];
-  sexAtBirthData:       { name: string; value: number }[];
-  genderIdentityData:   { name: string; value: number }[];
-  breakdownData:        { category: string; value: number }[];
-  userStats:            { total: number; onboarded: number } | null;
-  gadEventsCount:       number;
-  surveysCount:         number;
-  todayEvents:          TimelineEvent[];
-  filterOptions:        FilterOptions;
-  loading:              boolean;   // static data (KPIs, charts, timeline)
-  attendanceLoading:    boolean;   // attendance chart only
-  error:                string | null;
+	eventDates: string[];
+	eventAttendanceData: { month: string; attendees: number }[];
+	sexAtBirthData: { name: string; value: number }[];
+	genderIdentityData: { name: string; value: number }[];
+	breakdownData: { category: string; value: number }[];
+	userStats: { total: number; onboarded: number } | null;
+	gadEventsCount: number;
+	surveysCount: number;
+	todayEvents: TimelineEvent[];
+	filterOptions: FilterOptions;
+	loading: boolean; // static data (KPIs, charts, timeline)
+	attendanceLoading: boolean; // attendance chart only
+	error: string | null;
+	eventDates: string[];
 }
 
 const MONTH_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -164,6 +166,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
   const [loading,             setLoading]             = useState(true);
   const [attendanceLoading,   setAttendanceLoading]   = useState(true);
   const [error,               setError]               = useState<string | null>(null);
+    const [eventDates, setEventDates] = useState<string[]>([]);
 
   // global data: GAD events, surveys, today's timeline not filter-dependent
   // runs once on mount
@@ -172,37 +175,68 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 
     async function fetchGlobal() {
       try {
-        setLoading(true);
-        setError(null);
+			setLoading(true);
+			setError(null);
 
-        const { count: gadCount,    error: e1 } = await supabase.from("event").select("id", { count: "exact", head: true }).in("category", ["GSO", "ASHO", "Forum", "Research", "Training", "Workshop" ]);
-        const { count: surveyCount, error: e2 } = await supabase.from("survey").select("id", { count: "exact", head: true });
-        if (e1) throw e1;
-        if (e2) throw e2;
+			const { count: gadCount, error: e1 } = await supabase
+				.from("event")
+				.select("id", { count: "exact", head: true })
+				.in("category", [
+					"GSO",
+					"ASHO",
+					"Forum",
+					"Research",
+					"Training",
+					"Workshop",
+				]);
+			const { count: surveyCount, error: e2 } = await supabase
+				.from("survey")
+				.select("id", { count: "exact", head: true });
+			if (e1) throw e1;
+			if (e2) throw e2;
 
-        const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-        const todayEnd   = new Date(); todayEnd.setHours(23, 59, 59, 999);
-        // AFTER
-        const { data: todayRows, error: e3 } = await supabase
-            .from("event").select("id, title, start_date, end_date, location, category")
-            .lte("start_date", todayEnd.toISOString())   // started on or before end of today
-            .gte("end_date",   todayStart.toISOString())  // ends on or after start of today
-            .order("start_date", { ascending: true });
+			const todayStart = new Date();
+			todayStart.setHours(0, 0, 0, 0);
+			const todayEnd = new Date();
+			todayEnd.setHours(23, 59, 59, 999);
+			// AFTER
+			const { data: todayRows, error: e3 } = await supabase
+				.from("event")
+				.select("id, title, start_date, end_date, location, category")
+				.lte("start_date", todayEnd.toISOString()) // started on or before end of today
+				.gte("end_date", todayStart.toISOString()) // ends on or after start of today
+				.order("start_date", { ascending: true });
+			const { data: eventRows, error: e4 } = await supabase
+				.from("event")
+				.select("start_date");
+			if (e4) throw e4;
 
-        if (!cancelled) {
-          setGadEventsCount(gadCount ?? 0);
-          setSurveysCount(surveyCount ?? 0);
-          setTodayEvents(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (todayRows ?? []).map((r: any) => ({
-              time:     new Date(r.start_date).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }),
-              title:    r.title ?? "",
-              location: r.location ?? "",
-              category: r.category ?? "",
-            }))
-          );
-        }
-      } catch (err: unknown) {
+			if (!cancelled) {
+				setGadEventsCount(gadCount ?? 0);
+				setSurveysCount(surveyCount ?? 0);
+				setTodayEvents(
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(todayRows ?? []).map((r: any) => ({
+						time: new Date(r.start_date).toLocaleTimeString(
+							"en-US",
+							{
+								hour: "2-digit",
+								minute: "2-digit",
+								hour12: false,
+							},
+						),
+						title: r.title ?? "",
+						location: r.location ?? "",
+						category: r.category ?? "",
+					})),
+				);
+                setEventDates(
+					(eventRows ?? []).map(
+						(r: { start_date: string }) => r.start_date,
+					),
+				);
+			}
+		} catch (err: unknown) {
         if (!cancelled) setError((err as Error)?.message ?? "Failed to load dashboard data");
       } finally {
         if (!cancelled) setLoading(false);
@@ -319,7 +353,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
   }, [range.from, range.to, filterKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
-    eventAttendanceData, sexAtBirthData, genderIdentityData, breakdownData,
+    eventAttendanceData, sexAtBirthData, genderIdentityData, breakdownData, eventDates,
     userStats, gadEventsCount, surveysCount, todayEvents, filterOptions: STATIC_OPTIONS,
     loading, attendanceLoading, error,
   };
