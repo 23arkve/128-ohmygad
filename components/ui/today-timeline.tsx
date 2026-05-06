@@ -40,8 +40,9 @@ export function TodayTimeline({ events, loading }: TodayTimelineProps) {
           <p className="heading-sm font-bold">{todayLabel}</p>
           <p className="caption">Today&apos;s events</p>
         </div>
-        <span className="px-2 py-1 rounded-full bg-[var(--periwinkle-light)] caption-bold">
-          {loading ? "…" : events.length}
+
+        <span className="inline-flex items-center justify-center min-w-[20px] h-6 rounded-full px-4 body bg-[var(--periwinkle-light)]">
+            {loading ? "…" : events.length}
         </span>
       </div>
 

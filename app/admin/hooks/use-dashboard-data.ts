@@ -182,11 +182,12 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 
         const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
         const todayEnd   = new Date(); todayEnd.setHours(23, 59, 59, 999);
+        // AFTER
         const { data: todayRows, error: e3 } = await supabase
-          .from("event").select("id, title, start_date, location, category")
-          .gte("start_date", todayStart.toISOString()).lte("start_date", todayEnd.toISOString())
-          .order("start_date", { ascending: true });
-        if (e3) throw e3;
+            .from("event").select("id, title, start_date, end_date, location, category")
+            .lte("start_date", todayEnd.toISOString())   // started on or before end of today
+            .gte("end_date",   todayStart.toISOString())  // ends on or after start of today
+            .order("start_date", { ascending: true });
 
         if (!cancelled) {
           setGadEventsCount(gadCount ?? 0);
