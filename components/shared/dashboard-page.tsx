@@ -42,7 +42,7 @@ export default function DashboardPage({ role = "student", rightPanel }: Dashboar
 					<div>
 						<GlobalSearch
 							role={role}
-							placeholder="Search events, courses, surveys..."
+							placeholder="Search events, guidelines, surveys..."
 						/>
 					</div>
 				</div>
