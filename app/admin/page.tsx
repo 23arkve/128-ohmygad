@@ -318,7 +318,7 @@ export default function DashboardPage() {
 								}
 								iconBg="var(--pink-light)"
 								value={gadEventsCount ?? 0}
-								label="GAD Events"
+								label="Total Events"
 							/>
 							<StatCard
 								variant="no-hover"
