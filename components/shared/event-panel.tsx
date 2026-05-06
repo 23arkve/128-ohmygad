@@ -329,29 +329,19 @@ export const EventPanel = (): JSX.Element => {
 													>
 														<div className="flex gap-4 items-center">
 															<div className="flex flex-col gap-1.5 flex-1 min-w-0">
-																<span className="caption flex items-center gap-1">
-																	<Clock
-																		size={
-																			11
-																		}
-																	/>
-																	{event.time}
-																</span>
+																<div className="flex items-center gap-x-3 gap-y-1 flex-wrap caption text-[var(--gray)]">
+																	<span className="flex items-center gap-1 shrink-0">
+																		<Clock size={11} />
+																		{event.time}
+																	</span>
+																	<span className="flex items-center gap-1 min-w-0">
+																		<MapPin size={11} className="shrink-0" />
+																		<span className="truncate">{event.location}</span>
+																	</span>
+																</div>
 																<h3 className="heading-sm leading-snug m-0 line-clamp-2">
-																	{
-																		event.title
-																	}
+																	{event.title}
 																</h3>
-																<span className="caption flex items-center gap-1">
-																	<MapPin
-																		size={
-																			11
-																		}
-																	/>
-																	{
-																		event.location
-																	}
-																</span>
 																<div className="flex gap-2 flex-wrap mt-0.5">
 																	{event.registrationStatus && (
 																		<Badge
