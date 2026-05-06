@@ -194,6 +194,7 @@ export default function DashboardPage() {
 		sexAtBirthData,
 		genderIdentityData,
 		breakdownData,
+        eventDates,
 		userStats,
 		gadEventsCount,
 		surveysCount,
@@ -261,6 +262,22 @@ export default function DashboardPage() {
 			setSurveyPage(1);
 		}
 	}, [surveyPage, surveyPageCount]);
+
+	// dynamic Set for the MiniCalendar
+	const activeEventDays = useMemo(() => {
+		const days = new Set<number>();
+		const now = new Date();
+		eventDates.forEach((iso) => {
+			const d = new Date(iso);
+			if (
+				d.getFullYear() === now.getFullYear() &&
+				d.getMonth() === now.getMonth()
+			) {
+				days.add(d.getDate());
+			}
+		});
+		return days;
+	}, [eventDates]);
 
 	return (
 		<div className="flex flex-col gap-5 w-full animate-in fade-in duration-500">
@@ -338,11 +355,20 @@ export default function DashboardPage() {
 					{/* attendance and quick actions ------------------------------------------------ */}
 					<div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-4">
 						{/* attendance over time */}
-						<Card variant="no-hover" className="flex flex-col p-4 min-h-[320px]" >
+						<Card
+							variant="no-hover"
+							className="flex flex-col p-4 min-h-[320px]"
+						>
 							<div className="flex flex-wrap items-start justify-between gap-3 mb-4 shrink-0">
 								<div>
-									<h2 className="heading-md"> {" "} Attendance Over Time{" "} </h2>
-									<p className="caption mt-0.5"> {" "} Total event attendees per period{" "} </p>
+									<h2 className="heading-md">
+										{" "}
+										Attendance Over Time{" "}
+									</h2>
+									<p className="caption mt-0.5">
+										{" "}
+										Total event attendees per period{" "}
+									</p>
 								</div>
 								<DateRangePicker
 									value={attendanceRange}
@@ -370,11 +396,22 @@ export default function DashboardPage() {
 									!attendanceLoading &&
 									eventAttendanceData?.length === 0
 								) && (
-									<ResponsiveContainer width="100%" height={220} >
+									<ResponsiveContainer
+										width="100%"
+										height={220}
+									>
 										<LineChart
 											responsive
-											data={ eventAttendanceData ?? DUMMY_ATTENDANCE }
-											margin={{ top: 10, right: 5, left: 10, bottom: 25, }}
+											data={
+												eventAttendanceData ??
+												DUMMY_ATTENDANCE
+											}
+											margin={{
+												top: 10,
+												right: 5,
+												left: 10,
+												bottom: 25,
+											}}
 										>
 											<CartesianGrid
 												strokeDasharray="3 3"
@@ -450,7 +487,10 @@ export default function DashboardPage() {
 						</Card>
 
 						{/* quick actions */}
-						<Card variant="no-hover" className="flex flex-col justify-around p-4 gap-3" >
+						<Card
+							variant="no-hover"
+							className="flex flex-col justify-around p-4 gap-3"
+						>
 							<div>
 								<h2 className="heading-sm">Quick Actions</h2>
 							</div>
@@ -491,16 +531,31 @@ export default function DashboardPage() {
 					<div>
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 							{/* users per college */}
-							<Card variant="no-hover" className="flex flex-col p-5 min-h-[250px]" >
-								<h2 className="heading-md mb-0.5"> {" "} Users per College{" "} </h2>
-								<p className="caption mb-3"> {" "} Registered student breakdown{" "} </p>
+							<Card
+								variant="no-hover"
+								className="flex flex-col p-5 min-h-[250px]"
+							>
+								<h2 className="heading-md mb-0.5">
+									{" "}
+									Users per College{" "}
+								</h2>
+								<p className="caption mb-3">
+									{" "}
+									Registered student breakdown{" "}
+								</p>
 								<div className="flex-1 w-full min-h-[170px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse"> Loading… </span>
+											<span className="caption animate-pulse">
+												{" "}
+												Loading…{" "}
+											</span>
 										</div>
 									) : filteredColleges.length === 0 ? (
-										<Card variant="no-shadow" className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3" >
+										<Card
+											variant="no-shadow"
+											className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3"
+										>
 											<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
 												<Users
 													size={26}
@@ -508,14 +563,25 @@ export default function DashboardPage() {
 												/>
 											</div>
 											<div>
-												<p className="label text-[var(--primary-dark)]"> {" "} No user data{" "} </p>
+												<p className="label text-[var(--primary-dark)]">
+													{" "}
+													No user data{" "}
+												</p>
 											</div>
 										</Card>
 									) : (
-										<ResponsiveContainer width="100%" height={250} >
+										<ResponsiveContainer
+											width="100%"
+											height={250}
+										>
 											<BarChart
 												data={filteredColleges}
-												margin={{ top: 8, right: 0, left: -25, bottom: 0, }}
+												margin={{
+													top: 8,
+													right: 0,
+													left: -25,
+													bottom: 0,
+												}}
 											>
 												<CartesianGrid
 													strokeDasharray="3 3"
@@ -557,12 +623,18 @@ export default function DashboardPage() {
 												>
 													{filteredColleges.map(
 														(
-															item: { category: string; },
+															item: {
+																category: string;
+															},
 															idx: number,
 														) => (
 															<Cell
 																key={`col-${idx}`}
-																fill={colorFor( COLLEGE_COLORS, item.category, idx, )}
+																fill={colorFor(
+																	COLLEGE_COLORS,
+																	item.category,
+																	idx,
+																)}
 															/>
 														),
 													)}
@@ -574,15 +646,27 @@ export default function DashboardPage() {
 							</Card>
 
 							{/* sex at birth */}
-							<Card variant="no-hover" className="flex flex-col p-5 min-h-[250px]" >
-								<h2 className="heading-md mb-0.5"> Users Sex at Birth </h2>
+							<Card
+								variant="no-hover"
+								className="flex flex-col p-5 min-h-[250px]"
+							>
+								<h2 className="heading-md mb-0.5">
+									{" "}
+									Users Sex at Birth{" "}
+								</h2>
 								<div className="flex-1 w-full min-h-[190px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse"> Loading… </span>
+											<span className="caption animate-pulse">
+												{" "}
+												Loading…{" "}
+											</span>
 										</div>
 									) : !sexAtBirthData?.length ? (
-										<Card variant="no-shadow" className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3" >
+										<Card
+											variant="no-shadow"
+											className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3"
+										>
 											<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
 												<Users
 													size={26}
@@ -590,11 +674,17 @@ export default function DashboardPage() {
 												/>
 											</div>
 											<div>
-												<p className="label text-[var(--primary-dark)]"> {" "} No user data{" "} </p>
+												<p className="label text-[var(--primary-dark)]">
+													{" "}
+													No user data{" "}
+												</p>
 											</div>
 										</Card>
 									) : (
-										<ResponsiveContainer width="100%" height={280} >
+										<ResponsiveContainer
+											width="100%"
+											height={280}
+										>
 											<PieChart>
 												<Pie
 													data={sexAtBirthData}
@@ -647,12 +737,21 @@ export default function DashboardPage() {
 							</Card>
 
 							{/* gender identity */}
-							<Card variant="no-hover" className="flex flex-col p-5 min-h-[260px]" >
-								<h2 className="heading-md mb-0.5"> Users Gender Identity </h2>
+							<Card
+								variant="no-hover"
+								className="flex flex-col p-5 min-h-[260px]"
+							>
+								<h2 className="heading-md mb-0.5">
+									{" "}
+									Users Gender Identity{" "}
+								</h2>
 								<div className="flex-1 w-full min-h-[190px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse"> Loading… </span>
+											<span className="caption animate-pulse">
+												{" "}
+												Loading…{" "}
+											</span>
 										</div>
 									) : !filteredGenders.length ? (
 										<Card
@@ -666,11 +765,17 @@ export default function DashboardPage() {
 												/>
 											</div>
 											<div>
-												<p className="label text-[var(--primary-dark)]"> {" "} No user data{" "} </p>
+												<p className="label text-[var(--primary-dark)]">
+													{" "}
+													No user data{" "}
+												</p>
 											</div>
 										</Card>
 									) : (
-										<ResponsiveContainer width="100%" height={280} >
+										<ResponsiveContainer
+											width="100%"
+											height={280}
+										>
 											<PieChart>
 												<Pie
 													data={filteredGenders}
@@ -684,12 +789,21 @@ export default function DashboardPage() {
 												>
 													{filteredGenders.map(
 														(
-															item: { name?: string; category?: string; },
+															item: {
+																name?: string;
+																category?: string;
+															},
 															i: number,
 														) => (
 															<Cell
 																key={`gender-${i}`}
-																fill={colorFor( GENDER_COLORS, item.name ?? item.category ?? "", i, )}
+																fill={colorFor(
+																	GENDER_COLORS,
+																	item.name ??
+																		item.category ??
+																		"",
+																	i,
+																)}
 															/>
 														),
 													)}
@@ -720,11 +834,19 @@ export default function DashboardPage() {
 
 					{/* survey completion analytics ------------------------------------------------ */}
 					<div>
-						<Card variant="no-hover" className="flex flex-col p-5 min-h-[320px]" >
+						<Card
+							variant="no-hover"
+							className="flex flex-col p-5 min-h-[320px]"
+						>
 							<div className="flex flex-wrap items-center justify-between gap-3 mb-4">
 								<div>
-									<h2 className="heading-md mb-0.5">Response Rate by Survey</h2>
-									<p className="caption">Completed vs incomplete response percentage per survey</p>
+									<h2 className="heading-md mb-0.5">
+										Response Rate by Survey
+									</h2>
+									<p className="caption">
+										Completed vs incomplete response
+										percentage per survey
+									</p>
 								</div>
 								<SearchBar
 									placeholder="Search all surveys…"
@@ -740,20 +862,33 @@ export default function DashboardPage() {
 							<div className="w-full min-h-[220px] cursor-default select-none mt-2">
 								{surveyCompletionLoading ? (
 									<div className="flex items-center justify-center h-full">
-										<span className="caption animate-pulse"> Loading survey data… </span>
+										<span className="caption animate-pulse">
+											{" "}
+											Loading survey data…{" "}
+										</span>
 									</div>
 								) : (surveyCompletionData?.length ?? 0) ===
 								  0 ? (
 									<div className="flex items-center justify-center h-full">
-										<span className="caption text-[var(--gray)]"> No survey completion data available. </span>
+										<span className="caption text-[var(--gray)]">
+											{" "}
+											No survey completion data
+											available.{" "}
+										</span>
 									</div>
 								) : surveyCompletionChartData.length === 0 ? (
 									<div className="flex items-center justify-center h-full">
-										<span className="caption text-[var(--gray)]"> No surveys match your search. </span>
+										<span className="caption text-[var(--gray)]">
+											{" "}
+											No surveys match your search.{" "}
+										</span>
 									</div>
 								) : (
 									<>
-										<ResponsiveContainer width="100%" height={320} >
+										<ResponsiveContainer
+											width="100%"
+											height={320}
+										>
 											<BarChart
 												layout="vertical"
 												data={surveyCompletionChartData}
@@ -813,7 +948,9 @@ export default function DashboardPage() {
 													}}
 													iconType="circle"
 													formatter={(v) => (
-														<span className="caption tracking-wider">{v}</span>
+														<span className="caption tracking-wider">
+															{v}
+														</span>
 													)}
 												/>
 												<Bar
@@ -881,10 +1018,10 @@ export default function DashboardPage() {
 					{/* calendar */}
 					<Card variant="no-hover" className="p-4">
 						<div className="[&_button]:cursor-default [&_*]:cursor-default">
-						<MiniCalendar
-							eventDays={new Set([3, 10, 14])}
-							onDayClick={(date) => console.log(date)}
-						/>
+							<MiniCalendar
+								eventDays={activeEventDays}
+								onDayClick={(date) => console.log(date)}
+							/>
 						</div>
 					</Card>
 
