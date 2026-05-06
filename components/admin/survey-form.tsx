@@ -138,7 +138,11 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
 
   const addOption = (qi: number) =>
     setQuestions((prev) =>
-      prev.map((q, i) => i === qi ? { ...q, options: [...q.options, ""] } : q)
+      prev.map((q, i) => {
+        if (i !== qi) return q;
+        if (q.options.length >= 10) return q;
+        return { ...q, options: [...q.options, ""] };
+      })
     );
 
   const updateOption = (qi: number, oi: number, value: string) =>
@@ -164,7 +168,17 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
     setIsLoading(true);
     setError(null);
 
-    if (!title.trim()) { setError("Title is required."); setIsLoading(false); return; }
+    if (title.trim().length < 5) {
+      setError("Title must be at least 5 characters.");
+      setIsLoading(false);
+      return;
+    }
+    if (description && description.trim().length > 0 && description.trim().length < 5) {
+      setError("Description must be at least 5 characters if provided.");
+      setIsLoading(false);
+      return;
+    }
+
     if (!event_id) { setError("Linked Event is required."); setIsLoading(false); return; }
     if (!open_at) { setError("Open time is required."); setIsLoading(false); return; }
     if (!close_at) { setError("Close time is required."); setIsLoading(false); return; }
@@ -179,20 +193,28 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
       }
     }
 
+    if (questions.length === 0) {
+      setError("At least one question is required.");
+      setIsLoading(false);
+      return;
+    }
+
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
-      if (!q.question_text.trim()) {
-        setError(`Question ${i + 1} is missing its text.`);
-        setIsLoading(false);
-        return;
-      }
-      if (["multiple_choice"].includes(q.question_type) && q.options.length < 2) {
-        setError(`Question ${i + 1} needs at least 2 choices.`);
+      if (q.question_text.trim().length < 5) {
+        setError(`Question ${i + 1} must be at least 5 characters.`);
         setIsLoading(false);
         return;
       }
       if (["multiple_choice"].includes(q.question_type)) {
-        const trimmed = q.options.map((o) => o.trim().toLowerCase()).filter(Boolean);
+        const nonEmptyChoices = q.options.filter((o) => o.trim() !== "");
+        if (nonEmptyChoices.length < 2) {
+          setError(`Question ${i + 1} needs at least 2 non-empty choices.`);
+          setIsLoading(false);
+          return;
+        }
+        
+        const trimmed = nonEmptyChoices.map((o) => o.trim().toLowerCase());
         const unique = new Set(trimmed);
         if (unique.size !== trimmed.length) {
           setError(`Question ${i + 1} has duplicate choices.`);
@@ -464,9 +486,10 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                     <button
                       type="button"
                       onClick={() => addOption(qIndex)}
-                      className="flex items-center gap-1 caption text-[var(--gray)] hover:text-[var(--primary-dark)] border border-dashed border-[rgba(45,42,74,0.15)] rounded-[var(--radius-sm)] px-3 py-2 transition-colors hover:bg-white w-full"
+                      disabled={question.options.length >= 10}
+                      className="flex items-center gap-1 caption text-[var(--gray)] hover:text-[var(--primary-dark)] border border-dashed border-[rgba(45,42,74,0.15)] rounded-[var(--radius-sm)] px-3 py-2 transition-colors hover:bg-white w-full disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <Plus size={13} /> Add choice
+                      <Plus size={13} /> {question.options.length >= 10 ? "Max choices reached" : "Add choice"}
                     </button>
                   </div>
                 )}
