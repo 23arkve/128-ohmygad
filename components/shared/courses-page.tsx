@@ -12,7 +12,8 @@ import {
   ArrowUpDown,
   Search,
   Calendar,
-  GraduationCap
+  GraduationCap,
+  Users
 } from "lucide-react";
 
 import {
@@ -173,131 +174,178 @@ export default function CoursesPage() {
   const sortLabel = `${SORT_OPTIONS.find((o) => o.field === sort.field)?.label} ${sort.direction === "asc" ? "↑" : "↓"}`;
 
   return (
-    <div className="flex flex-col gap-6 mt-2">
-      {/* Header */}
-      {/* <div className="hidden md:block">
+		<div className="flex flex-col gap-6 mt-2">
+			{/* Header */}
+			{/* <div className="hidden md:block">
         <h1 className="heading-lg">Rules and Guidelines</h1>
       </div> */}
 
-      {/* Toolbar */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-3 flex-wrap">
-          <SearchBar
-            placeholder="Search…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onClear={() => setSearch("")}
-            containerStyle={{ flex: 1, minWidth: 120 }}
-          />
+			{/* Toolbar */}
+			<div className="flex flex-col gap-3">
+				<div className="flex items-center gap-3 flex-wrap">
+					<SearchBar
+						placeholder="Search…"
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						onClear={() => setSearch("")}
+						containerStyle={{ flex: 1, minWidth: 120 }}
+					/>
 
-          <div className="flex items-center gap-2">
-            {/* Sort Dropdown */}
-            <Dropdown trigger={
-              <Button variant="ghost">
-                <ArrowUpDown size={15} />
-                <span className="hidden md:inline"> {sortLabel}</span>
-              </Button>
-            }>
-              {SORT_OPTIONS.map(({ label, field }) => {
-                const isActive = sort.field === field;
-                return (
-                  <DropdownItem key={field} onClick={() => handleSort(field)}>
-                    <span className="flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 border-[1.5px] ${isActive ? "bg-[var(--primary-dark)] border-[var(--primary-dark)]" : "bg-transparent border-[rgba(45,42,74,0.20)]"}`} />
-                      <span>{isActive ? <strong>{label} {sort.direction === "asc" ? "↑" : "↓"}</strong> : label}</span>
-                    </span>
-                  </DropdownItem>
-                );
-              })}
-              <DropdownDivider />
-              <DropdownItem onClick={() => setSort({ field: "title", direction: "asc" })}>Reset sort</DropdownItem>
-            </Dropdown>
-          </div>
-        </div>
+					<div className="flex items-center gap-2">
+						{/* Sort Dropdown */}
+						<Dropdown
+							trigger={
+								<Button variant="ghost">
+									<ArrowUpDown size={15} />
+									<span className="hidden md:inline">
+										{" "}
+										{sortLabel}
+									</span>
+								</Button>
+							}
+						>
+							{SORT_OPTIONS.map(({ label, field }) => {
+								const isActive = sort.field === field;
+								return (
+									<DropdownItem
+										key={field}
+										onClick={() => handleSort(field)}
+									>
+										<span className="flex items-center gap-2">
+											<span
+												className={`w-1.5 h-1.5 rounded-full shrink-0 border-[1.5px] ${isActive ? "bg-[var(--primary-dark)] border-[var(--primary-dark)]" : "bg-transparent border-[rgba(45,42,74,0.20)]"}`}
+											/>
+											<span>
+												{isActive ? (
+													<strong>
+														{label}{" "}
+														{sort.direction ===
+														"asc"
+															? "↑"
+															: "↓"}
+													</strong>
+												) : (
+													label
+												)}
+											</span>
+										</span>
+									</DropdownItem>
+								);
+							})}
+							<DropdownDivider />
+							<DropdownItem
+								onClick={() =>
+									setSort({
+										field: "title",
+										direction: "asc",
+									})
+								}
+							>
+								Reset sort
+							</DropdownItem>
+						</Dropdown>
+					</div>
+				</div>
+			</div>
 
+			{/* Grid */}
+			{isLoading ? (
+				<Card className="flex items-center justify-center py-20 text-gray-400">
+					<Loader2 className="animate-spin mr-2" size={20} /> Loading
+					catalog...
+				</Card>
+			) : filteredAndSorted.length === 0 ? (
+				<Card className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4">
+					<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+						<BookOpen size={26} className="text-[var(--periwinkle)]" />
+					</div>
+					<div>
+						<p className="label text-[var(--primary-dark)]">
+							{" "}
+							No guidelines found.{" "}
+						</p>
+					</div>
+					<Button
+						variant="ghost"
+						onClick={() => {
+							setFilters({ semester: new Set() });
+							setSearch("");
+							setActiveSemesterChip("All Semesters");
+						}}
+					>
+						Clear all filters
+					</Button>
+				</Card>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+					{filteredAndSorted.map((course) => (
+						<div
+							className="group card relative cursor-pointer hover:shadow-md transition-shadow flex flex-col h-full overflow-hidden"
+							key={course.id}
+							onClick={() => setDetailCourse(course)}
+						>
+							<h3
+								className="heading-sm mb-2 pr-12 line-clamp-1"
+								title={course.title}
+							>
+								{course.title}
+							</h3>
 
-      </div>
+							<div className="flex flex-col gap-2 text-sm text-gray-500 mt-1">
+								<div
+									className="line-clamp-2 leading-snug min-h-[2.5rem] break-words mb-2"
+									title={course.description}
+								>
+									{course.description ||
+										"No Description Available"}
+								</div>
 
-      {/* Grid */}
-      {isLoading ? (
-        <Card className="flex items-center justify-center py-20 text-gray-400">
-          <Loader2 className="animate-spin mr-2" size={20} /> Loading catalog...
-        </Card>
-      ) : filteredAndSorted.length === 0 ? (
-        <Card className="py-20 text-center text-gray-500">
-          <p>No Guidelines found matching your criteria.</p>
-          <Button
-            variant="ghost"
-            className="mt-4 text-xs underline"
-            onClick={() => {
-              setFilters({ semester: new Set() });
-              setSearch("");
-              setActiveSemesterChip("All Semesters");
-            }}
-          >
-            Clear all filters
-          </Button>
+								{/* Read More Indicator */}
+								<Button variant="primary" size="md">
+									Read more
+								</Button>
+							</div>
+						</div>
+					))}
+				</div>
+			)}
 
-        </Card>
-      ) : (
-<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-  {filteredAndSorted.map((course) => (
-    <div
-      className="group card relative cursor-pointer hover:shadow-md transition-shadow flex flex-col h-full overflow-hidden"
-      key={course.id}
-      onClick={() => setDetailCourse(course)}
-    >
-      {/* Category Badge - positioned top right */}
-      {course.category && (
-        <span className="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-          {course.category}
-        </span>
-      )}
-
-      <h3 className="heading-sm mb-2 pr-12 line-clamp-1" title={course.title}>
-        {course.title}
-      </h3>
-      
-      <div className="flex flex-col gap-2 text-sm text-gray-500 mt-1">
-        <div className="line-clamp-2 leading-snug min-h-[2.5rem] break-words" title={course.description}>
-          {course.description || "No Description Available"}
-        </div>
-        
-        {/* Read More Indicator */}
-         <Button variant="ghost" size="xs" className="p-0">
-          Read more
-          </Button>
-      </div>
-    </div>
-  ))}
-</div>
-
-      )}
-
-      {/* Detail Modal */}
-      <Modal
-        open={!!detailCourse}
-        onClose={() => setDetailCourse(null)}
-        title={detailCourse?.title}
-        subtitle={detailCourse?.semester ?? undefined}
-        modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", overflowWrap: "break-word", hyphens: "auto" }}
-        contentStyle={{wordBreak: "break-word", hyphens: "auto" }}
-      >
-        {detailCourse && (
-          <div className="flex flex-col gap-1 p-1">
-            <div className="divider" />
-            <div className="space-y-3">
-              <p className="label">Description</p>
-              <p className="body text-gray-600" 
-                  lang="en" 
-                  style={{ overflowWrap: "break-word", overflowY: "auto", hyphens: "auto" }}>
-                {detailCourse.description || "No description provided."}
-              </p>
-            </div>
-          </div>
-        )}
-      </Modal>
-
-    </div>
+			{/* Detail Modal */}
+			<Modal
+				open={!!detailCourse}
+				onClose={() => setDetailCourse(null)}
+				title={detailCourse?.title}
+				subtitle={detailCourse?.semester ?? undefined}
+				modalStyle={{
+					maxWidth: "70vw",
+					maxHeight: "70vh",
+					overflowY: "auto",
+					overflowWrap: "break-word",
+					hyphens: "auto",
+				}}
+				contentStyle={{ wordBreak: "break-word", hyphens: "auto" }}
+			>
+				{detailCourse && (
+					<div className="flex flex-col gap-1 p-1">
+						<div className="divider" />
+						<div className="space-y-3">
+							<p className="label">Description</p>
+							<p
+								className="body text-gray-600"
+								lang="en"
+								style={{
+									overflowWrap: "break-word",
+									overflowY: "auto",
+									hyphens: "auto",
+								}}
+							>
+								{detailCourse.description ||
+									"No description provided."}
+							</p>
+						</div>
+					</div>
+				)}
+			</Modal>
+		</div>
   );
 }
