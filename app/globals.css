@@ -764,11 +764,11 @@ header {
 .event-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   font-size: 13px;
   color: var(--primary-dark);
   opacity: 0.7;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 /* ------------------------------------------------------------------─

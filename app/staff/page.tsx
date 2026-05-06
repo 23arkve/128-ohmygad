@@ -76,7 +76,7 @@ const GENDER_COLORS: Record<string, string> = {
 	Woman: "#F4A7B9",
 	"Non-binary": "#6DC5A0",
 	Genderqueer: "#F4C97A",
-	Genderfluid: "#9B9BB4",
+	Genderfluid: "#f4a97a",
 	"Prefer not to say": "#9B9BB4",
 };
 
@@ -144,7 +144,7 @@ function CustomTooltip({
 						style={{ background: e.color ?? e.payload?.fill }}
 					/>
 					<span className="caption capitalize">
-						{e.name ?? e.dataKey}: {e.value}
+						{e.name ?? e.dataKey}: {e.value}{(e.name === "Completed" || e.name === "Incomplete") ? "%" : ""}
 					</span>
 				</div>
 			))}
@@ -786,14 +786,14 @@ export default function DashboardPage() {
 													radius={[6, 0, 0, 6]}
 													barSize={24}
 												>
-													<LabelList
+													{/*<LabelList
 														dataKey="completedPct"
 														position="right"
 														formatter={(value) =>
 															`${value}%`
 														}
 														fill="var(--primary-dark)"
-													/>
+													/>*/}
 												</Bar>
 												<Bar
 													dataKey="incompletePct"
@@ -805,7 +805,7 @@ export default function DashboardPage() {
 													radius={[0, 6, 6, 0]}
 													barSize={24}
 												>
-													<LabelList
+													{/*<LabelList
 														dataKey="incompletePct"
 														position="insideRight"
 														formatter={(value) =>
@@ -816,7 +816,7 @@ export default function DashboardPage() {
 																: ""
 														}
 														fill="var(--primary-dark)"
-													/>
+													/>*/}
 												</Bar>
 											</BarChart>
 										</ResponsiveContainer>

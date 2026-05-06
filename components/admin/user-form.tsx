@@ -59,6 +59,7 @@ interface UserFormProps {
 	onCancel?: () => void;
 	layout?: "modal" | "page";
 	onRoleChangeRequest?: (role: string) => void;
+	onDirtyChange?: (dirty: boolean) => void;
 }
 
 // options
@@ -81,12 +82,46 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 	);
 }
 
+// for year level and student number, we can try to derive them from eo if one is missing (only if role is student)
+// if we're before aug, it's last year. aug onwards = this year
+
+const YEAR_LEVEL_MAP: Record<number, string> = {
+	1: "1st Year",
+	2: "2nd Year",
+	3: "3rd Year",
+	4: "4th Year",
+	5: "5th Year",
+};
+
+const getAcademicYearStart = (): number => {
+    const now = new Date();
+    const month = now.getMonth(); // 0-indexed, so 7 = August
+    return month >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+};
+
+const deriveYearLevel = (studentNum: string): number | null => {
+	const admissionYear = parseInt(studentNum.slice(0, 4), 10); // get the first 4 digits and parse as number
+	if (isNaN(admissionYear)) return null;
+	const academicStart = getAcademicYearStart();
+	if (admissionYear < 1900 || admissionYear > academicStart) return null; // for unrealistic admission years
+	const level = academicStart - admissionYear + 1; // sooo if acad year is 2025, 2025 - 2023 + 1 = 3rd year
+	if (level < 1) return null; // future admission year, not yet enrolled
+	return level;
+};
+
+const deriveYearLevelString = (studentNum: string): string | null => {
+	const derived = deriveYearLevel(studentNum);
+	if (derived === null) return null;
+	return YEAR_LEVEL_MAP[derived] ?? "Extendee"; // 6th yr and above r extendees
+};
+
 export default function UserForm({
 	initialData,
 	onSuccess,
 	onCancel,
 	layout = "modal",
 	onRoleChangeRequest,
+	onDirtyChange,
 }: UserFormProps) {
 	const router = useRouter();
 	const isEdit = !!initialData;
@@ -139,6 +174,13 @@ export default function UserForm({
 	const handleStudentNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const digits = e.target.value.replace(/\D/g, "").slice(0, 9);
 		setStudentNum(digits);
+
+		if (digits.length >= 4) {
+			const derived = deriveYearLevelString(digits);
+			if (derived !== null) {
+				setYearLevel(derived);
+			}
+		}
 	};
 
 	const handleContactNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,7 +203,10 @@ export default function UserForm({
 	) => {
 		// Strip non-digits, take only the first character, clamp 0-5
 		const raw = e.target.value.replace(/\D/g, "");
-		if (raw === "") { setter(""); return; }
+		if (raw === "") {
+			setter("");
+			return;
+		}
 		const num = Math.min(5, parseInt(raw, 10));
 		setter(String(num));
 	};
@@ -174,6 +219,35 @@ export default function UserForm({
 	const cancelRoleChange = () => {
 		setPendingRole(null);
 	};
+
+	// for matching student number and year level,  derive the ear level from the student number
+	// and show a warning if it doesnt match the selected year level
+	const derivedYear =
+		student_num.length >= 4 ? deriveYearLevel(student_num) : null;
+	const derivedYearString =
+		student_num.length >= 4 ? deriveYearLevelString(student_num) : null;
+
+	const admissionYearRaw =
+		student_num.length >= 4 ? parseInt(student_num.slice(0, 4), 10) : NaN;
+	const academicStart = getAcademicYearStart();
+
+	const studentNumError =
+		student_num.length >= 4 && derivedYear === null
+			? !isNaN(admissionYearRaw) &&
+				admissionYearRaw >= 1900 &&
+				admissionYearRaw <= academicStart
+				? "Admission year has not started yet."
+				: "Please check the student number format."
+			: null;
+
+	const yearMismatch =
+		derivedYearString !== null &&
+		year_level !== "" &&
+		year_level !== derivedYearString;
+
+	const yearMismatchError = yearMismatch
+		? `Expected ${derivedYearString} based on student number.`
+		: null;
 
 	// listen for role confirmation and cancel events from parent modal
 	useEffect(() => {
@@ -196,10 +270,16 @@ export default function UserForm({
 		};
 
 		window.addEventListener("role-confirmed", handleRoleConfirmed);
-		window.addEventListener("role-change-cancelled", handleRoleChangeCancelled);
+		window.addEventListener(
+			"role-change-cancelled",
+			handleRoleChangeCancelled,
+		);
 		return () => {
 			window.removeEventListener("role-confirmed", handleRoleConfirmed);
-			window.removeEventListener("role-change-cancelled", handleRoleChangeCancelled);
+			window.removeEventListener(
+				"role-change-cancelled",
+				handleRoleChangeCancelled,
+			);
 		};
 	}, []);
 
@@ -210,7 +290,14 @@ export default function UserForm({
 		setError(null);
 
 		try {
-			if (!full_name || !email || !role || (!isEdit && !password) || !sex_at_birth || !gender_identity) {
+			if (
+				!full_name ||
+				!email ||
+				!role ||
+				(!isEdit && !password) ||
+				!sex_at_birth ||
+				!gender_identity
+			) {
 				throw new Error("Please fill in all required fields.");
 			}
 
@@ -218,8 +305,13 @@ export default function UserForm({
 			if (nameErr) throw new Error(nameErr);
 
 			const emailDomain = email.trim().split("@")[1]?.toLowerCase();
-			if (!emailDomain || !["gmail.com", "up.edu.ph"].includes(emailDomain)) {
-				throw new Error("Email must end with @gmail.com or @up.edu.ph.");
+			if (
+				!emailDomain ||
+				!["gmail.com", "up.edu.ph"].includes(emailDomain)
+			) {
+				throw new Error(
+					"Email must end with @gmail.com or @up.edu.ph.",
+				);
 			}
 
 			const displayErr = validateDisplayName(display_name);
@@ -234,10 +326,14 @@ export default function UserForm({
 			if (contactErr) throw new Error(contactErr);
 
 			if (role === "student" || !role) {
-				if (!college || !program || !student_num) throw new Error("Please fill in all required fields.");
-				
+				if (!college || !program || !student_num)
+					throw new Error("Please fill in all required fields.");
+
 				const studentErr = validateStudentNum(student_num);
 				if (studentErr) throw new Error(studentErr);
+
+				if (studentNumError) throw new Error(studentNumError);
+				if (yearMismatchError) throw new Error(yearMismatchError);
 			}
 
 			if (role === "student" || role === "faculty" || !role) {
@@ -294,7 +390,14 @@ export default function UserForm({
 					: {}),
 				...(role === "admin" ? { office: office } : {}),
 				...(role === "staff" ? { office: office } : {}),
-				...(role === "faculty" ? { college, department, gso_attended: gsoNum, asho_attended: ashoNum } : {}),
+				...(role === "faculty"
+					? {
+							college,
+							department,
+							gso_attended: gsoNum,
+							asho_attended: ashoNum,
+						}
+					: {}),
 			};
 
 			if (isEdit) (payload as any).id = initialData!.id;
@@ -325,26 +428,33 @@ export default function UserForm({
 		}
 	};
 
-  const hasChanges =
-    full_name      !== (initialData?.full_name      ?? "")  ||
-    email          !== (initialData?.email          ?? "")  ||
-    password       !== ""                                   ||
-    role           !== (initialData?.role           ?? "")  ||
-    display_name   !== (initialData?.display_name   ?? "")  ||
-    contact_num    !== (initialData?.contact_num    ?? "")  ||
-    address        !== (initialData?.address        ?? "")  ||
-    pronouns       !== (initialData?.pronouns       ?? "")  ||
-    sex_at_birth   !== (initialData?.sex_at_birth   ?? "")  ||
-    gender_identity !== (initialData?.gender_identity ?? "") ||
-    college        !== (initialData?.college        ?? "")  ||
-    program        !== (initialData?.program        ?? "")  ||
-    student_num    !== (initialData?.student_num != null ? String(initialData.student_num) : "") ||
-    year_level     !== (initialData?.year_level     ?? "")  ||
-    String(gso_attended)  !== String(initialData?.gso_attended  ?? "") ||
-    String(asho_attended) !== String(initialData?.asho_attended ?? "") ||
-    office         !== (initialData?.office         ?? "")  ||
-    department     !== (initialData?.department     ?? "")  ||
-    is_onboarded   !== (initialData?.is_onboarded   ?? true);
+	const hasChanges =
+		full_name !== (initialData?.full_name ?? "") ||
+		email !== (initialData?.email ?? "") ||
+		password !== "" ||
+		role !== (initialData?.role ?? "") ||
+		display_name !== (initialData?.display_name ?? "") ||
+		contact_num !== (initialData?.contact_num ?? "") ||
+		address !== (initialData?.address ?? "") ||
+		pronouns !== (initialData?.pronouns ?? "") ||
+		sex_at_birth !== (initialData?.sex_at_birth ?? "") ||
+		gender_identity !== (initialData?.gender_identity ?? "") ||
+		college !== (initialData?.college ?? "") ||
+		program !== (initialData?.program ?? "") ||
+		student_num !==
+			(initialData?.student_num != null
+				? String(initialData.student_num)
+				: "") ||
+		year_level !== (initialData?.year_level ?? "") ||
+		String(gso_attended) !== String(initialData?.gso_attended ?? "") ||
+		String(asho_attended) !== String(initialData?.asho_attended ?? "") ||
+		office !== (initialData?.office ?? "") ||
+		department !== (initialData?.department ?? "") ||
+		is_onboarded !== (initialData?.is_onboarded ?? true);
+
+	useEffect(() => {
+		onDirtyChange?.(hasChanges);
+	}, [hasChanges]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	// page layout
 	if (layout === "page") {
@@ -397,16 +507,16 @@ export default function UserForm({
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 							<Select
-							label="Role"
-							required
-							value={pendingRole ?? role}
-							onChange={(e) => {
-								handleRoleSelect(e.target.value);
-							}}
-							options={[
-								{ value: "", label: "Select role…" },
-								...ROLE_OPTIONS,
-							]}
+								label="Role"
+								required
+								value={pendingRole ?? role}
+								onChange={(e) => {
+									handleRoleSelect(e.target.value);
+								}}
+								options={[
+									{ value: "", label: "Select role…" },
+									...ROLE_OPTIONS,
+								]}
 							/>
 						</div>
 
@@ -429,33 +539,60 @@ export default function UserForm({
 								onChange={handleContactNumChange}
 							/>
 							{(role === "student" || !role) && (
-								<Input
-									label="Student Number *"
-									required
-									prefixIcon={<Hash size={15} />}
-									placeholder="e.g. 2021-12345"
-									value={student_num}
-									onChange={handleStudentNumChange}
-								/>
+								<div className="flex flex-col gap-1">
+									<Input
+										label="Student Number *"
+										required
+										prefixIcon={<Hash size={15} />}
+										placeholder="e.g. 2021-12345"
+										value={student_num}
+										onChange={handleStudentNumChange}
+									/>
+									{studentNumError && (
+										<Toast
+											variant="error"
+											title="Invalid student number"
+											message={studentNumError}
+										/>
+									)}
+								</div>
 							)}
+
 							{(role === "student" || !role) && (
-								<Select
-									label="Year Level"
-									value={year_level}
-									onChange={(e) =>
-										setYearLevel(e.target.value)
-									}
-									options={[
-										{ value: "", label: "Select year…" },
-										...YEAR_OPTIONS,
-									]}
-								/>
+								<div className="flex flex-col gap-1">
+									<Select
+										required
+										label="Year Level"
+										value={year_level}
+										onChange={(e) =>
+											setYearLevel(e.target.value)
+										}
+										options={[
+											{
+												value: "",
+												label: "Select year…",
+											},
+											...YEAR_OPTIONS,
+										]}
+									/>
+									{yearMismatchError && (
+										<Toast
+											variant="warning"
+											title="Year level mismatch"
+											message={yearMismatchError}
+										/>
+									)}
+								</div>
 							)}
 							{(role === "student" ||
 								role === "faculty" ||
 								!role) && (
 								<Select
-									label={role === "student" || !role ? "College *" : "College"}
+									label={
+										role === "student" || !role
+											? "College *"
+											: "College"
+									}
 									required={role === "student" || !role}
 									value={college}
 									onChange={(e) => setCollege(e.target.value)}
@@ -714,16 +851,16 @@ export default function UserForm({
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 				<Select
-				label="Role"
-				required
-				value={pendingRole ?? role}
-				onChange={(e) => {
-					handleRoleSelect(e.target.value);
-				}}
-				options={[
-					{ value: "", label: "Select role…" },
-					...ROLE_OPTIONS,
-				]}
+					label="Role"
+					required
+					value={pendingRole ?? role}
+					onChange={(e) => {
+						handleRoleSelect(e.target.value);
+					}}
+					options={[
+						{ value: "", label: "Select role…" },
+						...ROLE_OPTIONS,
+					]}
 				/>
 			</div>
 
@@ -738,29 +875,53 @@ export default function UserForm({
 					maxLength={32}
 				/>
 				{(role === "student" || !role) && (
-					<Input
-						label="Student Number *"
-						required
-						prefixIcon={<Hash size={15} />}
-						placeholder="e.g. 2021-12345"
-						value={student_num}
-						onChange={handleStudentNumChange}
-					/>
+					<div className="flex flex-col gap-1">
+						<Input
+							label="Student Number *"
+							required
+							prefixIcon={<Hash size={15} />}
+							placeholder="e.g. 2021-12345"
+							value={student_num}
+							onChange={handleStudentNumChange}
+						/>
+						{studentNumError && (
+							<Toast
+								variant="error"
+								title="Invalid student number"
+								message={studentNumError}
+							/>
+						)}
+					</div>
 				)}
+
 				{(role === "student" || !role) && (
-					<Select
-						label="Year Level"
-						value={year_level}
-						onChange={(e) => setYearLevel(e.target.value)}
-						options={[
-							{ value: "", label: "Select year…" },
-							...YEAR_OPTIONS,
-						]}
-					/>
+					<div className="flex flex-col gap-1">
+						<Select
+							required
+							label="Year Level"
+							value={year_level}
+							onChange={(e) => setYearLevel(e.target.value)}
+							options={[
+								{ value: "", label: "Select year…" },
+								...YEAR_OPTIONS,
+							]}
+						/>
+						{yearMismatchError && (
+							<Toast
+								variant="warning"
+								title="Year level mismatch"
+								message={yearMismatchError}
+							/>
+						)}
+					</div>
 				)}
 				{(role === "student" || role === "faculty" || !role) && (
 					<Select
-						label={role === "student" || !role ? "College *" : "College"}
+						label={
+							role === "student" || !role
+								? "College *"
+								: "College"
+						}
 						required={role === "student" || !role}
 						value={college}
 						onChange={(e) => setCollege(e.target.value)}
@@ -870,7 +1031,9 @@ export default function UserForm({
 							inputMode="numeric"
 							placeholder="0"
 							value={gso_attended.toString()}
-							onChange={(e) => handleSessionChange(e, setGsoAttended)}
+							onChange={(e) =>
+								handleSessionChange(e, setGsoAttended)
+							}
 						/>
 						<Input
 							label="ASHO Sessions Attended"
@@ -878,7 +1041,9 @@ export default function UserForm({
 							inputMode="numeric"
 							placeholder="0"
 							value={asho_attended.toString()}
-							onChange={(e) => handleSessionChange(e, setAshoAttended)}
+							onChange={(e) =>
+								handleSessionChange(e, setAshoAttended)
+							}
 						/>
 					</>
 				)}

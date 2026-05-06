@@ -85,7 +85,7 @@ export default function FacultyLayout({
 							}}
 						/>
 						<DashboardHeader
-							basePath="/student"
+							basePath="/faculty"
 							pageLabels={PAGE_LABELS}
 						/>
 						<main className="relative z-1 flex-1 overflow-scroll flex flex-col px-3 md:px-5 md:py-2">
