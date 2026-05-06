@@ -216,7 +216,7 @@ const confirmDelete = async () => {
       header: <div className="text-center">Actions</div>,
       width: "8%",
       render: (course) => (
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
+        <div className="text-center">
           <Button
             variant="icon"
             title="Edit guideline"
