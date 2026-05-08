@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Plus, ArrowUpDown, Pencil, Trash2, Loader2, ChevronUp, ChevronDown, X } from "lucide-react";
+import { Plus, ArrowUpDown, Pencil, Trash2, Loader2, ChevronUp, ChevronDown, X, BookOpen } from "lucide-react";
 import CourseForm, { type CourseFormData } from "@/components/admin/course-form";
 import { paginate, totalPages, PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
@@ -298,12 +298,25 @@ const confirmDelete = async () => {
 				</Card>
 			) : filtered.length === 0 ? (
 				<Card>
-					<div className="flex flex-col items-center justify-center gap-3 py-12">
-						<p className="caption">
-							{search || hasActiveFilters
-								? "No courses match your search or filters."
-								: "No courses yet. Add your first course to get started."}
-						</p>
+					<div className="flex flex-col items-center justify-center text-center gap-3 py-12">
+						<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+							<BookOpen
+								size={26}
+								className="text-[var(--periwinkle)]"
+							/>
+						</div>
+						<div>
+							<p className="label text-[var(--primary-dark)]">
+								{search || hasActiveFilters
+									? "No courses found"
+									: "No courses yet"}
+							</p>
+							{!search && !hasActiveFilters && (
+								<p className="caption text-[var(--gray)] mt-1">
+									Add your first course to get started.
+								</p>
+							)}
+						</div>
 						{(search || hasActiveFilters) && (
 							<Button
 								variant="ghost"

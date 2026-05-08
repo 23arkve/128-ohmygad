@@ -425,12 +425,22 @@ export default function SurveysPage() {
         </Card>
       ) : filtered.length === 0 ? (
         <Card>
-          <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <p className="caption">
-              {search || hasActiveFilters
-                ? "No surveys match your search or filters."
-                : "No surveys yet. Add your first survey to get started."}
-            </p>
+          <div className="flex flex-col items-center justify-center text-center gap-3 py-12">
+            <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+              <BarChart3 size={26} className="text-[var(--periwinkle)]" />
+            </div>
+            <div>
+              <p className="label text-[var(--primary-dark)]">
+                {search || hasActiveFilters
+                  ? "No surveys found"
+                  : "No surveys yet"}
+              </p>
+              {!search && !hasActiveFilters && (
+                <p className="caption text-[var(--gray)] mt-1">
+                  Add your first survey to get started.
+                </p>
+              )}
+            </div>
             {(search || hasActiveFilters) && (
               <Button
                 variant="ghost"

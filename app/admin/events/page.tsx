@@ -16,7 +16,7 @@ import {
 	Users,
 	ClipboardCheck,
 	MapPin,
-	CalendarDays,
+	Calendar,
 	Clock,
 	X,
 	ClipboardList,
@@ -1191,12 +1191,25 @@ export default function EventsPage() {
 				</Card>
 			) : filtered.length === 0 ? (
 				<Card>
-					<div className="flex flex-col items-center justify-center gap-3 py-12">
-						<p className="caption">
-							{search || hasActiveFilters
-								? "No events match your search or filters."
-								: "No events yet. Add your first event to get started."}
-						</p>
+					<div className="flex flex-col items-center justify-center text-center gap-3 py-12">
+						<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+							<Calendar
+								size={26}
+								className="text-[var(--periwinkle)]"
+							/>
+						</div>
+						<div>
+							<p className="label text-[var(--primary-dark)]">
+								{search || hasActiveFilters
+									? "No events found"
+									: "No events yet"}
+							</p>
+							{!search && !hasActiveFilters && (
+								<p className="caption text-[var(--gray)] mt-1">
+									Add your first event to get started.
+								</p>
+							)}
+						</div>
 						{(search || hasActiveFilters) && (
 							<Button
 								variant="ghost"
@@ -1314,7 +1327,7 @@ export default function EventsPage() {
 									variant="primary"
 									size="sm"
 									onClick={() => {
-                                        editFromDetailRef.current = detailEvent;
+										editFromDetailRef.current = detailEvent;
 										setEditTarget(detailEvent);
 										setDetailEvent(null);
 									}}
@@ -1365,7 +1378,7 @@ export default function EventsPage() {
 
 								<div className="flex flex-col gap-3">
 									<div className="flex items-start gap-3 caption sm:text-sm text-[var(--gray)]">
-										<CalendarDays
+										<Calendar
 											size={15}
 											className="shrink-0 mt-0.5"
 										/>
@@ -1402,44 +1415,50 @@ export default function EventsPage() {
 												)}
 										</span>
 									</div>
-									<div className="flex items-center gap-x-4 gap-y-1.5 flex-wrap caption sm:text-sm text-[var(--gray)]">
-										<div className="flex items-center gap-2">
-											<Clock size={15} className="shrink-0" />
-											<span>
-												{detailEvent.start_date
-													? new Date(
-															detailEvent.start_date,
-														).toLocaleTimeString(
-															"en-PH",
-															{
-																hour: "numeric",
-																minute: "2-digit",
-															},
-														)
-													: "—"}
-												{detailEvent.end_date &&
-													detailEvent.end_date !==
-														detailEvent.start_date && (
-														<>
-															{" "}
-															—{" "}
-															{new Date(
-																detailEvent.end_date,
-															).toLocaleTimeString(
-																"en-PH",
-																{
-																	hour: "numeric",
-																	minute: "2-digit",
-																},
-															)}{" "}
-														</>
-													)}
-											</span>
-										</div>
-										<div className="flex items-center gap-2 min-w-0">
-											<MapPin size={15} className="shrink-0" />
-											<span className="truncate">{detailEvent.location ?? "—"}</span>
-										</div>
+									<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
+                                        <Clock
+                                            size={15}
+                                            className="shrink-0"
+                                        />
+                                        <span>
+                                            {detailEvent.start_date
+                                                ? new Date(
+                                                        detailEvent.start_date,
+                                                    ).toLocaleTimeString(
+                                                        "en-PH",
+                                                        {
+                                                            hour: "numeric",
+                                                            minute: "2-digit",
+                                                        },
+                                                    )
+                                                : "—"}
+                                            {detailEvent.end_date &&
+                                                detailEvent.end_date !==
+                                                    detailEvent.start_date && (
+                                                    <>
+                                                        {" "}
+                                                        —{" "}
+                                                        {new Date(
+                                                            detailEvent.end_date,
+                                                        ).toLocaleTimeString(
+                                                            "en-PH",
+                                                            {
+                                                                hour: "numeric",
+                                                                minute: "2-digit",
+                                                            },
+                                                        )}{" "}
+                                                    </>
+                                                )}
+                                        </span>
+									</div>
+									<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
+										<MapPin
+											size={15}
+											className="shrink-0"
+										/>
+										<span className="truncate">
+											{detailEvent.location ?? "—"}
+										</span>
 									</div>
 									<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
 										<Users size={15} className="shrink-0" />
@@ -1612,17 +1631,24 @@ export default function EventsPage() {
 											</div>
 										) : filteredRegistrations.length ===
 										  0 ? (
-											<div className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl border border-dashed border-[rgba(45,42,74,0.12)]">
-												<Users
-													size={24}
-													className="text-[var(--gray)] opacity-40"
-												/>
-												<p className="caption text-[var(--gray)] py-2 text-center">
-													{registrantSearch
-														? "No results match your search."
-														: "No registrations yet."}
-												</p>
-											</div>
+											<Card
+												variant="no-shadow"
+												className="flex flex-col items-center justify-center text-center min-h-[160px] gap-3"
+											>
+												<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+													<Users
+														size={26}
+														className="text-[var(--periwinkle)]"
+													/>
+												</div>
+												<div>
+													<p className="label text-[var(--primary-dark)]">
+														{registrantSearch
+															? "No users found"
+															: "No registrations yet"}
+													</p>
+												</div>
+											</Card>
 										) : (
 											<div className="flex flex-col max-h-[420px] overflow-y-auto pr-1">
 												<div className="grid grid-cols-[1fr_1fr_44px] gap-3 px-3 sticky top-0 bg-white">
