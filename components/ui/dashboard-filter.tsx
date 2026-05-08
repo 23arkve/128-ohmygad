@@ -52,6 +52,14 @@ const ROW1_KEYS: { key: keyof DashboardFilters; label: string; icon: React.React
   { key: "genderIdentity", label: "Gender Identity",  icon: <Heart size={15} /> },
 ];
 
+const ALL_CHIP_KEYS = [
+  ...ROW1_KEYS,
+  { key: "degreeProgram" as keyof DashboardFilters, label: "Degree Program", icon: <BookOpen size={15} /> },
+  { key: "role" as keyof DashboardFilters, label: "Role", icon: <User size={15} /> },
+];
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 // component
 interface DashboardFilterProps {
   value: DashboardFilters;
@@ -59,28 +67,12 @@ interface DashboardFilterProps {
   options: FilterOptions;
 }
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
 export function DashboardFilter({
 	value,
 	onChange,
 	options,
 }: DashboardFilterProps) {
 	const count = countActiveFilters(value);
-
-	const chips = [
-		...ROW1_KEYS,
-		{
-			key: "degreeProgram" as keyof DashboardFilters,
-			label: "Degree Program",
-			icon: <BookOpen size={15} />,
-		},
-		{
-			key: "role" as keyof DashboardFilters,
-			label: "Role",
-			icon: <User size={15} />,
-		},
-	].flatMap(({ key }) => value[key].map((val) => ({ key, val })));
 
 	function toggle(key: keyof DashboardFilters, val: string) {
 		const cur = value[key];
@@ -90,18 +82,13 @@ export function DashboardFilter({
 		onChange({ ...value, [key]: next });
 	}
 
-	function remove(key: keyof DashboardFilters, val: string) {
-		onChange({ ...value, [key]: value[key].filter((v) => v !== val) });
-	}
-
-	const filterButton = (
+	return (
 		<Dropdown
 			menuStyle={{ width: 750, overflowX: "auto" }}
 			trigger={
 				<Button
 					type="button"
 					variant={count > 0 ? "pink" : "ghost"}
-					size="sm"
 				>
 					<SlidersHorizontal size={13} />
 					Filters
@@ -190,35 +177,46 @@ export function DashboardFilter({
 			)}
 		</Dropdown>
 	);
+}
 
+interface DashboardFilterChipsProps {
+  value: DashboardFilters;
+  onChange: (f: DashboardFilters) => void;
+}
+
+export function DashboardFilterChips({ value, onChange }: DashboardFilterChipsProps) {
+	const chips = ALL_CHIP_KEYS.flatMap(({ key }) =>
+		value[key].map((val) => ({ key, val }))
+	);
+
+	if (chips.length === 0) return null;
+
+	function remove(key: keyof DashboardFilters, val: string) {
+		onChange({ ...value, [key]: value[key].filter((v) => v !== val) });
+	}
 
 	return (
-		<div className="flex flex-wrap items-center gap-2 shrink-0">
-			{chips.length > 0 && (
-				<>
-					<span className="caption">Active filters:</span>
-					{chips.map(({ key, val }) => (
-						<Badge key={`${key}-${val}`} variant="periwinkle">
-							{key === "role" ? capitalize(val) : val}
-							<button
-								type="button"
-								onClick={() => remove(key, val)}
-								className="ml-1.5"
-							>
-								×
-							</button>
-						</Badge>
-					))}
-					<Button
-						variant="soft"
-						size="sm"
-						onClick={() => onChange(EmptyFilters)}
+		<div className="flex flex-wrap items-center gap-2">
+			<span className="caption">Active filters:</span>
+			{chips.map(({ key, val }) => (
+				<Badge key={`${key}-${val}`} variant="periwinkle">
+					{key === "role" ? capitalize(val) : val}
+					<button
+						type="button"
+						onClick={() => remove(key, val)}
+						className="ml-1.5"
 					>
-						Clear all
-					</Button>
-				</>
-			)}
-			{filterButton}
+						×
+					</button>
+				</Badge>
+			))}
+			<Button
+				variant="soft"
+				size="sm"
+				onClick={() => onChange(EmptyFilters)}
+			>
+				Clear all
+			</Button>
 		</div>
 	);
 }
