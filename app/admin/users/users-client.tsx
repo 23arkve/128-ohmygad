@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowUpDown, UserPlus, Pencil, Trash2, Loader2, SlidersHorizontal } from "lucide-react";
+import { ArrowUpDown, UserPlus, Pencil, Trash2, Loader2, SlidersHorizontal, Users } from "lucide-react";
 import type { Profile, SortState } from "./profile.types";
 import { sortProfiles, paginate, totalPages } from "./profile.utils";
 import { deleteUser } from "./action";
@@ -25,6 +25,7 @@ import {
   Modal,
   Toast,
   Checkbox,
+  UserCard,
 } from "@/components/ui";
 
 interface UsersClientProps {
@@ -45,7 +46,6 @@ const GSO_VARIANT: Record<string, "warning" | "success"> = {
 };
 
 const ROLES = ["student", "staff", "faculty", "admin"];
-const GSO_STATUSES = ["attended", "pending"];
 
 
 export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) => {
@@ -132,6 +132,11 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
   const [editUser, setEditUser] = useState<any>(null);
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
+
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
@@ -255,6 +260,29 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 		setEditUser(null);
 		setEditError(null);
 		setIsFormDirty(false);
+  };
+
+  const openDetailModal = async (userId: string) => {
+    setDetailModalOpen(true);
+    setSelectedUser(null);
+    setDetailError(null);
+    setDetailLoading(true);
+    try {
+      const res = await fetch(`/api/admin/get-user?id=${userId}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to fetch user");
+      setSelectedUser(data);
+    } catch (err: unknown) {
+      setDetailError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const closeDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedUser(null);
+    setDetailError(null);
   };
 
   const openDeleteModal = (profile: Profile) => {
@@ -566,32 +594,46 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 			{!fetchError &&
 				(filtered.length === 0 ? (
 					<Card>
-						<div className="flex flex-col items-center justify-center gap-3 py-12">
-							<p className="caption">
-								{search || hasActiveFilters
-									? "No users match your search or filters."
-									: "No users found."}
-							</p>
-							{(search || hasActiveFilters) && (
-								<Button
-									variant="ghost"
-									size="sm"
-									onClick={() => {
-										setSearch("");
-										clearAllFilters();
-									}}
-								>
-									Clear search & filters
-								</Button>
-							)}
-						</div>
+                        <div className="flex flex-col items-center justify-center text-center gap-3 py-12">
+                            <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+                                <Users
+                                    size={26}
+                                    className="text-[var(--periwinkle)]"
+                                />
+                            </div>
+                            <div>
+                                <p className="label text-[var(--primary-dark)]">
+                                    {search || hasActiveFilters
+                                        ? "No users found"
+                                        : "No users yet"}
+                                </p>
+                                {!search && !hasActiveFilters && (
+                                    <p className="caption text-[var(--gray)] mt-1">
+                                        Add your first user to get started.
+                                    </p>
+                                )}
+                            </div>
+                            {(search || hasActiveFilters) && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        setSearch("");
+                                        setSearch("");
+                                        clearAllFilters();
+                                    }}
+                                >
+                                    Clear search &amp; filters
+                                </Button>
+                            )}
+                        </div>
 					</Card>
 				) : (
 					<DataTable
 						columns={columns}
 						rows={paginatedProfiles}
 						keyExtractor={(p) => p.id}
-						onRowClick={(p) => openEditModal(p.id)}
+						onRowClick={(p) => openDetailModal(p.id)}
 					/>
 				))}
 
@@ -748,6 +790,56 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 						</div>
 					</div>
 				)}
+			</Modal>
+
+			{/* user detail modal */}
+            {/* user detail modal */}
+            <Modal
+                open={detailModalOpen}
+                onClose={closeDetailModal}
+                hideCloseButton
+                // Added maxWidth and width to override globals.css
+                modalStyle={{ padding: 0, overflow: "hidden", maxWidth: 700, width: "100%" }}
+                contentStyle={{ padding: 0, marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
+            >
+                {detailLoading ? (
+                    <div style={{ padding: 40, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                        <Loader2 size={20} className="animate-spin" style={{ color: "var(--gray)" }} />
+                        <span className="caption">Loading user…</span>
+                    </div>
+                ) : detailError ? (
+                    <div style={{ padding: 24 }} className="flex flex-col gap-4">
+                        <Toast variant="error" title="Failed to load user" message={detailError} />
+                        <Button variant="ghost" className="w-full" onClick={closeDetailModal}>Close</Button>
+                    </div>
+                ) : selectedUser ? (
+                    <UserCard
+                        name={selectedUser.full_name ?? "—"}
+                        email={selectedUser.email ?? undefined}
+                        displayName={selectedUser.display_name ?? undefined}
+						pronouns={selectedUser.pronouns ?? undefined}
+						sexAtBirth={selectedUser.sex_at_birth ?? undefined}
+						genderIdentity={selectedUser.gender_identity ?? undefined}
+						contactNum={selectedUser.contact_num ?? undefined}
+						address={selectedUser.address ?? undefined}
+						role={selectedUser.role ?? "student"}
+						studentNum={selectedUser.student_num ?? undefined}
+						yearLevel={selectedUser.year_level ?? undefined}
+						college={selectedUser.college ?? undefined}
+						program={selectedUser.program ?? undefined}
+						department={selectedUser.department ?? undefined}
+						office={selectedUser.office ?? undefined}
+						gsoAttended={selectedUser.gso_attended}
+						ashoAttended={selectedUser.asho_attended}
+						forumAttended={selectedUser.forum_attended}
+						researchAttended={selectedUser.research_attended}
+						trainingAttended={selectedUser.training_attended}
+						workshopAttended={selectedUser.workshop_attended}
+						isOnboarded={selectedUser.is_onboarded}
+						onEdit={() => { closeDetailModal(); openEditModal(selectedUser.id); }}
+						onClose={closeDetailModal}
+					/>
+				) : null}
 			</Modal>
 
 			{showRoleConfirm && (
