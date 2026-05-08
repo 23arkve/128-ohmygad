@@ -355,13 +355,22 @@ export default function DashboardPage() {
 										</span>
 									</div>
 								) : eventAttendanceData?.length === 0 ? (
-									<div className="flex items-center justify-center h-full">
-										<span className="caption text-[var(--gray)]">
-											{" "}
-											No attendance data for the selected
-											period.{" "}
-										</span>
-									</div>
+									<Card
+										variant="no-shadow"
+										className="flex flex-col items-center justify-center text-center min-h-[200px] gap-3"
+									>
+										<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+											<Calendar
+												size={26}
+												className="text-[var(--periwinkle)]"
+											/>
+										</div>
+										<div>
+											<p className="label text-[var(--primary-dark)]">
+												No attendance data
+											</p>
+										</div>
+									</Card>
 								) : null}
 								{!(
 									!attendanceLoading &&
@@ -704,13 +713,39 @@ export default function DashboardPage() {
 									</div>
 								) : (surveyCompletionData?.length ?? 0) ===
 								  0 ? (
-									<div className="flex items-center justify-center h-full">
-										<span className="caption text-[var(--gray)]"> No survey completion data available. </span>
-									</div>
+									<Card
+										variant="no-shadow"
+										className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3"
+									>
+										<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+											<ClipboardList
+												size={26}
+												className="text-[var(--periwinkle)]"
+											/>
+										</div>
+										<div>
+											<p className="label text-[var(--primary-dark)]">
+												No survey data
+											</p>
+										</div>
+									</Card>
 								) : surveyCompletionChartData.length === 0 ? (
-									<div className="flex items-center justify-center h-full">
-										<span className="caption text-[var(--gray)]"> No surveys match your search. </span>
-									</div>
+									<Card
+										variant="no-shadow"
+										className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3"
+									>
+										<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+											<ClipboardList
+												size={26}
+												className="text-[var(--periwinkle)]"
+											/>
+										</div>
+										<div>
+											<p className="label text-[var(--primary-dark)]">
+												No surveys match your search
+											</p>
+										</div>
+									</Card>
 								) : (
 									<>
 										<ResponsiveContainer width="100%" height={320} >
