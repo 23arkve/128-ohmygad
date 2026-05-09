@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import {
 	Users,
 	Calendar,
@@ -44,7 +43,7 @@ import {
 import { useDashboardData, type RawEvent } from "./hooks/use-dashboard-data";
 import { useSurveyCompletionRates } from "./hooks/use-survey-completion-rates";
 import GlobalSearch from "@/components/global-search";
-import EventForm from "@/components/admin/event-form";
+import EventForm, { type EventFormData } from "@/components/admin/event-form";
 import { EventDetailModal } from "@/components/admin/event-detail-modal";
 import UserForm from "@/components/admin/user-form";
 import CourseForm from "@/components/admin/course-form";
@@ -175,7 +174,6 @@ const DUMMY_ATTENDANCE = [
 
 // ------------------------------------------------ DASHBOARD PAGE ------------------------------------------------
 export default function DashboardPage() {
-	const router = useRouter();
 	const [attendanceRange, setAttendanceRange] = useState<DateRange>(() => {
 		const now = new Date();
 		const start = new Date(now);
@@ -194,8 +192,54 @@ export default function DashboardPage() {
 	>(null);
 	const closeModal = () => setActiveModal(null);
 
+	function rawToFormData(e: RawEvent): EventFormData {
+		return {
+			id: e.id,
+			title: e.title,
+			description: e.description ?? "",
+			location: e.location,
+			start_date: e.start_date,
+			end_date: e.end_date,
+			capacity: e.capacity ?? 0,
+			registration_open: e.registration_open ?? "",
+			registration_close: e.registration_close ?? "",
+			category: e.category,
+			status: "",
+			banner_url: e.banner_url ?? undefined,
+		};
+	}
+
+	const handleEditSuccess = useCallback((updated?: EventFormData) => {
+		const prev = editFromDetailRef.current;
+		editFromDetailRef.current = null;
+		setEditTarget(null);
+		if (updated && prev) {
+			setSelectedEvent({
+				...prev,
+				...updated,
+				id: updated.id ?? prev.id,
+				description: updated.description ?? null,
+				capacity: updated.capacity ?? null,
+				banner_url: updated.banner_url ?? null,
+				registration_open: updated.registration_open ?? null,
+				registration_close: updated.registration_close ?? null,
+			});
+		} else if (prev) {
+			setSelectedEvent(prev);
+		}
+	}, []);
+
+	const handleEditCancel = useCallback(() => {
+		const prev = editFromDetailRef.current;
+		editFromDetailRef.current = null;
+		setEditTarget(null);
+		if (prev) setSelectedEvent(prev);
+	}, []);
+
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 	const [selectedEvent, setSelectedEvent] = useState<RawEvent | null>(null);
+	const [editTarget, setEditTarget] = useState<RawEvent | null>(null);
+	const editFromDetailRef = useRef<RawEvent | null>(null);
 
 	const {
 		eventAttendanceData,
@@ -1127,7 +1171,14 @@ export default function DashboardPage() {
 
 					{/* timeline */}
 					<Card variant="no-hover" className="p-4">
-						<TodayTimeline events={todayEvents} loading={loading} />
+						<TodayTimeline
+                            events={todayEvents}
+                            loading={loading}
+                            onEventClick={(id) => {
+                                const full = allEvents.find((e) => e.id === id);
+                                if (full) setSelectedEvent(full);
+                            }}
+                        />
 					</Card>
 				</aside>
 			</div>
@@ -1256,11 +1307,31 @@ export default function DashboardPage() {
 			<EventDetailModal
 				event={selectedEvent}
 				onClose={() => setSelectedEvent(null)}
-				onEdit={(e) => {
+				onEdit={() => {
+					editFromDetailRef.current = selectedEvent;
 					setSelectedEvent(null);
-					router.push(`/admin/events?event=${e.id}`);
+					setEditTarget(selectedEvent);
 				}}
 			/>
+
+			{/* -------------------------------------- edit event modal (from dashboard) -------------------------------------- */}
+			<Modal
+				open={editTarget !== null}
+				onClose={handleEditCancel}
+				title="Edit Event"
+				subtitle={editTarget?.title}
+				modalStyle={{ maxWidth: 900 }}
+			>
+				{editTarget && (
+					<EventForm
+						key={editTarget.id}
+						mode="edit"
+						initialData={rawToFormData(editTarget)}
+						onSuccess={handleEditSuccess}
+						onCancel={handleEditCancel}
+					/>
+				)}
+			</Modal>
 		</div>
 	);
 }

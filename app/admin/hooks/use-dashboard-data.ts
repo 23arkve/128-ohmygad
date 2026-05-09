@@ -12,6 +12,7 @@ import type { DateRange } from "@/components/ui/date-range-picker";
 import type { DashboardFilters, FilterOptions } from "@/components/ui/dashboard-filter";
 
 export interface TimelineEvent {
+  id: string;
   time: string;
   title: string;
   location: string;
@@ -232,6 +233,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 				setTodayEvents(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(todayRows ?? []).map((r: any) => ({
+						id: r.id as string,
 						time: new Date(r.start_date).toLocaleTimeString(
 							"en-US",
 							{
