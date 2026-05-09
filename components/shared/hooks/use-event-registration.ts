@@ -96,7 +96,7 @@ export function useEventRegistration({
 				showToast({
 					variant: "error",
 					title: "Registration failed",
-					message: error.message,
+					message: "Registration failed. Please try again.",
 				});
 			} else {
 				setRegisteredIds((prev) => new Set([...prev, eventId]));
@@ -141,7 +141,7 @@ export function useEventRegistration({
 				showToast({
 					variant: "error",
 					title: "Cancellation failed",
-					message: error.message,
+					message: "Cancellation failed. Please try again.",
 				});
 			} else {
 				setRegisteredIds((prev) => {

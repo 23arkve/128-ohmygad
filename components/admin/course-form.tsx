@@ -56,13 +56,13 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
           router.refresh();
         }
       } else {
-        const errorMsg = result?.error || "Failed to submit form";
-        console.error("Submit error:", JSON.stringify(result, null, 2));
+        const errorMsg = "Failed to save guideline. Please try again.";
+
         setError(errorMsg);
       }
     } catch (err: any) {
-      const errorMsg = err?.message || "An unexpected error occurred";
-      console.error("Submit exception:", err);
+      const errorMsg = "Failed to save guideline. Please try again.";
+
       setError(errorMsg);
     } finally {
       setIsLoading(false);

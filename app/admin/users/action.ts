@@ -12,7 +12,7 @@ export async function deleteUser(userId: string) {
     .eq("id", userId);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error("Failed to delete user.");
   }
 
   return { success: true };

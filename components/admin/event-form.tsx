@@ -133,7 +133,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
         .upload(fileName, bannerFile, { upsert: true });
 
       if (uploadError) {
-        setError("Failed to upload banner: " + uploadError.message);
+        setError("Failed to upload banner. Please try again.");
         setIsLoading(false);
         setUploadingBanner(false);
         return;

@@ -422,7 +422,7 @@ export default function UserForm({
 				router.refresh();
 			}
 		} catch (err: unknown) {
-			setError(err instanceof Error ? err.message : "An error occurred");
+			setError("Failed to save user. Please try again.");
 		} finally {
 			setIsLoading(false);
 		}

@@ -72,7 +72,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
           }
         }
       } catch (err) {
-        console.error("Search failed:", err);
+        
       } finally {
         setLoading(false);
       }

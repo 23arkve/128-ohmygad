@@ -305,9 +305,8 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
         router.refresh();
       }
     } catch (err: unknown) {
-      console.error("Survey submit error:", err);
-      const message = err instanceof Error ? err.message : (err as any)?.message ?? JSON.stringify(err);
-      setError(message);
+      
+      setError("Failed to save survey. Please try again.");
     } finally {
       setIsLoading(false);
     }

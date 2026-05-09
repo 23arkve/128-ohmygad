@@ -169,8 +169,6 @@ export function OnboardingForm({
       }
     } // catching errors: 
     catch (error: any) {
-      console.error("Onboarding Save Error:", error);
-
       // unique violation error, if it already exists, show this error
       if (error?.code === '23505' || error?.message?.includes('duplicate key')) {
         setError("This student number or contact number is already registered to another account.");

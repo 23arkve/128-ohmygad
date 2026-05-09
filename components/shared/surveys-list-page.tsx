@@ -115,7 +115,7 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
         .in("event_id", attendedEventIds)
         .order("open_at", { ascending: false });
 
-      if (error) setError(error.message);
+      if (error) setError("Failed to load surveys. Please refresh the page.");
       else if (data) setSurveys(data);
       setIsLoading(false);
     }
@@ -234,7 +234,7 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 				<Card>
 					<div className="flex flex-col items-center justify-center gap-3 py-10">
 						<p className="caption text-[var(--error)]">
-							Error: {error}
+							Unable to load surveys. Please refresh the page.
 						</p>
 						<Button
 							variant="ghost"

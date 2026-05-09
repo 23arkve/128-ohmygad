@@ -165,7 +165,7 @@ const confirmDelete = async () => {
     .eq("id", deleteTarget.id);
 
   if (error) {
-    setDeleteError(error.message || "Failed to delete course");
+    setDeleteError("Failed to delete guideline. Please try again.");
   } else {
     setCourses((prev) => prev.filter((e) => e.id !== deleteTarget.id));
     showToast("success", "Course deleted successfully");
