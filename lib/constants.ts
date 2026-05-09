@@ -92,9 +92,9 @@ export const EVENT_STATUS_OPTIONS = [
 ];
 
 export const SURVEY_STATUS_OPTIONS = [
+  { value: "upcoming", label: "Upcoming"},
   { value: "open",   label: "Open"   },
   { value: "closed", label: "Closed" },
-  { value: "upcoming", label: "Upcoming"},
 ];
 
 export const QUESTION_TYPE_OPTIONS = [
