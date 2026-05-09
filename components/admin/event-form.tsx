@@ -332,11 +332,24 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 <Input
                   label="Capacity *"
                   type="number"
+                  min="0"
                   placeholder="e.g. 30"
                   required
                   prefixIcon={<Users size={15} />}
                   value={capacity ?? ""}
-                  onChange={(e) => setCapacity(e.target.value === "" ? null : Number(e.target.value))}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setCapacity(null);
+                    } else {
+                      setCapacity(Math.max(0, Number(val)));
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === '-') {
+                      e.preventDefault();
+                    }
+                  }}
                 />
 
                 <Select 
