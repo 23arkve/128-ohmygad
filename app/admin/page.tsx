@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import {
 	Users,
 	Calendar,
@@ -9,6 +10,7 @@ import {
 	BookOpen,
 } from "lucide-react";
 import {
+	Badge,
 	Card,
 	StatCard,
 	Button,
@@ -39,10 +41,11 @@ import {
 	Bar,
 	LabelList,
 } from "recharts";
-import { useDashboardData } from "./hooks/use-dashboard-data";
+import { useDashboardData, type RawEvent } from "./hooks/use-dashboard-data";
 import { useSurveyCompletionRates } from "./hooks/use-survey-completion-rates";
 import GlobalSearch from "@/components/global-search";
 import EventForm from "@/components/admin/event-form";
+import { EventDetailModal } from "@/components/admin/event-detail-modal";
 import UserForm from "@/components/admin/user-form";
 import CourseForm from "@/components/admin/course-form";
 import SurveyForm from "@/components/admin/survey-form";
@@ -172,6 +175,7 @@ const DUMMY_ATTENDANCE = [
 
 // ------------------------------------------------ DASHBOARD PAGE ------------------------------------------------
 export default function DashboardPage() {
+	const router = useRouter();
 	const [attendanceRange, setAttendanceRange] = useState<DateRange>(() => {
 		const now = new Date();
 		const start = new Date(now);
@@ -190,12 +194,15 @@ export default function DashboardPage() {
 	>(null);
 	const closeModal = () => setActiveModal(null);
 
+	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+	const [selectedEvent, setSelectedEvent] = useState<RawEvent | null>(null);
+
 	const {
 		eventAttendanceData,
 		sexAtBirthData,
 		genderIdentityData,
 		breakdownData,
-        eventDates,
+		allEvents,
 		userStats,
 		gadEventsCount,
 		surveysCount,
@@ -268,17 +275,79 @@ export default function DashboardPage() {
 	const activeEventDays = useMemo(() => {
 		const days = new Set<number>();
 		const now = new Date();
-		eventDates.forEach((iso) => {
-			const d = new Date(iso);
-			if (
-				d.getFullYear() === now.getFullYear() &&
-				d.getMonth() === now.getMonth()
-			) {
-				days.add(d.getDate());
+		const curYear = now.getFullYear();
+		const curMonth = now.getMonth();
+
+		allEvents.forEach((e) => {
+			// Parse as local date to avoid UTC-offset shifting
+			const part = e.start_date?.split("T")[0];
+			if (!part) return;
+			const [y, m, d] = part.split("-").map(Number);
+			if (y === curYear && m - 1 === curMonth) days.add(d);
+		});
+
+		return days;
+	}, [allEvents]);
+
+	const ongoingEventDays = useMemo(() => {
+		const days = new Set<number>();
+		const now = new Date();
+		const curYear = now.getFullYear();
+		const curMonth = now.getMonth();
+		const monthStart = new Date(curYear, curMonth, 1);
+		const monthEnd = new Date(curYear, curMonth + 1, 0);
+
+		function toLocal(iso: string): Date {
+			const part = iso?.split("T")[0];
+			if (!part) return new Date(NaN);
+			const [y, m, d] = part.split("-").map(Number);
+			return new Date(y, m - 1, d);
+		}
+
+		allEvents.forEach((e) => {
+			const start = toLocal(e.start_date);
+			const end = e.end_date ? toLocal(e.end_date) : start;
+			if (isNaN(start.getTime())) return;
+			// Only events that started before this month but are still ongoing
+			if (start >= monthStart) return;
+			if (end < monthStart) return;
+
+			const cur = new Date(monthStart);
+			const cap = new Date(Math.min(end.getTime(), monthEnd.getTime()));
+			while (cur <= cap) {
+				days.add(cur.getDate());
+				cur.setDate(cur.getDate() + 1);
 			}
 		});
+
 		return days;
-	}, [eventDates]);
+	}, [allEvents]);
+
+	const selectedDateEvents = useMemo(() => {
+		if (!selectedDate) return null;
+		const dayStart = new Date(selectedDate);
+		dayStart.setHours(0, 0, 0, 0);
+		const dayEnd = new Date(selectedDate);
+		dayEnd.setHours(23, 59, 59, 999);
+		return allEvents
+			.filter((e) => {
+				const start = new Date(e.start_date);
+				const end = new Date(e.end_date);
+				return start <= dayEnd && end >= dayStart;
+			})
+			.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
+			.map((e) => ({
+				id: e.id,
+				time: new Date(e.start_date).toLocaleTimeString("en-US", {
+					hour: "2-digit",
+					minute: "2-digit",
+					hour12: false,
+				}),
+				title: e.title,
+				location: e.location,
+				category: e.category,
+			}));
+	}, [selectedDate, allEvents]);
 
 	return (
 		<div className="flex flex-col gap-5 w-full animate-in fade-in duration-500">
@@ -1049,12 +1118,11 @@ export default function DashboardPage() {
 				<aside className="flex flex-col gap-5 xl:w-[268px] shrink-0 pb-8">
 					{/* calendar */}
 					<Card variant="no-hover" className="p-4">
-						<div className="[&_button]:cursor-default [&_*]:cursor-default">
-							<MiniCalendar
-								eventDays={activeEventDays}
-								onDayClick={(date) => console.log(date)}
-							/>
-						</div>
+						<MiniCalendar
+							eventDays={activeEventDays}
+							ongoingDays={ongoingEventDays}
+							onDayClick={(date) => setSelectedDate(date)}
+						/>
 					</Card>
 
 					{/* timeline */}
@@ -1116,6 +1184,83 @@ export default function DashboardPage() {
 					onCancel={closeModal}
 				/>
 			</Modal>
+
+			{/* -------------------------------------- today events modal -------------------------------------- */}
+			<Modal
+				open={selectedDate !== null}
+				onClose={() => setSelectedDate(null)}
+				title={`Events on ${
+					selectedDate?.toLocaleDateString("en-US", {
+						weekday: "long",
+						month: "long",
+						day: "numeric",
+					}) ?? ""
+				}`}
+				modalStyle={{ maxWidth: 480 }}
+			>
+				{selectedDateEvents && selectedDateEvents.length === 0 ? (
+					<div className="flex flex-col items-center justify-center text-center gap-3 py-12">
+						<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+							<Calendar
+								size={26}
+								className="text-[var(--periwinkle)]"
+							/>
+						</div>
+						<div>
+							<p className="label text-[var(--primary-dark)]">
+								No events scheduled for this day
+							</p>
+						</div>
+					</div>
+				) : (
+					<div className="flex flex-col gap-2 py-1">
+						{selectedDateEvents?.map((event, i) => (
+							<button
+								key={i}
+								onClick={() => {
+									const full = allEvents.find((e) => e.id === event.id);
+									setSelectedDate(null);
+									if (full) setSelectedEvent(full);
+								}}
+								className="flex items-start gap-3 w-full text-left rounded-[8px] border border-black/[0.06] bg-white/60 px-3 py-2.5 hover:bg-[var(--periwinkle-light)] transition-colors cursor-pointer"
+							>
+								<span className="caption w-[34px] shrink-0 pt-0.5 text-[var(--gray)]">
+									{event.time}
+								</span>
+								<div className="flex-1 min-w-0">
+									<p
+										title={event.title}
+										className="caption-bold truncate"
+									>
+										{event.title}
+									</p>
+									{event.location && (
+										<p
+											title={event.location}
+											className="caption text-[var(--gray)] mt-0.5 truncate"
+										>
+											{event.location}
+										</p>
+									)}
+								</div>
+								<Badge variant="ghost" className="shrink-0">
+									{event.category}
+								</Badge>
+							</button>
+						))}
+					</div>
+				)}
+			</Modal>
+
+			{/* -------------------------------------- event detail modal -------------------------------------- */}
+			<EventDetailModal
+				event={selectedEvent}
+				onClose={() => setSelectedEvent(null)}
+				onEdit={(e) => {
+					setSelectedEvent(null);
+					router.push(`/admin/events?event=${e.id}`);
+				}}
+			/>
 		</div>
 	);
 }

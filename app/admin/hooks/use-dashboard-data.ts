@@ -18,8 +18,23 @@ export interface TimelineEvent {
   category: string;
 }
 
+export interface RawEvent {
+  id: string;
+  start_date: string;
+  end_date: string;
+  title: string;
+  location: string;
+  category: string;
+  description: string | null;
+  capacity: number | null;
+  banner_url: string | null;
+  registration_open: string | null;
+  registration_close: string | null;
+}
+
 export interface DashboardData {
 	eventDates: string[];
+	allEvents: RawEvent[];
 	eventAttendanceData: { month: string; attendees: number }[];
 	sexAtBirthData: { name: string; value: number }[];
 	genderIdentityData: { name: string; value: number }[];
@@ -32,7 +47,6 @@ export interface DashboardData {
 	loading: boolean; // static data (KPIs, charts, timeline)
 	attendanceLoading: boolean; // attendance chart only
 	error: string | null;
-	eventDates: string[];
 }
 
 const MONTH_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -166,7 +180,8 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
   const [loading,             setLoading]             = useState(true);
   const [attendanceLoading,   setAttendanceLoading]   = useState(true);
   const [error,               setError]               = useState<string | null>(null);
-    const [eventDates, setEventDates] = useState<string[]>([]);
+  const [eventDates,          setEventDates]          = useState<string[]>([]);
+  const [allEvents,           setAllEvents]           = useState<RawEvent[]>([]);
 
   // global data: GAD events, surveys, today's timeline not filter-dependent
   // runs once on mount
@@ -208,7 +223,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 				.order("start_date", { ascending: true });
 			const { data: eventRows, error: e4 } = await supabase
 				.from("event")
-				.select("start_date");
+				.select("id, start_date, end_date, title, location, category, description, capacity, banner_url, registration_open, registration_close");
 			if (e4) throw e4;
 
 			if (!cancelled) {
@@ -231,9 +246,24 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 					})),
 				);
                 setEventDates(
-					(eventRows ?? []).map(
-						(r: { start_date: string }) => r.start_date,
-					),
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(eventRows ?? []).map((r: any) => r.start_date as string),
+				);
+				setAllEvents(
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(eventRows ?? []).map((r: any) => ({
+						id: r.id as string,
+						start_date: r.start_date as string,
+						end_date: r.end_date as string,
+						title: r.title ?? "",
+						location: r.location ?? "",
+						category: r.category ?? "",
+						description: r.description ?? null,
+						capacity: r.capacity ?? null,
+						banner_url: r.banner_url ?? null,
+						registration_open: r.registration_open ?? null,
+						registration_close: r.registration_close ?? null,
+					})),
 				);
 			}
 		} catch (err: unknown) {
@@ -354,7 +384,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 
   return {
     eventAttendanceData, sexAtBirthData, genderIdentityData, breakdownData, eventDates,
-    userStats, gadEventsCount, surveysCount, todayEvents, filterOptions: STATIC_OPTIONS,
+    allEvents, userStats, gadEventsCount, surveysCount, todayEvents, filterOptions: STATIC_OPTIONS,
     loading, attendanceLoading, error,
   };
 }
