@@ -458,7 +458,7 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 											<span className="caption">Loading registrations…</span>
 										</div>
 									) : filteredRegistrations.length === 0 ? (
-										<Card variant="no-shadow" className="flex flex-col items-center justify-center text-center min-h-[160px] gap-3">
+										<Card variant="no-shadow" className="border border-dashed border-[rgba(45,42,74,0.12)] flex flex-col items-center justify-center text-center min-h-[160px] gap-3">
 											<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
 												<Users size={26} className="text-[var(--periwinkle)]" />
 											</div>
@@ -515,11 +515,12 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 											<span className="caption">Loading…</span>
 										</div>
 									) : attendedUsers.length === 0 ? (
-										<div className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl border border-dashed border-[rgba(45,42,74,0.12)]">
-											<ClipboardCheck size={24} className="text-[var(--gray)] opacity-40" />
-											<p className="caption">No attendees marked yet.</p>
-											<p className="caption text-center max-w-[250px]">Mark attendance in the Registrations tab using the checkboxes.</p>
-										</div>
+										<Card variant="no-shadow" className="border border-dashed border-[rgba(45,42,74,0.12)] flex flex-col items-center justify-center text-center min-h-[160px] gap-3">
+											<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+												<ClipboardCheck size={26} className="text-[var(--periwinkle)]" />
+											</div>
+											<p className="label text-[var(--primary-dark)]">No attendees marked yet</p>
+										</Card>
 									) : (
 										<div className="flex flex-col max-h-[420px] overflow-y-auto pr-1">
 											<div className="grid grid-cols-[1fr_1fr] gap-3 px-3 sticky top-0 bg-white">

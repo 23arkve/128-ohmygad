@@ -40,6 +40,7 @@ import {
 	Bar,
 	LabelList,
 } from "recharts";
+import { createClient } from "@/lib/supabase/client";
 import { useDashboardData, type RawEvent } from "./hooks/use-dashboard-data";
 import { useSurveyCompletionRates } from "./hooks/use-survey-completion-rates";
 import GlobalSearch from "@/components/global-search";
@@ -209,24 +210,30 @@ export default function DashboardPage() {
 		};
 	}
 
-	const handleEditSuccess = useCallback((updated?: EventFormData) => {
+	const handleEditSuccess = useCallback(async () => {
 		const prev = editFromDetailRef.current;
 		editFromDetailRef.current = null;
 		setEditTarget(null);
-		if (updated && prev) {
-			setSelectedEvent({
-				...prev,
-				...updated,
-				id: updated.id ?? prev.id,
-				description: updated.description ?? null,
-				capacity: updated.capacity ?? null,
-				banner_url: updated.banner_url ?? null,
-				registration_open: updated.registration_open ?? null,
-				registration_close: updated.registration_close ?? null,
-			});
-		} else if (prev) {
-			setSelectedEvent(prev);
-		}
+		if (!prev) return;
+		const supabase = createClient();
+		const { data } = await supabase
+			.from("event")
+			.select("id, start_date, end_date, title, location, category, description, capacity, banner_url, registration_open, registration_close")
+			.eq("id", prev.id)
+			.single();
+		setSelectedEvent(data ? {
+			id: data.id,
+			start_date: data.start_date,
+			end_date: data.end_date,
+			title: data.title ?? "",
+			location: data.location ?? "",
+			category: data.category ?? "",
+			description: data.description ?? null,
+			capacity: data.capacity ?? null,
+			banner_url: data.banner_url ?? null,
+			registration_open: data.registration_open ?? null,
+			registration_close: data.registration_close ?? null,
+		} : prev);
 	}, []);
 
 	const handleEditCancel = useCallback(() => {
