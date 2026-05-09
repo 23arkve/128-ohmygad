@@ -334,31 +334,29 @@ export function TextResponses({ responses }: { responses: ResponseRow[] }) {
         <TextResponseItem key={`${r.response_token}-${i}`} text={r.response_value || ""} />
       ))}
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-1">
-          <span className="body text-[var(--gray)]">
-            Page {page} of {totalPages}
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              className="btn btn-icon"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-              style={{ opacity: page <= 1 ? 0.35 : 1 }}
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              className="btn btn-icon"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              style={{ opacity: page >= totalPages ? 0.35 : 1 }}
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
+      <div className="flex items-center justify-between mt-1">
+        <span className="body text-[var(--gray)]">
+          Page {page} of {totalPages}
+        </span>
+        <div className="flex items-center gap-1">
+          <button
+            className="btn btn-icon"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+            style={{ opacity: page <= 1 ? 0.35 : 1 }}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            className="btn btn-icon"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            style={{ opacity: page >= totalPages ? 0.35 : 1 }}
+          >
+            <ChevronRight size={16} />
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

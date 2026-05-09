@@ -292,7 +292,7 @@ export default function EventsPage() {
 				<Card>
 					<div className="flex flex-col items-center justify-center gap-3 py-10">
 						<p className="caption text-[var(--error)]">
-							Error: {error}
+							Unable to load events. Please refresh the page.
 						</p>
 						<Button
 							variant="ghost"

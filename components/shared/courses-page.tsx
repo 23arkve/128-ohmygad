@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Typography, InputText } from "@snowball-tech/fractal";
 import { useSearchParams } from "next/navigation";
 import {
   SlidersHorizontal,
@@ -13,7 +12,9 @@ import {
   Search,
   Calendar,
   GraduationCap,
-  Users
+  Users,
+  ChevronUp, 
+  ChevronDown,
 } from "lucide-react";
 
 import {
@@ -44,8 +45,11 @@ type Course = {
   enrolled_count?: number;
 };
 
-type SortField = "title" | "semester" | "start_time";
+const SORT_FIELDS = ["title"] as const;
+type SortField = typeof SORT_FIELDS[number];
 type SortDirection = "asc" | "desc";
+
+
 
 interface SortState {
   field: SortField;
@@ -60,11 +64,6 @@ const SORT_OPTIONS: { label: string; field: SortField }[] = [
   { label: "Title", field: "title" },
 ];
 
-const CATEGORY_GRADIENT: Record<string, string> = {
-  "1st Semester": "linear-gradient(135deg, #F4A7B9 0%, #B8B5E8 100%)",
-  "2nd Semester": "linear-gradient(135deg, #F4A7B9 0%, #FAF8FF 100%)",
-  "Mid-Year": "linear-gradient(135deg, #B8B5E8 0%, #FAF8FF 100%)",
-};
 const DEFAULT_GRADIENT = "linear-gradient(135deg, #B8B5E8 0%, #2D2A4A 100%)";
 
 // --- Helper Component ---
@@ -99,10 +98,14 @@ export default function CoursesPage() {
     setPrevUrlSearch(urlSearch);
     setSearch(urlSearch);
   }
-  const [sort, setSort] = useState<SortState>({ field: "title", direction: "asc" });
-  const [filters, setFilters] = useState<FilterState>({ semester: new Set() });
-  const [activeSemesterChip, setActiveSemesterChip] = useState("All Semesters");
+  const [sort, setSort] = useState<SortState>({ field: "title", direction: "desc" });
   const [detailCourse, setDetailCourse] = useState<Course | null>(null);
+  const [toast, setToast] = useState<{ variant: "success" | "error"; title: string } | null>(null);
+
+  function SortIcon({ field }: { field: SortField }) {
+    if (sort.field !== field) return <span style={{ opacity: 0.35 }}>↑↓</span>;
+    return sort.direction === "asc" ? <span>↑</span> : <span>↓</span>;
+  }
 
   // Fetch Logic
   useEffect(() => {
@@ -122,51 +125,33 @@ export default function CoursesPage() {
   }, []);
 
   // Filter & Sort Logic
-  const semesters = useMemo(() => Array.from(new Set(courses.map((c) => c.semester).filter(Boolean))) as string[], [courses]);
+ 
   const filteredAndSorted = useMemo(() => {
     return courses
       .filter((c) => {
         const matchesSearch = `${c.title} ${c.description || ""}`.toLowerCase().includes(search.toLowerCase());
-        const matchesSemester = filters.semester.size === 0 || filters.semester.has(c.semester || "");
+        
 
-        return matchesSearch && matchesSemester;
+        return matchesSearch;
       })
       .sort((a, b) => {
-        const aVal = (a[sort.field] || "").toString().toLowerCase();
-        const bVal = (b[sort.field] || "").toString().toLowerCase();
-        return sort.direction === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      });
-  }, [courses, search, filters, sort]);
+        let aVal: any = a[sort.field as keyof Course];
+        let bVal: any = b[sort.field as keyof Course];
 
-  // Handlers
-  const toggleFilter = (type: keyof FilterState, value: string) => {
-    setFilters((prev) => {
-      const next = new Set(prev[type]);
-      next.has(value) ? next.delete(value) : next.add(value);
+        if (aVal == null && bVal == null) return 0;
+        if (aVal == null) return sort.direction === "asc" ? 1 : -1;
+        if (bVal == null) return sort.direction === "asc" ? -1 : 1;
 
-      // If we are modifying semesters via dropdown, reset the chip UI to "All" 
-      // if more than one is selected, otherwise sync it.
-      if (type === "semester") {
-        if (next.size === 1) {
-          setActiveSemesterChip(Array.from(next)[0]);
-        } else {
-          setActiveSemesterChip("All Semesters");
+        if (typeof aVal === "string" && typeof bVal === "string") {
+          aVal = aVal.toLowerCase();
+          bVal = bVal.toLowerCase();
         }
-      }
 
-      return { ...prev, [type]: next };
-    });
-  };
-
-  const handleSemesterChip = (sem: string) => {
-    setActiveSemesterChip(sem);
-    setFilters(prev => ({
-      ...prev,
-      semester: sem === "All Semesters" ? new Set() : new Set([sem])
-    }));
-  };
-
-  const totalActiveFilters = filters.semester.size;
+        if (aVal < bVal) return sort.direction === "asc" ? -1 : 1;
+        if (aVal > bVal) return sort.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+  }, [courses, search, sort]);
 
   const handleSort = (field: SortField) =>
     setSort((prev) => ({ field, direction: prev.field === field && prev.direction === "asc" ? "desc" : "asc" }));
@@ -192,58 +177,16 @@ export default function CoursesPage() {
 					/>
 
 					<div className="flex items-center gap-2">
-						{/* Sort Dropdown */}
-						<Dropdown
-							trigger={
-								<Button variant="ghost">
-									<ArrowUpDown size={15} />
-									<span className="hidden md:inline">
-										{" "}
-										{sortLabel}
-									</span>
-								</Button>
-							}
-						>
-							{SORT_OPTIONS.map(({ label, field }) => {
-								const isActive = sort.field === field;
-								return (
-									<DropdownItem
-										key={field}
-										onClick={() => handleSort(field)}
-									>
-										<span className="flex items-center gap-2">
-											<span
-												className={`w-1.5 h-1.5 rounded-full shrink-0 border-[1.5px] ${isActive ? "bg-[var(--primary-dark)] border-[var(--primary-dark)]" : "bg-transparent border-[rgba(45,42,74,0.20)]"}`}
-											/>
-											<span>
-												{isActive ? (
-													<strong>
-														{label}{" "}
-														{sort.direction ===
-														"asc"
-															? "↑"
-															: "↓"}
-													</strong>
-												) : (
-													label
-												)}
-											</span>
-										</span>
-									</DropdownItem>
-								);
-							})}
-							<DropdownDivider />
-							<DropdownItem
-								onClick={() =>
-									setSort({
-										field: "title",
-										direction: "asc",
-									})
-								}
-							>
-								Reset sort
-							</DropdownItem>
-						</Dropdown>
+						{/* Sort */}
+								<Button
+						variant="ghost"
+						onClick={() => handleSort("title")}
+						className="flex items-center gap-2"
+					>
+						<ArrowUpDown size={12} />
+						<span>Sort by Title</span>
+						<SortIcon field="title" />
+					</Button>
 					</div>
 				</div>
 			</div>
@@ -265,16 +208,6 @@ export default function CoursesPage() {
 							No guidelines found.{" "}
 						</p>
 					</div>
-					<Button
-						variant="ghost"
-						onClick={() => {
-							setFilters({ semester: new Set() });
-							setSearch("");
-							setActiveSemesterChip("All Semesters");
-						}}
-					>
-						Clear all filters
-					</Button>
 				</Card>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

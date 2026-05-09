@@ -38,7 +38,6 @@ import {
 	Legend,
 	BarChart,
 	Bar,
-	LabelList,
 } from "recharts";
 import { createClient } from "@/lib/supabase/client";
 import { useDashboardData, type RawEvent } from "./hooks/use-dashboard-data";
@@ -562,7 +561,7 @@ export default function DashboardPage() {
 												axisLine={false}
 												dy={10}
 												label={{
-													value: "Month",
+													value: "Dates",
 													position: "insideBottom",
 													offset: -25,
 													fill: "var(--primary-dark)",
@@ -1149,7 +1148,7 @@ export default function DashboardPage() {
 												</Bar>
 											</BarChart>
 										</ResponsiveContainer>
-										{surveyPageCount > 1 && (
+										{(surveyPageCount > 1 || surveySearch.trim()) && (
 											<div className="mt-4 flex items-center justify-end">
 												<Pagination
 													page={surveyPage}

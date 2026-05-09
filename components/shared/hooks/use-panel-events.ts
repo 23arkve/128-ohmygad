@@ -56,19 +56,18 @@ export function usePanelEvents() {
 			const { data, error } = await supabase
 				.from("event_registration")
 				.select(
-					`
-          status,
-          event (
-            id, title, location, start_date, end_date, banner_url, category, description
-          )
-        `,
+                    `
+                    status,
+                    event (
+                    id, title, location, start_date, end_date, banner_url, category, description
+                    )
+                    `,
 				)
 				.eq("user_id", user.id)
 				.neq("status", "cancelled")
 				.order("event(start_date)", { ascending: true });
 
 			if (error) {
-				console.error("Failed to fetch events:", error.message);
 				setLoading(false);
 				return;
 			}

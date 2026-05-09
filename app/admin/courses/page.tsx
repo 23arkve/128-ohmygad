@@ -128,8 +128,8 @@ export default function CoursesPage() {
   };
 
   function SortIcon({ field }: { field: SortField }) {
-    if (sort.field !== field) return <ArrowUpDown size={12} style={{ opacity: 0.35 }} />;
-    return sort.direction === "asc" ? <ChevronUp size={12} /> : <ChevronDown size={12} />;
+    if (sort.field !== field) return <span style={{ opacity: 0.35 }}>↑↓</span>;
+    return sort.direction === "asc" ? <span>↑</span> : <span>↓</span>;
   }
 
   // delete execution logic triggered by the modal
@@ -165,7 +165,7 @@ const confirmDelete = async () => {
     .eq("id", deleteTarget.id);
 
   if (error) {
-    setDeleteError(error.message || "Failed to delete course");
+    setDeleteError("Failed to delete guideline. Please try again.");
   } else {
     setCourses((prev) => prev.filter((e) => e.id !== deleteTarget.id));
     showToast("success", "Course deleted successfully");
@@ -272,8 +272,9 @@ const confirmDelete = async () => {
 						onClick={() => handleSort("title")}
 						className="flex items-center gap-2"
 					>
-						<SortIcon field="title" />
+						<ArrowUpDown size={12} />
 						<span>Sort by Title</span>
+						<SortIcon field="title" />
 					</Button>
 
 					<Button

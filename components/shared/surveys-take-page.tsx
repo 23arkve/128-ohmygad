@@ -192,7 +192,7 @@ export default function SurveyTakePage() {
           .limit(1);
 
         if (existingResponse && existingResponse.length > 0) {
-          console.log("DB check found existing response:", existingResponse, "for userId:", userId, "surveyId:", id);
+          
           // Already submitted, persist to localStorage so future loads are instant
           if (localKey && typeof window !== "undefined") {
             localStorage.setItem(localKey, "true");
@@ -332,7 +332,7 @@ export default function SurveyTakePage() {
       .insert(responseRows);
 
     if (insertError) {
-      setError("Failed to submit: " + insertError.message);
+      setError("Failed to submit your response. Please try again.");
       setIsSubmitting(false);
       return;
     }

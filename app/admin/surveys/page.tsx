@@ -203,7 +203,7 @@ export default function SurveysPage() {
     const { error } = await supabase.from("survey").delete().eq("id", deleteTarget.id);
 
     if (error) {
-      showToast("error", "Failed to delete survey", error.message);
+      showToast("error", "Failed to delete survey. Please try again.");
     } else {
       setSurveys((prev) => prev.filter((e) => e.id !== deleteTarget.id));
       showToast("success", "Survey deleted successfully");

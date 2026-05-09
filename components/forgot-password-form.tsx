@@ -29,7 +29,7 @@ export function ForgotPasswordForm({
       if (error) throw error;
       setSuccess(true);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError("Failed to send reset email. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -39,6 +39,7 @@ export function ForgotPasswordForm({
     <div className={cn("card max-w-md w-full mx-auto", className)} {...props}>
       {success ? (
         <div className="flex flex-col items-center text-center py-6">
+            
           <div className="w-16 h-16 rounded-full bg-[var(--periwinkle-light)] text-[var(--periwinkle)] flex items-center justify-center mb-6">
             <MailCheck className="w-8 h-8" strokeWidth={2.5} />
           </div>
@@ -53,13 +54,6 @@ export function ForgotPasswordForm({
       ) : (
         <>
           <div className="flex flex-col items-center mb-6 text-center">
-            <Image
-              src="/kasarian-upb-logo.svg"
-              alt="UPB Kasarian Gender Studies Program Logo"
-              width={80}
-              height={80}
-              className="mb-4"
-            />
             <h2 className="heading-lg">Reset Password</h2>
             <p className="body text-[var(--gray)] mt-1">
               Enter your email and we&apos;ll send you instructions to reset your password.

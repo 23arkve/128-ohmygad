@@ -33,7 +33,7 @@ import {
 } from "@/lib/constants";
 
 export type EventDetailData = {
-	id: string;
+	id?: string;
 	title: string;
 	category?: string | null;
 	start_date?: string | null;

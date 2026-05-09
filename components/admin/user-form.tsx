@@ -422,7 +422,7 @@ export default function UserForm({
 				router.refresh();
 			}
 		} catch (err: unknown) {
-			setError(err instanceof Error ? err.message : "An error occurred");
+			setError("Failed to save user. Please try again.");
 		} finally {
 			setIsLoading(false);
 		}
@@ -544,7 +544,7 @@ export default function UserForm({
 										label="Student Number *"
 										required
 										prefixIcon={<Hash size={15} />}
-										placeholder="e.g. 2021-12345"
+										placeholder="e.g. 202112345"
 										value={student_num}
 										onChange={handleStudentNumChange}
 									/>
@@ -880,7 +880,7 @@ export default function UserForm({
 							label="Student Number *"
 							required
 							prefixIcon={<Hash size={15} />}
-							placeholder="e.g. 2021-12345"
+							placeholder="e.g. 202112345"
 							value={student_num}
 							onChange={handleStudentNumChange}
 						/>

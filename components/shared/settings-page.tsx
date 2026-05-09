@@ -78,7 +78,7 @@ export default function SharedSettingsPage() {
       });
       setNewEmail(""); // clear input
     } catch (error: any) {
-      setToast({ type: "error", message: error.message || "Failed to update email." });
+      setToast({ type: "error", message: "Failed to update email. Please try again." });
     } finally {
       setSavingEmail(false);
     }
@@ -143,7 +143,7 @@ export default function SharedSettingsPage() {
         }   catch (error: any) {
                 setToast({
                     type: "error",
-                    message: error.message || "Failed to update password."
+                    message: "Failed to update password. Please try again."
                 });
         }   finally {
                 setSavingPassword(false);

@@ -136,7 +136,7 @@ export function MiniCalendar({
 			<div className="flex flex-col gap-1 mt-3 px-2">
 				<div className="flex items-center gap-2">
 					<span className="w-[4px] h-[4px] rounded-full bg-[var(--soft-pink)] shrink-0" />
-					<span className="text-[12px] uppercase tracking-wide text-[var(--gray)]">Event starts</span>
+					<span className="text-[12px] uppercase tracking-wide text-[var(--gray)]">Event start</span>
 				</div>
 				<div className="flex items-center gap-2">
 					<span className="w-[4px] h-[4px] rounded-full bg-[var(--periwinkle)] shrink-0" />

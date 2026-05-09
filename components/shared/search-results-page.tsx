@@ -137,7 +137,7 @@ function SearchResultsContent({ role }: { role: string }) {
           <div className="flex flex-col items-center justify-center gap-3 py-12">
             <Search size={32} style={{ opacity: 0.2 }} />
             <p className="caption">No results found for your search.</p>
-            <Button variant={"outline"} size="sm" onClick={() => router.back()}>
+            <Button variant={"ghost"} size="sm" onClick={() => router.back()}>
               Go back
             </Button>
           </div>

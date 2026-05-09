@@ -249,7 +249,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
       if (!res.ok) throw new Error(data.error || "Failed to fetch user");
       setEditUser(data);
     } catch (err: any) {
-      setEditError(err.message || "Unknown error");
+      setEditError("Failed to update user. Please try again.");
     } finally {
       setEditLoading(false);
     }
@@ -273,7 +273,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
       if (!res.ok) throw new Error(data.error || "Failed to fetch user");
       setSelectedUser(data);
     } catch (err: unknown) {
-      setDetailError(err instanceof Error ? err.message : "Unknown error");
+      setDetailError("Failed to load user details. Please try again.");
     } finally {
       setDetailLoading(false);
     }
@@ -334,8 +334,8 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
         showToast("success", "User deleted successfully");
       }
     } catch (err: any) {
-      setDeleteError(err.message || "Failed to delete user.");
-      showToast("error", "Failed to delete user", err.message);
+      setDeleteError("Failed to delete user. Please try again.");
+      showToast("error", "Failed to delete user. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -351,7 +351,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
       width: "20%",
       render: (p) => (
         <span 
-        title={p.full_name}>
+        title={p.full_name ?? undefined}>
         <div className="flex items-center gap-2">
             <div className="font-semibold text-[13px] text-primary-dark">{p.full_name ?? "—"}</div>
         </div>
@@ -363,7 +363,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     width: "20%",
     render: (p) => (
       <span 
-      title={p.email}>
+      title={p.email ?? undefined}>
       <div className="flex items-center gap-2">
         <div className="text-[13px] text-primary-dark">{p.email ?? "—"}</div>
       </div>
