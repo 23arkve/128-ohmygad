@@ -277,7 +277,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
                     minLength={10}
-                    maxLength={250}
+                    maxLength={1000}
                   />
                 </div>
               </div>
@@ -332,11 +332,24 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 <Input
                   label="Capacity *"
                   type="number"
+                  min="0"
                   placeholder="e.g. 30"
                   required
                   prefixIcon={<Users size={15} />}
                   value={capacity ?? ""}
-                  onChange={(e) => setCapacity(e.target.value === "" ? null : Number(e.target.value))}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setCapacity(null);
+                    } else {
+                      setCapacity(Math.max(0, Number(val)));
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === '-') {
+                      e.preventDefault();
+                    }
+                  }}
                 />
 
                 <Select 
