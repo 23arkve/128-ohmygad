@@ -25,7 +25,7 @@ import {
 	Checkbox,
 	Tabs,
 } from "@/components/ui";
-import { type EventFormData, deriveStatus } from "@/components/admin/event-form";
+import {deriveStatus } from "@/components/admin/event-form";
 import {
 	CATEGORY_GRADIENT,
 	DEFAULT_GRADIENT,
