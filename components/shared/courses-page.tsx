@@ -100,6 +100,7 @@ export default function CoursesPage() {
   }
   const [sort, setSort] = useState<SortState>({ field: "title", direction: "desc" });
   const [detailCourse, setDetailCourse] = useState<Course | null>(null);
+  const [toast, setToast] = useState<{ variant: "success" | "error"; title: string } | null>(null);
 
   function SortIcon({ field }: { field: SortField }) {
     if (sort.field !== field) return <span style={{ opacity: 0.35 }}>↑↓</span>;
