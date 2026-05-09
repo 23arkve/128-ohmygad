@@ -1148,7 +1148,7 @@ export default function DashboardPage() {
 												</Bar>
 											</BarChart>
 										</ResponsiveContainer>
-										{surveyPageCount > 1 && (
+										{(surveyPageCount > 1 || surveySearch.trim()) && (
 											<div className="mt-4 flex items-center justify-end">
 												<Pagination
 													page={surveyPage}
