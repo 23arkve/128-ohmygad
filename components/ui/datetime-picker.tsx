@@ -136,7 +136,7 @@ function Spinner({ value, onUp, onDn, format }: {
 // 
 export function DateTimePicker({
   label, mode = "datetime", placeholder,
-  value, onChange, minDate, maxDate, required, error,
+  value, onChange, minDate = new Date(), maxDate, required, error,
 }: DateTimePickerProps) {
 
   // parse incoming value 
@@ -347,7 +347,7 @@ export function DateTimePicker({
                       !day ? "empty" : "",
                       day && isSel(day) ? "selected" : "",
                       day && isToday(day) && !isSel(day) ? "today" : "",
-                      day && isDis(day) ? "disabled" : "",
+                      day && isDis(day) && !isSel(day) ? "disabled" : "",
                     ].filter(Boolean).join(" ")}
                   >
                     {day ?? ""}
