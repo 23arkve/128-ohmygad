@@ -25,7 +25,7 @@ import {
 	Checkbox,
 	Tabs,
 } from "@/components/ui";
-import {deriveStatus } from "@/components/admin/event-form";
+import { deriveStatus } from "@/components/admin/event-form";
 import {
 	CATEGORY_GRADIENT,
 	DEFAULT_GRADIENT,
@@ -360,7 +360,16 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 							<div className="flex flex-col gap-3">
 								<div className="flex items-start gap-3 caption sm:text-sm text-[var(--gray)]">
 									<Calendar size={15} className="shrink-0 mt-0.5" />
-									<span>
+									<span
+										title={
+												event.start_date 
+													? `${new Date(event.start_date).toLocaleDateString("en-PH", {month: 'long', day: 'numeric', year: 'numeric' })}` + 
+													(event.end_date && event.end_date !== event.start_date 
+														? ` — ${new Date(event.end_date).toLocaleDateString("en-PH", {month: 'long', day: 'numeric', year: 'numeric' })}` 
+														: '')
+													: "No date set"
+											}
+									>
 										{event.start_date
 											? new Date(event.start_date).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })
 											: "—"}
@@ -371,7 +380,14 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 								</div>
 								<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
 									<Clock size={15} className="shrink-0" />
-									<span>
+									<span
+										title={
+												event.start_date 
+													? `${new Date(event.start_date).toLocaleTimeString("en-PH", { hour: 'numeric', minute: '2-digit' })}` + 
+													(event.end_date ? ` — ${new Date(event.end_date).toLocaleTimeString("en-PH", { hour: 'numeric', minute: '2-digit' })}` : '')
+													: "No date set"
+											}
+									>
 										{event.start_date
 											? new Date(event.start_date).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })
 											: "—"}
@@ -382,23 +398,40 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 								</div>
 								<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
 									<MapPin size={15} className="shrink-0" />
-									<span className="truncate">{event.location ?? "—"}</span>
+									<span
+										className="truncate" title={event.location ?? "—"}
+									>
+										{event.location ?? "—"}
+									</span>
 								</div>
 								<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
 									<Users size={15} className="shrink-0" />
-									<span>Capacity: {event.capacity ?? "—"}</span>
+									<span
+										title={`Capacity: ${event.capacity ?? "—"}`}
+									>
+										Capacity: {event.capacity ?? "—"}
+									</span>
 								</div>
 								{(event.registration_open || event.registration_close) && (
 									<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
 										<ClipboardList size={15} className="shrink-0" />
-										<span>
+										<span
+										title={
+												event.registration_open 
+													? `Registration: ${new Date(event.registration_open).toLocaleDateString("en-PH", {month: 'long', day: 'numeric', year: 'numeric' })}` + 
+													(event.registration_close && event.registration_close !== event.registration_open 
+														? ` — ${new Date(event.registration_close).toLocaleDateString("en-PH", {month: 'long', day: 'numeric', year: 'numeric' })}` 
+														: '')
+													: "No date set"
+											}										
+										>
 											Registration:&nbsp;
 											{event.registration_open
-												? new Date(event.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric" })
+												? new Date(event.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: 'numeric' })
 												: "?"}
 											&nbsp;—&nbsp;
 											{event.registration_close
-												? new Date(event.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric" })
+												? new Date(event.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: 'numeric' })
 												: "?"}
 										</span>
 									</div>
