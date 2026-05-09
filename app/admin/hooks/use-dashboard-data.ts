@@ -361,17 +361,47 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
         }
 
         const frame = buildBuckets(range);
-        const results = await Promise.all(
-          frame.map(async ({ label, gte, lt }) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let q: any = supabase.from("event_registration").select("id", { count: "exact", head: true })
-              .eq("attended", true).gte("registration_date", gte).lt("registration_date", lt);
-            if (filteredIds !== null) q = q.in("user_id", filteredIds);
-            const { count, error: me } = await q;
-            if (me) throw me;
-            return { month: label, attendees: count ?? 0 };
-          })
-        );
+
+        // fetch all events that start before the range ends
+        //    no end_date filter here
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: events, error: evErr } = await supabase
+          .from("event")
+          .select("id, start_date, end_date")
+          .lt("start_date", frame[frame.length - 1].lt);
+        if (evErr) throw evErr;
+
+        const eventIds = (events ?? []).map((e: { id: string }) => e.id);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const eventMap = new Map((events ?? []).map((e: any) => [e.id, e]));
+
+        // fetch attended registrations for those events + apply user filters if any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let regQuery: any = supabase
+          .from("event_registration")
+          .select("event_id, user_id")
+          .eq("attended", true);
+        if (eventIds.length > 0) regQuery = regQuery.in("event_id", eventIds);
+        else regQuery = regQuery.eq("event_id", "");
+        if (filteredIds !== null) regQuery = regQuery.in("user_id", filteredIds);
+        const { data: regs, error: regErr } = await regQuery;
+        if (regErr) throw regErr;
+
+        // client-side bucketing. a registration counts in every bucket its event spans.
+        //    end_date falls back to start_date for single-day / null-end events.
+        const results = frame.map(({ label, gte, lt }) => {
+          const bucketStart = new Date(gte);
+          const bucketEnd   = new Date(lt);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const count = (regs ?? []).filter((reg: any) => {
+            const ev = eventMap.get(reg.event_id);
+            if (!ev?.start_date) return false;
+            const eventStart = new Date(ev.start_date);
+            const eventEnd   = ev.end_date ? new Date(ev.end_date) : eventStart;
+            return eventStart < bucketEnd && eventEnd >= bucketStart;
+          }).length;
+          return { month: label, attendees: count };
+        });
         if (!cancelled) setEventAttendanceData(results);
       } catch (err: unknown) {
         if (!cancelled) setError((err as Error)?.message ?? "Failed to load attendance data");
