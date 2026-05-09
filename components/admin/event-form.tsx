@@ -277,7 +277,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
                     minLength={10}
-                    maxLength={250}
+                    maxLength={1000}
                   />
                 </div>
               </div>
