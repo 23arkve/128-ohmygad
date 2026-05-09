@@ -37,6 +37,10 @@
     color: var(--color-base-black);
   }
 }
+/* https://github.com/recharts/recharts/issues/4790 */
+.recharts-wrapper *:focus:not(:focus-visible) {
+    outline: none !important;
+}
 
 /* ------------------------------------------------------------------─
    RESET
