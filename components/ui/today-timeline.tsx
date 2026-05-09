@@ -3,6 +3,7 @@
 import { MapPin } from "lucide-react";
 
 export interface TimelineEvent {
+  id: string;
   time: string;
   title: string;
   location?: string;
@@ -24,9 +25,10 @@ function categoryColor(cat: string) {
 interface TodayTimelineProps {
   events: TimelineEvent[];
   loading?: boolean;
+  onEventClick?: (id: string) => void;
 }
 
-export function TodayTimeline({ events, loading }: TodayTimelineProps) {
+export function TodayTimeline({ events, loading, onEventClick }: TodayTimelineProps) {
   const todayLabel = new Date().toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -72,7 +74,10 @@ export function TodayTimeline({ events, loading }: TodayTimelineProps) {
               <span className="caption w-[34px] shrink-0 pt-1">
                 {item.time}
               </span>
-              <div className="flex-1 min-w-0 rounded-[8px] border border-black/[0.06] bg-white/60 px-2.5 py-2">
+              <button
+                onClick={() => onEventClick?.(item.id)}
+                className={`flex-1 min-w-0 rounded-[8px] border border-black/[0.06] bg-white/60 px-2.5 py-2 text-left transition-colors ${onEventClick ? "hover:bg-[var(--periwinkle-light)] cursor-pointer" : "cursor-default"}`}
+              >
                 <p title={item.title} className="caption-bold truncate">
                   {item.title}
                 </p>
@@ -82,11 +87,7 @@ export function TodayTimeline({ events, loading }: TodayTimelineProps) {
                     <span className="truncate">{item.location}</span>
                   </p>
                 )}
-              </div>
-              <span
-                className="w-[3px] self-stretch rounded-full shrink-0 mt-0.5"
-                style={{ background: categoryColor(item.category) }}
-              />
+              </button>
             </div>
           ))}
         </div>
