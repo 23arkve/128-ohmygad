@@ -254,8 +254,8 @@ export default function EventsPage() {
 			...events.map((e) => [
 				e.title,
 				e.category ?? "—",
-				regCountMap.get(e.id) ?? 0,
-				attendedCountMap.get(e.id) ?? 0,
+				regCountMap.get(e.id ?? "") ?? 0,
+				attendedCountMap.get(e.id ?? "") ?? 0,
 				deriveStatus(e.start_date ?? "", e.end_date ?? ""),
 				e.description ?? "—",
 				e.location ?? "—",
