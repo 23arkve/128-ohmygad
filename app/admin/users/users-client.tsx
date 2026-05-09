@@ -351,7 +351,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
       width: "20%",
       render: (p) => (
         <span 
-        title={p.full_name}>
+        title={p.full_name ?? undefined}>
         <div className="flex items-center gap-2">
             <div className="font-semibold text-[13px] text-primary-dark">{p.full_name ?? "—"}</div>
         </div>
@@ -363,7 +363,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     width: "20%",
     render: (p) => (
       <span 
-      title={p.email}>
+      title={p.email ?? undefined}>
       <div className="flex items-center gap-2">
         <div className="text-[13px] text-primary-dark">{p.email ?? "—"}</div>
       </div>

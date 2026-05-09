@@ -18,7 +18,6 @@ import {
 	CheckCircle2,
 	VenusAndMars,
 	IdCard,
-	IdCardLanyard,
 	Mail,
 	MessageCircle,
 	AtSign,

@@ -102,6 +102,7 @@ export default function CoursesPage() {
   const [filters, setFilters] = useState<FilterState>({ semester: new Set() });
   const [activeSemesterChip, setActiveSemesterChip] = useState("All Semesters");
   const [detailCourse, setDetailCourse] = useState<Course | null>(null);
+  const [toast, setToast] = useState<{ variant: "success" | "error"; title: string } | null>(null);
 
   // Fetch Logic
   useEffect(() => {
