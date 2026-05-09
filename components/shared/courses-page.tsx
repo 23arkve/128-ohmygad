@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Typography, InputText } from "@snowball-tech/fractal";
 import { useSearchParams } from "next/navigation";
 import {
   SlidersHorizontal,

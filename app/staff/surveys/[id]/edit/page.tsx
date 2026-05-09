@@ -60,7 +60,7 @@ export default function EditSurveyPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <Typography variant="body-1" className="text-fractal-text-placeholder">
+        <Typography variant="body-1" className="text-[var(--gray)]">
           Loading survey...
         </Typography>
       </div>
@@ -75,7 +75,7 @@ export default function EditSurveyPage() {
         </Typography>
         <button
           onClick={() => router.push("/staff/surveys")}
-          className="underline text-sm text-fractal-text-placeholder hover:text-fractal-text-default transition-colors"
+          className="underline text-sm text-[var(--gray)] hover:text-[var(--primary-dark)] transition-colors"
         >
           Back to Surveys
         </button>
