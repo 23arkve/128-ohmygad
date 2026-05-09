@@ -132,7 +132,7 @@ export default function EventsPage() {
 	} | null>(null);
 
 	// ref-tracked timer so clearing toast never leaks after unmount
-	const toastTimerRef = useRef<ReturnType<typeof setTimeout>>();
+	const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	const showToast = useCallback(
 		(variant: "success" | "error", title: string, message?: string) => {
@@ -150,7 +150,7 @@ export default function EventsPage() {
 	const [detailEvent, setDetailEvent] = useState<EventFormData | null>(null);
 	const editFromDetailRef = useRef<EventFormData | null>(null);
 
-	const fetchAbortRef = useRef<AbortController>();
+	const fetchAbortRef = useRef<AbortController | undefined>(undefined);
 
 	const openDetail = useCallback(
 		(event: EventFormData) => {
