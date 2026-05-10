@@ -91,6 +91,7 @@ export async function POST(req: Request) {
         const { error: profileError } = await supabaseAdmin
             .from("profile")
             .update({
+                email,
                 full_name,
                 display_name: display_name || null,
                 role,

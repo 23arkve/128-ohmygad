@@ -83,6 +83,7 @@ export async function PATCH(req: Request) {
         // 2. Build profile update with only provided fields
         const profileUpdatePayload: Record<string, unknown> = {};
 
+        if (email !== undefined) profileUpdatePayload.email = email;
         if (full_name !== undefined) profileUpdatePayload.full_name = full_name;
         if (display_name !== undefined) profileUpdatePayload.display_name = display_name || null;
         if (role !== undefined) profileUpdatePayload.role = role;
