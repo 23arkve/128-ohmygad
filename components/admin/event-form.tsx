@@ -204,12 +204,6 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
       return;
     }
 
-    if (capacity !== null && capacity > 300) {
-      setError("Capacity must be at most 300.");
-      setIsLoading(false);
-      return;
-    }
-
     const payload = {
       title,
       description,
@@ -289,7 +283,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 prefixIcon={<MapPin size={15} />}
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                maxLength={250}
+                maxLength={100}
               />
 
               {/* banner image */}
@@ -332,7 +326,8 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 <Input
                   label="Capacity *"
                   type="number"
-                  min="0"
+                  min="1"
+                  max="500"
                   placeholder="e.g. 30"
                   required
                   prefixIcon={<Users size={15} />}
@@ -342,7 +337,8 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                     if (val === "") {
                       setCapacity(null);
                     } else {
-                      setCapacity(Math.max(0, Number(val)));
+                      const num = Number(val);
+                      setCapacity(Math.min(500, Math.max(0, num)));
                     }
                   }}
                   onKeyDown={(e) => {

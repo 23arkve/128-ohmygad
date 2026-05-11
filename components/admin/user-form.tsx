@@ -474,7 +474,7 @@ export default function UserForm({
 								label="Full Name"
 								required
 								prefixIcon={<User size={15} />}
-								maxLength={64}
+								maxLength={100}
 								placeholder="e.g. Maria Santos"
 								value={full_name}
 								onChange={(e) => setFullName(e.target.value)}
@@ -484,6 +484,7 @@ export default function UserForm({
 								type="email"
 								required
 								prefixIcon={<Mail size={15} />}
+								maxLength={50}
 								placeholder="m@up.edu.ph"
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
@@ -496,7 +497,7 @@ export default function UserForm({
 								}
 								type="password"
 								required={!isEdit}
-								maxLength={128}
+								maxLength={100}
 								prefixIcon={<Lock size={15} />}
 								placeholder={
 									isEdit
@@ -528,7 +529,7 @@ export default function UserForm({
 								placeholder="Nickname or preferred name"
 								value={display_name}
 								onChange={(e) => setDisplayName(e.target.value)}
-								maxLength={32}
+								maxLength={30}
 							/>
 							<Input
 								label="Contact Number (optional)"
@@ -665,6 +666,7 @@ export default function UserForm({
 									placeholder="City, Province"
 									value={address}
 									onChange={(e) => setAddress(e.target.value)}
+									maxLength={64}
 								/>
 							</div>
 						</div>
@@ -996,6 +998,7 @@ export default function UserForm({
 					placeholder="City, Province"
 					value={address}
 					onChange={(e) => setAddress(e.target.value)}
+					maxLength={64}
 				/>
 				<Select
 					label="Pronouns"

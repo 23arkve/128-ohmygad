@@ -353,7 +353,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
-                    maxLength={250}
+                    maxLength={500}
                   />
                 </div>
               </div>
@@ -447,7 +447,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                   placeholder="e.g. How would you rate this event?"
                   value={question.question_text}
                   onChange={(e) => updateQuestion(qIndex, { question_text: e.target.value })}
-                  maxLength={250}
+                  maxLength={500}
                 />
 
                 <Select
