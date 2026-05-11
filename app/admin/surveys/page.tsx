@@ -47,6 +47,14 @@ export default function SurveysPage() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [prevUrlSearch, setPrevUrlSearch] = useState(searchParams.get("search") || "");
 
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [analyticsTarget, setAnalyticsTarget] = useState<SurveyFormData | null>(null);
+  const [sort, setSort] = useState<{ field: SortField; direction: "asc" | "desc"}>({ field: "open_at", direction: "desc"});
+  const [statusFilters, setStatusFilters] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
+
   // Sync search state with URL parameter synchronously to avoid "previous search" flash
   const urlSearch = searchParams.get("search") || "";
   if (urlSearch !== prevUrlSearch) {
@@ -57,14 +65,6 @@ export default function SurveysPage() {
       setStatusFilters(new Set());
     }
   }
-
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [analyticsTarget, setAnalyticsTarget] = useState<SurveyFormData | null>(null);
-  const [sort, setSort] = useState<{ field: SortField; direction: "asc" | "desc"}>({ field: "open_at", direction: "desc"});
-  const [statusFilters, setStatusFilters] = useState<Set<string>>(new Set());
-  const [page, setPage] = useState(1);
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<SurveyFormData | null>(null);
