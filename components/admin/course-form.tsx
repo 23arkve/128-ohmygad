@@ -113,7 +113,7 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
-                    maxLength={5000}
+                    maxLength={100000}
                   />
                 </div>
               </div>

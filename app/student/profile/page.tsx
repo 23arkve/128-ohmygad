@@ -162,6 +162,7 @@ export default function StudentProfilePage() {
   ) => setProfile((p) => ({ ...p, [field]: e.target.value }));
 
   const isChanged = initialProfile ? JSON.stringify(profile) !== JSON.stringify(initialProfile) : false;
+  const displayed = initialProfile ?? profile;
 
   if (loading) {
     return (
@@ -183,69 +184,69 @@ export default function StudentProfilePage() {
           <Card variant="no-hover" className="flex flex-col items-center text-center p-4 lg:p-6">
 
             {/* user details */}
-            <h2 className="heading-lg mb-1">{profile.full_name || "Your Name"}</h2>
+            <h2 className="heading-lg mb-1">{displayed.full_name || "Your Name"}</h2>
             <p className="text-sm text-[var(--gray)] mb-2">
-              {profile.display_name ? `${profile.display_name}` : "No display name set"}
+              {displayed.display_name ? `${displayed.display_name}` : "No display name set"}
             </p>
 
             <div className="flex flex-wrap justify-center gap-2 mb-4">
               <Badge variant="periwinkle" dot>Student</Badge>
-              {profile.student_num && <Badge variant="pink-light">#{profile.student_num}</Badge>}
-              {profile.program && <Badge variant="dark">{profile.program}</Badge>}
+              {displayed.student_num && <Badge variant="pink-light">#{displayed.student_num}</Badge>}
+              {displayed.program && <Badge variant="dark">{displayed.program}</Badge>}
             </div>
 
             {/* gso progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.gso_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.gso_attended ?? 0) / 2) * 100, 100)}
                 variant="gradient"
                 label="GSO Attendance"
-                sublabel={`${profile.gso_attended ?? 0} / 2 completed`}
+                sublabel={`${displayed.gso_attended ?? 0} / 2 completed`}
               />
             </div>
             {/* asho progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.asho_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.asho_attended ?? 0) / 2) * 100, 100)}
                 variant="gradient"
                 label="ASHO Attendance"
-                sublabel={`${profile.asho_attended ?? 0} / 2 completed`}
+                sublabel={`${displayed.asho_attended ?? 0} / 2 completed`}
               />
             </div>
             {/* forums progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.forum_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.forum_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Forums Attended"
-                sublabel={`${profile.forum_attended ?? 0} attended`}
+                sublabel={`${displayed.forum_attended ?? 0} attended`}
               />
             </div>
             {/* research progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.research_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.research_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Research Attended"
-                sublabel={`${profile.research_attended ?? 0} attended`}
+                sublabel={`${displayed.research_attended ?? 0} attended`}
               />
             </div>
             {/* training progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.training_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.training_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Trainings Attended"
-                sublabel={`${profile.training_attended ?? 0} attended`}
+                sublabel={`${displayed.training_attended ?? 0} attended`}
               />
             </div>
             {/* workshops progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.workshop_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.workshop_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Workshops Attended"
-                sublabel={`${profile.workshop_attended ?? 0} attended`}
+                sublabel={`${displayed.workshop_attended ?? 0} attended`}
               />
             </div>
 
