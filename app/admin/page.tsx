@@ -21,6 +21,7 @@ import {
 	EmptyFilters,
 	Modal,
 	SearchBar,
+    PulsingLoader,
 } from "@/components/ui";
 import { Pagination } from "@/components/pagination";
 import type { DateRange, DashboardFilters } from "@/components/ui";
@@ -214,7 +215,7 @@ export default function DashboardPage() {
 
 	// quick action modals
 	const [activeModal, setActiveModal] = useState<
-		"event" | "user" | "course" | "survey" | null
+		"event" | "user" | "guideline" | "survey" | null
 	>(null);
 	const closeModal = () => setActiveModal(null);
 
@@ -447,7 +448,7 @@ export default function DashboardPage() {
 					<div className="flex flex-col gap-5">
 						<GlobalSearch
 							role="admin"
-							placeholder="Search events, courses, surveys..."
+							placeholder="Search events, guidelines, surveys..."
 						/>
 						<div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
 							<StatCard
@@ -527,10 +528,7 @@ export default function DashboardPage() {
 							<div className="flex-1 w-full min-h-[200px] cursor-default select-none relative">
 								{attendanceLoading ? (
 									<div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-xl z-10">
-										<span className="caption animate-pulse">
-											{" "}
-											Loading…{" "}
-										</span>
+										<PulsingLoader variant="breath" />
 									</div>
 								) : eventAttendanceData?.length === 0 ? (
 									<Card
@@ -670,7 +668,7 @@ export default function DashboardPage() {
 								<Button
 									variant="soft"
 									className="w-full justify-between"
-									onClick={() => setActiveModal("course")}
+									onClick={() => setActiveModal("guideline")}
 								>
 									<BookOpen size={16} /> New Guideline
 								</Button>
@@ -704,10 +702,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[170px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : filteredColleges.length === 0 ? (
 										<Card
@@ -815,10 +810,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[190px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : !sexAtBirthData?.length ? (
 										<Card
@@ -853,7 +845,7 @@ export default function DashboardPage() {
 													paddingAngle={2}
 													dataKey="value"
 													nameKey="name"
-                                                    stroke=""
+													stroke=""
 												>
 													{sexAtBirthData.map(
 														(
@@ -907,10 +899,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[190px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : !filteredGenders.length ? (
 										<Card
@@ -945,7 +934,7 @@ export default function DashboardPage() {
 													paddingAngle={2}
 													dataKey="value"
 													nameKey="name"
-                                                    stroke=""
+													stroke=""
 												>
 													{filteredGenders.map(
 														(
@@ -1022,10 +1011,7 @@ export default function DashboardPage() {
 							<div className="w-full min-h-[220px] cursor-default select-none mt-2">
 								{surveyCompletionLoading ? (
 									<div className="flex items-center justify-center h-full">
-										<span className="caption animate-pulse">
-											{" "}
-											Loading survey data…{" "}
-										</span>
+										<PulsingLoader variant="breath" />
 									</div>
 								) : (surveyCompletionData?.length ?? 0) ===
 								  0 ? (
@@ -1140,14 +1126,36 @@ export default function DashboardPage() {
 														SURVEY_COMPLETED_COLOR
 													}
 													barSize={24}
-													onMouseEnter={() => { hoveredSurveyBarKey.current = "completedPct"; }}
-													onMouseLeave={() => { hoveredSurveyBarKey.current = null; }}
+													onMouseEnter={() => {
+														hoveredSurveyBarKey.current =
+															"completedPct";
+													}}
+													onMouseLeave={() => {
+														hoveredSurveyBarKey.current =
+															null;
+													}}
 													shape={(props: any) => {
-														const { x, y, width, height, payload } = props;
-														if (width <= 0) return <></>;
+														const {
+															x,
+															y,
+															width,
+															height,
+															payload,
+														} = props;
+														if (width <= 0)
+															return <></>;
 														// Round right side only if incomplete is 0
-														const r = (payload.incompletePct === 0) ? 6 : [6, 0, 0, 6];
-														return <Rectangle {...props} radius={r} />;
+														const r =
+															payload.incompletePct ===
+															0
+																? 6
+																: [6, 0, 0, 6];
+														return (
+															<Rectangle
+																{...props}
+																radius={r}
+															/>
+														);
 													}}
 												>
 													{/*--<LabelList
@@ -1167,14 +1175,36 @@ export default function DashboardPage() {
 														SURVEY_INCOMPLETE_COLOR
 													}
 													barSize={24}
-													onMouseEnter={() => { hoveredSurveyBarKey.current = "incompletePct"; }}
-													onMouseLeave={() => { hoveredSurveyBarKey.current = null; }}
+													onMouseEnter={() => {
+														hoveredSurveyBarKey.current =
+															"incompletePct";
+													}}
+													onMouseLeave={() => {
+														hoveredSurveyBarKey.current =
+															null;
+													}}
 													shape={(props: any) => {
-														const { x, y, width, height, payload } = props;
-														if (width <= 0) return <></>;
+														const {
+															x,
+															y,
+															width,
+															height,
+															payload,
+														} = props;
+														if (width <= 0)
+															return <></>;
 														// Round left side only if completed is 0
-														const r = (payload.completedPct === 0) ? 6 : [0, 6, 6, 0];
-														return <Rectangle {...props} radius={r} />;
+														const r =
+															payload.completedPct ===
+															0
+																? 6
+																: [0, 6, 6, 0];
+														return (
+															<Rectangle
+																{...props}
+																radius={r}
+															/>
+														);
 													}}
 												>
 													{/*--<LabelList
@@ -1192,7 +1222,8 @@ export default function DashboardPage() {
 												</Bar>
 											</BarChart>
 										</ResponsiveContainer>
-										{(surveyPageCount > 1 || surveySearch.trim()) && (
+										{(surveyPageCount > 1 ||
+											surveySearch.trim()) && (
 											<div className="mt-4 flex items-center justify-end">
 												<Pagination
 													page={surveyPage}
@@ -1222,13 +1253,13 @@ export default function DashboardPage() {
 					{/* timeline */}
 					<Card variant="no-hover" className="p-4">
 						<TodayTimeline
-                            events={todayEvents}
-                            loading={loading}
-                            onEventClick={(id) => {
-                                const full = allEvents.find((e) => e.id === id);
-                                if (full) setSelectedEvent(full);
-                            }}
-                        />
+							events={todayEvents}
+							loading={loading}
+							onEventClick={(id) => {
+								const full = allEvents.find((e) => e.id === id);
+								if (full) setSelectedEvent(full);
+							}}
+						/>
 					</Card>
 				</aside>
 			</div>
@@ -1260,7 +1291,7 @@ export default function DashboardPage() {
 
 			{/* -------------------------------------- guideline modal -------------------------------------- */}
 			<Modal
-				open={activeModal === "course"}
+				open={activeModal === "guideline"}
 				onClose={closeModal}
 				title="Add Guideline"
 				modalStyle={{ maxWidth: 860 }}
@@ -1319,7 +1350,9 @@ export default function DashboardPage() {
 							<button
 								key={i}
 								onClick={() => {
-									const full = allEvents.find((e) => e.id === event.id);
+									const full = allEvents.find(
+										(e) => e.id === event.id,
+									);
 									setSelectedDate(null);
 									if (full) setSelectedEvent(full);
 								}}
