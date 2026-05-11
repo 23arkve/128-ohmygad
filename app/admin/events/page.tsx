@@ -92,22 +92,6 @@ export default function EventsPage() {
 	);
 	const [deleteError, setDeleteError] = useState<string | null>(null);
 
-	// sync search state with URL parameter synchronously to avoid "previous search" flash
-	const urlSearch = searchParams.get("search") || "";
-	if (urlSearch !== prevUrlSearch) {
-		setPrevUrlSearch(urlSearch);
-		setSearchInput(urlSearch);
-		setSearch(urlSearch);
-		// clear filters when searching from global search to ensure result is visible
-		if (urlSearch) {
-			setStatusFilters(new Set());
-			setCategoryFilters(new Set());
-			setActiveChip("All");
-		}
-	}
-
-
-
 	const [isLoading, setIsLoading] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 	const [sort, setSort] = useState<{
@@ -121,6 +105,20 @@ export default function EventsPage() {
 	);
 	const [statusFilters, setStatusFilters] = useState<Set<string>>(new Set());
 	const [activeChip, setActiveChip] = useState("All");
+
+	// sync search state with URL parameter synchronously to avoid "previous search" flash
+	const urlSearch = searchParams.get("search") || "";
+	if (urlSearch !== prevUrlSearch) {
+		setPrevUrlSearch(urlSearch);
+		setSearchInput(urlSearch);
+		setSearch(urlSearch);
+		// clear filters when searching from global search to ensure result is visible
+		if (urlSearch) {
+			setStatusFilters(new Set());
+			setCategoryFilters(new Set());
+			setActiveChip("All");
+		}
+	}
 
 	const [page, setPage] = useState(1);
 
@@ -161,12 +159,9 @@ export default function EventsPage() {
 
 	const fetchAbortRef = useRef<AbortController | undefined>(undefined);
 
-	const openDetail = useCallback(
-		(event: EventFormData) => {
-			setDetailEvent(event);
-		},
-		[],
-	);
+	const openDetail = useCallback((event: EventFormData) => {
+		setDetailEvent(event);
+	}, []);
 
 	const getEvents = useCallback(async () => {
 		// cancel any in-flight fetch before starting a new one
@@ -200,7 +195,7 @@ export default function EventsPage() {
 		if (match) openDetail(match);
 	}, [autoOpenId, isLoading, events, openDetail]);
 
-    const handleExportEvents = useCallback(async () => {
+	const handleExportEvents = useCallback(async () => {
 		if (!events || events.length === 0) return;
 
 		const supabase = createClient();
@@ -426,7 +421,10 @@ export default function EventsPage() {
 		} else {
 			// avoids a full refetch after delete
 			setEvents((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-			showToast("success", `Event "${deleteTarget.title}" deleted successfully.`);
+			showToast(
+				"success",
+				`Event "${deleteTarget.title}" deleted successfully.`,
+			);
 			setDeleteTarget(null);
 			setDeletePassword("");
 			setDeleteError(null);
@@ -585,9 +583,7 @@ export default function EventsPage() {
 				header: <div className="text-center">Actions</div>,
 				width: "13%",
 				render: (event) => (
-					<div
-						className="text-center"
-					>
+					<div className="text-center">
 						<Button
 							variant="icon"
 							title="Edit event"
