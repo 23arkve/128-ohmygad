@@ -9,7 +9,7 @@
 */
 
 import { useState, useMemo, useRef, useCallback } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Rectangle } from "recharts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { mean, median, stddev } from "@/lib/stats.utils";
 import { BRAND_COLORS, AXIS_COLOR, TICK_COLOR, LIKERT_LABELS, LIKERT_COLORS, CustomTooltip } from "./survey-analytics.constants";
@@ -117,7 +117,7 @@ export function MultipleChoiceChart({
             label={{ value: "Options", angle: -90, position: "insideLeft", offset: -10, fill: TICK_COLOR, fontSize: 13, fontWeight: 750, style: { textAnchor: "middle" } }}
           />
           <Tooltip content={<MCTooltip />} cursor={{ fill: "rgba(45,42,74,0.03)" }} />
-          <Bar dataKey="value" name="Responses" radius={[0, 6, 6, 0]} barSize={28}>
+          <Bar dataKey="value" name="Responses" radius={[6, 6, 6, 6]} barSize={28}>
             {data.map((_, idx) => (
               <Cell key={`mc-${idx}`} fill={BRAND_COLORS[idx % BRAND_COLORS.length]} />
             ))}
@@ -139,12 +139,27 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
     let no = 0;
     let total = 0;
     for (const r of responses) {
-      if (r.response_value?.toLowerCase() === "yes") { yes++; total++; }
-      else if (r.response_value?.toLowerCase() === "no") { no++; total++; }
+      if (r.response_value?.toLowerCase() === "yes") {
+        yes++;
+        total++;
+      } else if (r.response_value?.toLowerCase() === "no") {
+        no++;
+        total++;
+      }
     }
     return [
-      { name: "Yes", value: yes, pct: total ? Math.round((yes / total) * 100) : 0 },
-      { name: "No", value: no, pct: total ? Math.round((no / total) * 100) : 0 },
+      {
+        name: "Yes",
+        value: yes,
+        pct: total ? Math.round((yes / total) * 100) : 0,
+        color: YES_NO_COLORS[0],
+      },
+      {
+        name: "No",
+        value: no,
+        pct: total ? Math.round((no / total) * 100) : 0,
+        color: YES_NO_COLORS[1],
+      },
     ].filter((d) => d.value > 0);
   }, [responses]);
 
@@ -179,17 +194,13 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
             cy="45%"
             innerRadius="55%"
             outerRadius="78%"
-            paddingAngle={3}
+            paddingAngle={2}
             dataKey="value"
             nameKey="name"
-            stroke="white"
-            strokeWidth={2}
+            stroke=""
           >
-            {data.map((_, i) => (
-              <Cell
-                key={`yn-${i}`}
-                fill={YES_NO_COLORS[i % YES_NO_COLORS.length]}
-              />
+            {data.map((entry, i) => (
+              <Cell key={`yn-${i}`} fill={entry.color} />
             ))}
           </Pie>
           <Tooltip content={<YesNoTooltip />} />
@@ -321,15 +332,27 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
                 name={LIKERT_LABELS[n - 1]}
                 stackId="stack"
                 fill={LIKERT_COLORS[n - 1]}
-                radius={
-                  n === 1
-                    ? [6, 0, 0, 6]
-                    : n === 5
-                      ? [0, 6, 6, 0]
-                      : [0, 0, 0, 0]
-                }
                 onMouseEnter={() => { hoveredBarKey.current = `r${n}`; }}
                 onMouseLeave={() => { hoveredBarKey.current = null; }}
+                shape={(props: any) => {
+                  const { width, payload } = props;
+                  if (width <= 0) return <></>;
+                  
+                  // Check neighbors to decide rounding
+                  const allKeys = [1, 2, 3, 4, 5];
+                  const leftSum = allKeys.slice(0, n - 1).reduce((acc, curr) => acc + (payload[`r${curr}`] || 0), 0);
+                  const rightSum = allKeys.slice(n).reduce((acc, curr) => acc + (payload[`r${curr}`] || 0), 0);
+                  
+                  const isLeftmost = leftSum === 0;
+                  const isRightmost = rightSum === 0;
+                  
+                  let r: number | number[] = 0;
+                  if (isLeftmost && isRightmost) r = 6;
+                  else if (isLeftmost) r = [6, 0, 0, 6];
+                  else if (isRightmost) r = [0, 6, 6, 0];
+                  
+                  return <Rectangle {...props} radius={r} />;
+                }}
               />
             ))}
           </BarChart>

@@ -38,6 +38,7 @@ import {
 	Legend,
 	BarChart,
 	Bar,
+	Rectangle,
 } from "recharts";
 import { createClient } from "@/lib/supabase/client";
 import { useDashboardData, type RawEvent } from "./hooks/use-dashboard-data";
@@ -143,17 +144,31 @@ function CustomTooltip({
 					Attendees: {totalAttendees}
 				</p>
 			)}
-			{payload.map((e: TooltipEntry, i: number) => (
-				<div key={i} className="flex items-center gap-2">
-					<span
-						className="w-4 h-4 rounded-full shrink-0"
-						style={{ background: e.color ?? e.payload?.fill }}
-					/>
-					<span className="caption capitalize">
-						{e.name ?? e.dataKey}: {e.value}{(e.name === "Completed" || e.name === "Incomplete") ? "%" : ""}
-					</span>
-				</div>
-			))}
+			{payload.map((e: TooltipEntry, i: number) => {
+				const isCompletion = e.name === "Completed" || e.name === "Incomplete";
+				let displayValue = e.value?.toString();
+				
+				if (isCompletion && firstPayload) {
+					const count = e.name === "Completed" 
+						? firstPayload.completedCount 
+						: (firstPayload.respondentCount - firstPayload.completedCount);
+					displayValue = `${count} (${e.value}%)`;
+				} else if (isCompletion) {
+					displayValue = `${e.value}%`;
+				}
+
+				return (
+					<div key={i} className="flex items-center gap-2">
+						<span
+							className="w-4 h-4 rounded-full shrink-0"
+							style={{ background: e.color ?? e.payload?.fill }}
+						/>
+						<span className="caption capitalize">
+							{e.name ?? e.dataKey}: {displayValue}
+						</span>
+					</div>
+				);
+			})}
 		</div>
 	);
 }
@@ -185,6 +200,17 @@ export default function DashboardPage() {
 	const [filters, setFilters] = useState<DashboardFilters>(EmptyFilters);
 	const [surveySearch, setSurveySearch] = useState("");
 	const [surveyPage, setSurveyPage] = useState(1);
+	const hoveredSurveyBarKey = useRef<string | null>(null);
+
+	const SurveyTooltip = useCallback(
+		({ active, payload, label }: any) => {
+			if (!active || !payload?.length || !hoveredSurveyBarKey.current) return null;
+			const filtered = payload.filter((p: any) => p.dataKey === hoveredSurveyBarKey.current);
+			if (!filtered.length) return null;
+			return <CustomTooltip active={active} payload={filtered} label={label} />;
+		},
+		[],
+	);
 
 	// quick action modals
 	const [activeModal, setActiveModal] = useState<
@@ -750,7 +776,7 @@ export default function DashboardPage() {
 												<Bar
 													dataKey="value"
 													name="Users"
-													radius={[6, 6, 0, 0]}
+													radius={[6, 6, 6, 6]}
 													barSize={36}
 												>
 													{filteredColleges.map(
@@ -1046,10 +1072,10 @@ export default function DashboardPage() {
 												layout="vertical"
 												data={surveyCompletionChartData}
 												margin={{
-													top: 24,
+													top: 5,
 													right: 100,
 													left: 20,
-													bottom: 5,
+													bottom: 30,
 												}}
 												barCategoryGap="30%"
 											>
@@ -1087,19 +1113,19 @@ export default function DashboardPage() {
 													tickMargin={20}
 												/>
 												<Tooltip
-													content={<CustomTooltip />}
+													content={<SurveyTooltip />}
 													cursor={{
 														fill: "transparent",
 														stroke: "transparent",
 													}}
 												/>
 												<Legend
-													verticalAlign="top"
-													align="right"
-													wrapperStyle={{
-														paddingBottom: 20,
-													}}
+													verticalAlign="bottom"
+													align="center"
 													iconType="circle"
+													wrapperStyle={{
+														paddingTop: 14,
+													}}
 													formatter={(v) => (
 														<span className="caption tracking-wider">
 															{v}
@@ -1113,8 +1139,16 @@ export default function DashboardPage() {
 													fill={
 														SURVEY_COMPLETED_COLOR
 													}
-													radius={[6, 0, 0, 6]}
 													barSize={24}
+													onMouseEnter={() => { hoveredSurveyBarKey.current = "completedPct"; }}
+													onMouseLeave={() => { hoveredSurveyBarKey.current = null; }}
+													shape={(props: any) => {
+														const { x, y, width, height, payload } = props;
+														if (width <= 0) return <></>;
+														// Round right side only if incomplete is 0
+														const r = (payload.incompletePct === 0) ? 6 : [6, 0, 0, 6];
+														return <Rectangle {...props} radius={r} />;
+													}}
 												>
 													{/*--<LabelList
 														dataKey="completedPct"
@@ -1132,8 +1166,16 @@ export default function DashboardPage() {
 													fill={
 														SURVEY_INCOMPLETE_COLOR
 													}
-													radius={[0, 6, 6, 0]}
 													barSize={24}
+													onMouseEnter={() => { hoveredSurveyBarKey.current = "incompletePct"; }}
+													onMouseLeave={() => { hoveredSurveyBarKey.current = null; }}
+													shape={(props: any) => {
+														const { x, y, width, height, payload } = props;
+														if (width <= 0) return <></>;
+														// Round left side only if completed is 0
+														const r = (payload.completedPct === 0) ? 6 : [0, 6, 6, 0];
+														return <Rectangle {...props} radius={r} />;
+													}}
 												>
 													{/*--<LabelList
 														dataKey="incompletePct"
