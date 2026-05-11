@@ -10,6 +10,7 @@ import { PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
 import UserForm from "@/components/admin/user-form";
 import { createClient } from "@/lib/supabase/client";
+import { PulsingLoader } from "@/components/ui";
 
 import {
   Input,
@@ -600,39 +601,39 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 			{!fetchError &&
 				(filtered.length === 0 ? (
 					<Card>
-                        <div className="flex flex-col items-center justify-center text-center gap-3 py-12">
-                            <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
-                                <Users
-                                    size={26}
-                                    className="text-[var(--periwinkle)]"
-                                />
-                            </div>
-                            <div>
-                                <p className="label text-[var(--primary-dark)]">
-                                    {search || hasActiveFilters
-                                        ? "No users found"
-                                        : "No users yet"}
-                                </p>
-                                {!search && !hasActiveFilters && (
-                                    <p className="caption text-[var(--gray)] mt-1">
-                                        Add your first user to get started.
-                                    </p>
-                                )}
-                            </div>
-                            {(search || hasActiveFilters) && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                        setSearch("");
-                                        setSearch("");
-                                        clearAllFilters();
-                                    }}
-                                >
-                                    Clear search &amp; filters
-                                </Button>
-                            )}
-                        </div>
+						<div className="flex flex-col items-center justify-center text-center gap-3 py-12">
+							<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+								<Users
+									size={26}
+									className="text-[var(--periwinkle)]"
+								/>
+							</div>
+							<div>
+								<p className="label text-[var(--primary-dark)]">
+									{search || hasActiveFilters
+										? "No users found"
+										: "No users yet"}
+								</p>
+								{!search && !hasActiveFilters && (
+									<p className="caption text-[var(--gray)] mt-1">
+										Add your first user to get started.
+									</p>
+								)}
+							</div>
+							{(search || hasActiveFilters) && (
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => {
+										setSearch("");
+										setSearch("");
+										clearAllFilters();
+									}}
+								>
+									Clear search &amp; filters
+								</Button>
+							)}
+						</div>
 					</Card>
 				) : (
 					<DataTable
@@ -670,7 +671,10 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 					onSuccess={(name) => {
 						setCreateModalOpen(false);
 						router.refresh();
-						showToast("success", `User "${name}" created successfully`);
+						showToast(
+							"success",
+							`User "${name}" created successfully`,
+						);
 					}}
 					onCancel={() =>
 						requestClose(() => setCreateModalOpen(false))
@@ -694,8 +698,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 			>
 				{editLoading ? (
 					<div className="flex items-center justify-center gap-3 py-8 text-gray-400">
-						<Loader2 size={20} className="animate-spin" />
-						<span className="caption">Loading user data…</span>
+						<PulsingLoader variant="breath" />
 					</div>
 				) : editError ? (
 					<div className="flex flex-col gap-4">
@@ -719,7 +722,10 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 						onSuccess={(name) => {
 							closeEditModal();
 							router.refresh();
-							showToast("success", `User "${name}" updated successfully`);
+							showToast(
+								"success",
+								`User "${name}" updated successfully`,
+							);
 						}}
 						onRoleChangeRequest={handleRoleChangeRequest}
 						onDirtyChange={setIsFormDirty}
@@ -800,33 +806,66 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 			</Modal>
 
 			{/* user detail modal */}
-            {/* user detail modal */}
-            <Modal
-                open={detailModalOpen}
-                onClose={closeDetailModal}
-                hideCloseButton
-                // Added maxWidth and width to override globals.css
-                modalStyle={{ padding: 0, overflow: "hidden", maxWidth: 700, width: "100%" }}
-                contentStyle={{ padding: 0, marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
-            >
-                {detailLoading ? (
-                    <div style={{ padding: 40, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
-                        <Loader2 size={20} className="animate-spin" style={{ color: "var(--gray)" }} />
-                        <span className="caption">Loading user…</span>
-                    </div>
-                ) : detailError ? (
-                    <div style={{ padding: 24 }} className="flex flex-col gap-4">
-                        <Toast variant="error" title="Failed to load user" message={detailError} />
-                        <Button variant="ghost" className="w-full" onClick={closeDetailModal}>Close</Button>
-                    </div>
-                ) : selectedUser ? (
-                    <UserCard
-                        name={selectedUser.full_name ?? "—"}
-                        email={selectedUser.email ?? undefined}
-                        displayName={selectedUser.display_name ?? undefined}
+			{/* user detail modal */}
+			<Modal
+				open={detailModalOpen}
+				onClose={closeDetailModal}
+				hideCloseButton
+				// Added maxWidth and width to override globals.css
+				modalStyle={{
+					padding: 0,
+					overflow: "hidden",
+					maxWidth: 700,
+					width: "100%",
+				}}
+				contentStyle={{
+					padding: 0,
+					marginTop: 0,
+					marginLeft: 0,
+					marginRight: 0,
+					marginBottom: 0,
+				}}
+			>
+				{detailLoading ? (
+					<div
+						style={{
+							padding: 40,
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 12,
+						}}
+					>
+						<PulsingLoader variant="breath" />
+					</div>
+				) : detailError ? (
+					<div
+						style={{ padding: 24 }}
+						className="flex flex-col gap-4"
+					>
+						<Toast
+							variant="error"
+							title="Failed to load user"
+							message={detailError}
+						/>
+						<Button
+							variant="ghost"
+							className="w-full"
+							onClick={closeDetailModal}
+						>
+							Close
+						</Button>
+					</div>
+				) : selectedUser ? (
+					<UserCard
+						name={selectedUser.full_name ?? "—"}
+						email={selectedUser.email ?? undefined}
+						displayName={selectedUser.display_name ?? undefined}
 						pronouns={selectedUser.pronouns ?? undefined}
 						sexAtBirth={selectedUser.sex_at_birth ?? undefined}
-						genderIdentity={selectedUser.gender_identity ?? undefined}
+						genderIdentity={
+							selectedUser.gender_identity ?? undefined
+						}
 						contactNum={selectedUser.contact_num ?? undefined}
 						address={selectedUser.address ?? undefined}
 						role={selectedUser.role ?? "student"}
@@ -843,7 +882,10 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 						trainingAttended={selectedUser.training_attended}
 						workshopAttended={selectedUser.workshop_attended}
 						isOnboarded={selectedUser.is_onboarded}
-						onEdit={() => { closeDetailModal(); openEditModal(selectedUser.id); }}
+						onEdit={() => {
+							closeDetailModal();
+							openEditModal(selectedUser.id);
+						}}
 						onClose={closeDetailModal}
 					/>
 				) : null}

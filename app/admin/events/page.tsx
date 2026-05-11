@@ -23,6 +23,7 @@ import { EventDetailModal } from "@/components/admin/event-detail-modal";
 import { Tabs } from "@/components/ui";
 import { paginate, totalPages, PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
+import { PulsingLoader } from "@/components/ui";
 
 import {
 	Input,
@@ -869,8 +870,7 @@ export default function EventsPage() {
 						className="flex items-center justify-center gap-3 py-10"
 						style={{ color: "var(--gray)" }}
 					>
-						<Loader2 size={20} className="animate-spin" />
-						<span className="caption">Loading events…</span>
+						<PulsingLoader variant="breath" />
 					</div>
 				</Card>
 			) : filtered.length === 0 ? (

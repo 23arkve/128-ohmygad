@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, Clock, X, ArrowUpDown, ClipboardList } from "lucide-react";
 import ScrollToTop from "@/components/ui/scroll-to-top";
-import { Toast } from "@/components/ui";
 import type { SurveyFormData } from "@/components/admin/survey-form";
 
 import {
@@ -12,10 +11,11 @@ import {
   Badge,
   Button,
   Card,
-  Modal,
+  Toast,
   Dropdown,
   DropdownItem,
   DropdownDivider,
+  PulsingLoader,
 } from "@/components/ui";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -226,8 +226,7 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 			{isLoading ? (
 				<Card>
 					<div className="flex items-center justify-center gap-3 py-10 text-[var(--gray)]">
-						<Loader2 size={20} className="animate-spin" />
-						<span className="caption">Loading surveys…</span>
+						<PulsingLoader variant="breath" />
 					</div>
 				</Card>
 			) : error ? (
@@ -266,7 +265,11 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 
 					{/* Action Button */}
 					{search && (
-						<Button variant="ghost" size="sm" onClick={() => setSearch("")}>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => setSearch("")}
+						>
 							Clear search &amp; filters
 						</Button>
 					)}

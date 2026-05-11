@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, Search } from "lucide-react";
-import { Card, Badge, Button, Tabs } from "@/components/ui";
+import { Card, Badge, Button, Tabs, PulsingLoader } from "@/components/ui";
 import { Pagination } from "@/components/pagination";
 import { paginate, totalPages } from "@/lib/pagination.utils";
 
@@ -104,8 +104,7 @@ function SearchResultsContent({ role }: { role: string }) {
       {loading ? (
         <Card>
           <div className="flex flex-col items-center justify-center gap-3 py-12 text-[var(--gray)]">
-            <Loader2 size={24} className="animate-spin" />
-            <span className="caption">Searching across all records...</span>
+            <PulsingLoader variant="breath" />
           </div>
         </Card>
       ) : results.length === 0 ? (
@@ -187,13 +186,14 @@ import { Suspense } from "react";
 
 export default function SearchResultsPage({ role }: { role: string }) {
   return (
-    <Suspense fallback={
-      <div className="flex flex-col items-center justify-center py-20 gap-3">
-        <Loader2 size={24} className="animate-spin text-[var(--gray)]" />
-        <span className="caption">Loading...</span>
-      </div>
-    }>
-      <SearchResultsContent role={role} />
-    </Suspense>
+		<Suspense
+			fallback={
+				<div className="flex flex-col items-center justify-center py-20 gap-3">
+					<PulsingLoader variant="breath" />
+				</div>
+			}
+		>
+			<SearchResultsContent role={role} />
+		</Suspense>
   );
 }

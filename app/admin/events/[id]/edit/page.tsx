@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Loader2, ArrowLeft } from "lucide-react";
 import EventForm, { type EventFormData } from "@/components/admin/event-form";
 import { Button, Card } from "@/components/ui";
+import { PulsingLoader } from "@/components/ui";
 
 export default function EditEventPage() {
   const { id } = useParams<{ id: string }>();
@@ -41,8 +42,7 @@ export default function EditEventPage() {
           className="flex items-center justify-center gap-3 py-12"
           style={{ color: "var(--gray)" }}
         >
-          <Loader2 size={20} className="animate-spin" />
-          <span className="caption">Loading event…</span>
+          <PulsingLoader variant="breath" />
         </div>
       </Card>
     );

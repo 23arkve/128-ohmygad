@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Search, Loader2, ChevronUp, ExternalLink, X, MoveUp, MoveDown } from "lucide-react";
-import { Badge } from "@/components/ui";
+import { Search, Loader2, ExternalLink, X, } from "lucide-react";
+import { PulsingLoader } from "@/components/ui";
 
 interface GlobalSearchProps {
   role: "admin" | "staff" |"faculty" | "student";
@@ -184,7 +184,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
           {/* Results Area */}
           {loading ? (
             <div style={{ padding: 24, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--gray)", fontSize: 13 }}>
-              <Loader2 size={16} className="animate-spin" /> Searching...
+              <PulsingLoader variant="breath" />
             </div>
           ) : results.length > 0 ? (
             <div style={{ overflowY: "auto", flex: 1, paddingBottom: 8 }}>

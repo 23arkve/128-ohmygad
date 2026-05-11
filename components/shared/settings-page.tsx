@@ -7,7 +7,7 @@ import {
   Mail, Lock, KeyRound, AlertCircle
 } from "lucide-react";
 
-import { Card, Input, Button, Toast } from "@/components/ui";
+import { Card, Input, Button, Toast, PulsingLoader } from "@/components/ui";
 
 type ToastState = { type: "success" | "error" | "info"; message: string } | null;
 
@@ -145,10 +145,10 @@ export default function SharedSettingsPage() {
 
         if (loading) {
             return (
-            <div className="flex-1 flex items-center justify-center h-full min-h-0">
-                <div className="w-8 h-8 border-4 border-[var(--periwinkle-light)] border-t-[var(--periwinkle)] rounded-full animate-spin"></div>
-            </div>
-        );
+				<div className="flex-1 flex items-center justify-center h-full min-h-0">
+					<PulsingLoader variant="breath" />
+				</div>
+			);
     }
 
   return (

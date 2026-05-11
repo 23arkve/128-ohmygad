@@ -8,7 +8,7 @@ import {
   Save, Building2
 } from "lucide-react";
 
-import { Card, Input, Select, Button, Badge, Tabs, ProgressBar, Toast } from "@/components/ui";
+import { Card, Input, Select, Button, Badge, Tabs, ProgressBar, Toast, PulsingLoader } from "@/components/ui";
 import { validateFullName, validateDisplayName, validateContactNum, validateAddress, validateOffice } from "@/lib/validation";
 
 type Profile = {
@@ -172,10 +172,10 @@ export default function StaffProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center h-full min-h-0">
-        <div className="w-8 h-8 border-4 border-[var(--periwinkle-light)] border-t-[var(--periwinkle)] rounded-full animate-spin"></div>
-      </div>
-    );
+		<div className="flex-1 flex items-center justify-center h-full min-h-0">
+			<PulsingLoader variant="breath" />
+		</div>
+	);
   }
 
   return (

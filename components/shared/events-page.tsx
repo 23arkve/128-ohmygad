@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
 	SlidersHorizontal,
-	Loader2,
 	CalendarDays,
 	MapPin,
 	Users,
@@ -17,7 +16,7 @@ import {
 	type EventFormData,
 } from "@/components/admin/event-form";
 import ScrollToTop from "@/components/ui/scroll-to-top";
-import { Toast, ProgressBar } from "@/components/ui";
+import { Toast, ProgressBar, PulsingLoader } from "@/components/ui";
 import {
 	SearchBar,
 	EventCard,
@@ -282,10 +281,7 @@ export default function EventsPage() {
 			{/* loading */}
 			{isLoading ? (
 				<Card>
-					<div className="flex items-center justify-center gap-3 py-10 text-[var(--gray)]">
-						<Loader2 size={20} className="animate-spin" />
-						<span className="caption">Loading events…</span>
-					</div>
+					<PulsingLoader variant="breath" />
 				</Card>
 			) : error ? (
 				<Card>
