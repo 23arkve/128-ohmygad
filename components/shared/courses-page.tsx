@@ -248,32 +248,33 @@ export default function CoursesPage() {
 				open={!!detailCourse}
 				onClose={() => setDetailCourse(null)}
 				title={detailCourse?.title}
-				subtitle={detailCourse?.semester ?? undefined}
 				modalStyle={{
 					maxWidth: "70vw",
 					maxHeight: "70vh",
-					overflowY: "auto",
-					overflowWrap: "break-word",
-					hyphens: "auto",
 				}}
-				contentStyle={{ wordBreak: "break-word", hyphens: "auto" }}
+				contentStyle={{ 
+					paddingTop: "0px", // Remove top padding to align with title
+					overflowY: "auto" // Let the content area handle the scroll
+				}}
 			>
 				{detailCourse && (
-					<div className="flex flex-col gap-1 p-1">
-						<div className="divider" />
-						<div className="space-y-3">
-							<p className="label">Description</p>
+					<div className="flex flex-col gap-0 p-0">
+						<div className="divider mt-0 mb-2" />
+
+						<div className="space-y-2">
+							<p className="font-semibold text-sm uppercase tracking-wider text-gray-500">
+								Description
+							</p>
+							
 							<p
-								className="body text-gray-600"
+								className="text-gray-600 whitespace-pre-wrap break-words leading-relaxed"
 								lang="en"
 								style={{
-									overflowWrap: "break-word",
-									overflowY: "auto",
+									overflowWrap: "anywhere", // Prevents long URLs from breaking layout
 									hyphens: "auto",
 								}}
 							>
-								{detailCourse.description ||
-									"No description provided."}
+								{detailCourse.description || "No description provided."}
 							</p>
 						</div>
 					</div>
