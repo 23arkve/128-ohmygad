@@ -256,7 +256,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 prefixIcon={<Type size={15} />}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                maxLength={100}
+                maxLength={1000}
               />
 
               <div className="input-wrap">
