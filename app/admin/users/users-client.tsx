@@ -64,6 +64,12 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     setSearch(urlSearch);
   }
 
+  useEffect(() => {
+    return () => {
+      setSearch("");
+    };
+  }, []);
+
   const [sort, setSort] = useState<SortState>({ field: "full_name", direction: "asc" });
 
   // Role change confirmation state

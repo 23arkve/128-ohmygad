@@ -99,6 +99,13 @@ export default function EventsPage() {
 		setSearch(urlSearch);
 	}
 
+	useEffect(() => {
+		return () => {
+			setSearchInput("");
+			setSearch("");
+		};
+	}, []);
+
 	const [isLoading, setIsLoading] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 	const [sort, setSort] = useState<{

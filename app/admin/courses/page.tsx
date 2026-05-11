@@ -83,6 +83,12 @@ export default function CoursesPage() {
     setSearch(urlSearch);
   }
 
+  useEffect(() => {
+    return () => {
+      setSearch("");
+    };
+  }, []);
+
   //  filter / sort 
   useEffect(() => {
     const q = search.toLowerCase();

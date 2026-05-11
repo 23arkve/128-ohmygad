@@ -52,6 +52,12 @@ export default function SurveysPage() {
     setPrevUrlSearch(urlSearch);
     setSearch(urlSearch);
   }
+
+  useEffect(() => {
+    return () => {
+      setSearch("");
+    };
+  }, []);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [analyticsTarget, setAnalyticsTarget] = useState<SurveyFormData | null>(null);
