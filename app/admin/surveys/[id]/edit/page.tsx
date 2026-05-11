@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Typography } from "@/components/typography";
-import { ChevronLeft } from "lucide-react";
 import SurveyForm, { type SurveyFormData, type SurveyQuestion } from "@/components/admin/survey-form";
 
 export default function EditSurveyPage() {
