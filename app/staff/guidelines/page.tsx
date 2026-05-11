@@ -1,5 +1,5 @@
-import CoursesPage from "@/components/shared/courses-page";
+import GuidelinesPage from "@/components/shared/guidelines-page";
 
-export default function StaffCoursesPage() {
-  return <CoursesPage/>;
+export default function StaffGuidelinesPage() {
+  return <GuidelinesPage/>;
 }

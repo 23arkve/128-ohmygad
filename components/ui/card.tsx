@@ -230,7 +230,7 @@ export function EventCard({
 }
 
 // coursecard
-export interface CourseCardProps {
+export interface GuidelineCardProps {
 	title: string;
 	category: string;
 	time: string;

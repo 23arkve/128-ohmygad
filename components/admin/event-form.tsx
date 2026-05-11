@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { submitFormData } from "@/lib/form-submit.utils";
 import { MapPin, Users, AlignLeft, Type, ImagePlus, X } from "lucide-react";
-import { Card, Input, Select, Button, DateTimePicker } from "@/components/ui";
+import { Card, Input, Select, Button, DateTimePicker, Toast } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 
 export type EventFormData = {
@@ -68,6 +68,36 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
   const [category, setCategory] = useState(initialData?.category ?? "");
 
   const status = deriveStatus(start_date, end_date);
+
+const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const markTouched = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  // Live Validation Errors
+  const titleError = !title ? "Title is required." : undefined;
+  const descriptionError = !description ? "Description is required." : undefined;
+  const locationError = !location ? "Location is required." : undefined;
+  const categoryError = !category ? "Category is required." : undefined;
+
+  // Date Validation (Event)
+  const startDateError = !start_date ? "Start date is required." : undefined;
+  const startFutureError = start_date && new Date(start_date) <= new Date() ? "Event must start in the future." : undefined;
+  const endDateError = !end_date ? "End date is required." : undefined;
+  const eventSequenceError = start_date && end_date && new Date(start_date) >= new Date(end_date) ? "End date must be after start date." : undefined;
+
+  // Date Validation (Registration)
+  const regOpenError = !registration_open ? "Registration opening date is required." : undefined;
+  const regCloseError = !registration_close ? "Registration closing date is required." : undefined;
+  const regSequenceError = registration_open && registration_close && new Date(registration_open) >= new Date(registration_close) ? "Registration close must be after open." : undefined;
+  const regBeforeEventError = registration_close && start_date && new Date(registration_close) > new Date(start_date) ? "Registration must close before event starts." : undefined;
+
+  const hasFieldErrors = !!(
+    titleError || descriptionError || locationError || categoryError ||
+    startDateError || startFutureError || endDateError || eventSequenceError ||
+    regOpenError || regCloseError || regSequenceError || regBeforeEventError
+  );
 
   // for banner images
   const [banner_url, setBannerUrl] = useState(initialData?.banner_url ?? "");
@@ -249,15 +279,19 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 <h3 className="heading-md">Basic Information</h3>
               </div>
 
-              <Input
-                label="Title *"
-                placeholder="e.g. Gender Sensitivity Orientation"
-                required
-                prefixIcon={<Type size={15} />}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxLength={500}
-              />
+              <div className="flex flex-col gap-1">
+                <Input
+                  label="Title *"
+                  placeholder="e.g. Gender Sensitivity Orientation"
+                  required
+                  prefixIcon={<Type size={15} />}
+                  value={title}
+                  onChange={(e) => { setTitle(e.target.value); markTouched("title"); }}
+                  onBlur={() => markTouched("title")}
+                  maxLength={500}
+                />
+                {touched.title && titleError && <Toast variant="error" title="Invalid title" message={titleError} />}
+              </div>
 
               <div className="input-wrap">
                 <label htmlFor="description" className="label">Description</label>
@@ -276,15 +310,19 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 </div>
               </div>
 
-              <Input
-                label="Location *"
-                placeholder="e.g. Sarmiento Hall"
-                required
-                prefixIcon={<MapPin size={15} />}
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                maxLength={100}
-              />
+              <div className="flex flex-col gap-1">
+                <Input
+                  label="Location *"
+                  placeholder="e.g. Sarmiento Hall"
+                  required
+                  prefixIcon={<MapPin size={15} />}
+                  value={location}
+                  onChange={(e) => { setLocation(e.target.value); markTouched("location"); }}
+                  onBlur={() => markTouched("location")}
+                  maxLength={100}
+                />
+                {touched.location && locationError && <Toast variant="error" title="Invalid location" message={locationError} />}
+              </div>
 
               {/* banner image */}
               <div className="input-wrap">
@@ -348,13 +386,16 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                   }}
                 />
 
-                <Select 
-                  label="Category *"
-                  required
-                  options={[{ value: "", label: "Select category" }, ...EVENT_CATEGORY_OPTIONS]}
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                />
+                <div className="flex flex-col gap-1">
+                  <Select 
+                    label="Category *"
+                    required
+                    options={[{ value: "", label: "Select category" }, ...EVENT_CATEGORY_OPTIONS]}
+                    value={category}
+                    onChange={(e) => { setCategory(e.target.value); markTouched("category"); }}
+                  />
+                  {touched.category && categoryError && <Toast variant="error" title="Invalid category" message={categoryError} />}
+                </div>
 
                 <div className="input-wrap">
                   <label className="label">Status</label>
@@ -382,39 +423,57 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 <h3 className="heading-md">Event Schedule</h3>
               </div>
 
-              <DateTimePicker
-                label="Start Date & Time"
-                mode="datetime"
-                required
-                value={start_date}
-                onChange={setStartDate}
-              />
+              <div className="flex flex-col gap-1">
+                <DateTimePicker
+                  label="Start Date & Time"
+                  mode="datetime"
+                  required
+                  value={start_date}
+                  onChange={(val) => { setStartDate(val); markTouched("start_date"); }}
+                />
+                {touched.start_date && (startDateError || startFutureError) && (
+                <Toast variant="error" title="Schedule Error" message={startFutureError || startDateError} />
+                )}
+              </div>
 
-              <DateTimePicker
-                label="End Date & Time *"
-                mode="datetime"
-                required
-                value={end_date}
-                onChange={setEndDate}
-                minDate={start_date ? new Date(start_date) : new Date()}
-              />
+              <div className="flex flex-col gap-1">
+                <DateTimePicker
+                  label="End Date & Time *"
+                  mode="datetime"
+                  required
+                  value={end_date}
+                  onChange={(val) => { setEndDate(val); markTouched("end_date"); }}
+                  minDate={start_date ? new Date(start_date) : new Date()}
+                />
+                {touched.end_date && (endDateError || eventSequenceError) && (
+                <Toast variant="error" title="Schedule Error" message={eventSequenceError || endDateError} />
+                )}
+              </div>
 
-              <DateTimePicker
-                label="Registration Opens"
-                mode="datetime"
-                required
-                value={registration_open}
-                onChange={setRegistrationOpen}
-              />
+              <div className="flex flex-col gap-1">
+                <DateTimePicker
+                  label="Registration Opens"
+                  mode="datetime"
+                  required
+                  value={registration_open}
+                  onChange={(val) => { setRegistrationOpen(val); markTouched("registration_open"); }}
+                />
+                {touched.registration_open && regOpenError && <Toast variant="error" title="Required" message={regOpenError} />}
+              </div>
 
-              <DateTimePicker
-                label="Registration Closes"
-                mode="datetime"
-                required
-                value={registration_close}
-                onChange={setRegistrationClose}
-                minDate={registration_open ? new Date(registration_open) : new Date()}
-              />
+              <div className="flex flex-col gap-1">
+                <DateTimePicker
+                  label="Registration Closes"
+                  mode="datetime"
+                  required
+                  value={registration_close}
+                  onChange={(val) => { setRegistrationClose(val); markTouched("registration_close"); }}
+                  minDate={registration_open ? new Date(registration_open) : new Date()}
+                />
+                {touched.registration_close && (regCloseError || regSequenceError || regBeforeEventError) && (
+                <Toast variant="error" title="Registration Error" message={regBeforeEventError || regSequenceError || regCloseError} />
+                )}
+              </div>
             </div>
 
             {/* error toast */}

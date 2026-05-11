@@ -1,5 +1,5 @@
 import SurveysPage from "@/app/admin/surveys/page";
 
-export default function StaffCoursesPage() {
+export default function StaffGuidelinesPage() {
   return <SurveysPage/>;
 }

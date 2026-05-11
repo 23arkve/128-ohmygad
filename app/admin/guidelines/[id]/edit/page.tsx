@@ -8,7 +8,7 @@ import GuidelineForm, { type GuidelineFormData } from "@/components/admin/guidel
 import { Button, Card } from "@/components/ui";
 import { PulsingLoader } from "@/components/ui";
 
-export default function EditCoursePage() {
+export default function EditGuidelinePage() {
   const { id } = useParams<{ id: string }>();
   const router  = useRouter();
 
@@ -17,7 +17,7 @@ export default function EditCoursePage() {
   const [error,     setError]     = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchGuideline = async () => {
       const supabase = createClient();
       const { data, error } = await supabase
         .from("course")
@@ -31,7 +31,7 @@ export default function EditCoursePage() {
       setIsLoading(false);
     };
 
-    fetchCourse();
+    fetchGuideline();
   }, [id]);
 
   // loading 
