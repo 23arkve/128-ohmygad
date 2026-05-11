@@ -206,7 +206,7 @@ export default function SurveysPage() {
       showToast("error", "Failed to delete survey. Please try again.");
     } else {
       setSurveys((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-      showToast("success", "Survey deleted successfully");
+      showToast("success", "Survey deleted successfully!");
     }
 
     setDeletingId(null);
@@ -492,6 +492,7 @@ export default function SurveysPage() {
           onSuccess={() => {
             setCreateModalOpen(false);
             getSurveys();
+            showToast("success", "Survey created successfully!");
           }}
           onCancel={() => setCreateModalOpen(false)}
         />
@@ -523,6 +524,7 @@ export default function SurveysPage() {
               onSuccess={() => {
                 setEditTarget(null);
                 getSurveys();
+                showToast("success", "Survey updated successfully!");
               }}
               onCancel={() => setEditTarget(null)}
             />
