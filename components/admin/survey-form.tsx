@@ -177,9 +177,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
     );
 
   // ── Validation errors ──
-  const titleError = title.length > 0 && title.trim().length < 5
-    ? "Title must be at least 5 characters."
-    : null;
+  const titleError = !title ? "Title is required." : null;
 
   const descriptionError = description && description.trim().length > 0 && description.trim().length < 5
     ? "Description must be at least 5 characters."

@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { validateAddress, validateStudentNum, validateGsoSessions, validateAshoSessions } from "@/lib/validation";
+import { 
+    validateAddress, 
+    validateStudentNum, 
+    validateGsoSessions, 
+    validateAshoSessions,
+    validateForumSessions,
+    validateResearchSessions,
+    validateTrainingSessions,
+    validateWorkshopSessions
+} from "@/lib/validation";
 
 export async function PATCH(req: Request) {
     try {
@@ -55,6 +64,34 @@ export async function PATCH(req: Request) {
             const ashoErr = validateAshoSessions(asho_attended);
             if (ashoErr) {
                 return NextResponse.json({ error: ashoErr }, { status: 400 });
+            }
+        }
+
+        if (forum_attended !== undefined) {
+            const forumErr = validateForumSessions(forum_attended);
+            if (forumErr) {
+                return NextResponse.json({ error: forumErr }, { status: 400 });
+            }
+        }
+
+        if (research_attended !== undefined) {
+            const researchErr = validateResearchSessions(research_attended);
+            if (researchErr) {
+                return NextResponse.json({ error: researchErr }, { status: 400 });
+            }
+        }
+
+        if (training_attended !== undefined) {
+            const trainingErr = validateTrainingSessions(training_attended);
+            if (trainingErr) {
+                return NextResponse.json({ error: trainingErr }, { status: 400 });
+            }
+        }
+
+        if (workshop_attended !== undefined) {
+            const workshopErr = validateWorkshopSessions(workshop_attended);
+            if (workshopErr) {
+                return NextResponse.json({ error: workshopErr }, { status: 400 });
             }
         }
 

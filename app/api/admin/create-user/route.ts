@@ -1,6 +1,19 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { validateFullName, validateEmail, validatePassword, validateContactNum, validateStudentNum, validateAddress, validateGsoSessions, validateAshoSessions } from "@/lib/validation";
+import { 
+    validateFullName, 
+    validateEmail, 
+    validatePassword, 
+    validateContactNum, 
+    validateStudentNum, 
+    validateAddress, 
+    validateGsoSessions, 
+    validateAshoSessions,
+    validateForumSessions,
+    validateResearchSessions,
+    validateTrainingSessions,
+    validateWorkshopSessions
+} from "@/lib/validation";
 
 export async function POST(req: Request) {
     try {
@@ -71,6 +84,26 @@ export async function POST(req: Request) {
         const ashoErr = validateAshoSessions(asho_attended);
         if (ashoErr) {
             return NextResponse.json({ error: ashoErr }, { status: 400 });
+        }
+
+        const forumErr = validateForumSessions(forum_attended);
+        if (forumErr) {
+            return NextResponse.json({ error: forumErr }, { status: 400 });
+        }
+
+        const researchErr = validateResearchSessions(research_attended);
+        if (researchErr) {
+            return NextResponse.json({ error: researchErr }, { status: 400 });
+        }
+
+        const trainingErr = validateTrainingSessions(training_attended);
+        if (trainingErr) {
+            return NextResponse.json({ error: trainingErr }, { status: 400 });
+        }
+
+        const workshopErr = validateWorkshopSessions(workshop_attended);
+        if (workshopErr) {
+            return NextResponse.json({ error: workshopErr }, { status: 400 });
         }
 
         // 1. Create the auth user with email auto-confirmed
