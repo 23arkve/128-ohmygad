@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo, memo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
-	X,
 	Users,
 	ClipboardCheck,
 	MapPin,
@@ -306,7 +305,6 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 		<Modal
 			open={event !== null}
 			onClose={onClose}
-			hideCloseButton
 			modalStyle={MODAL_STYLE}
 			contentStyle={MODAL_CONTENT_STYLE}
 		>
@@ -321,13 +319,6 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 								: (CATEGORY_GRADIENT[event.category ?? ""] ?? DEFAULT_GRADIENT),
 						}}
 					>
-						<button
-							onClick={onClose}
-							aria-label="Close"
-							className="absolute top-3 right-3 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-none cursor-pointer flex items-center justify-center text-[var(--primary-dark)] z-10 backdrop-blur-sm bg-white/80"
-						>
-							<X size={15} />
-						</button>
 						<div className="absolute bottom-3 right-3 flex gap-2 z-10">
 							<Button variant="primary" size="sm" onClick={handleExportCSV} title="Export event details to CSV">
 								<Upload size={15} /> Export CSV
