@@ -587,7 +587,9 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 												className="text-[var(--gray)]"
 											/>
 											{loadingRegs ? (
-												<PulsingLoader variant="breath" />
+												<p className="caption">
+													Loading...
+												</p>
 											) : (
 												<span className="caption">
 													<strong>
@@ -692,7 +694,9 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 												className="text-[var(--gray)]"
 											/>
 											{loadingRegs ? (
-												<PulsingLoader variant="breath" />
+												<p className="caption">
+													Loading...
+												</p>
 											) : (
 												<span className="caption">
 													<strong>
