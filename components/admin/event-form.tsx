@@ -304,7 +304,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                       onClick={removeBanner}
                       className="absolute top-2 right-2 w-4 h-4 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--primary-dark)] border-none cursor-pointer"
                     >
-                      <X size={14} />
+                      <X size={15} />
                     </button>
                   </div>
                 ) : (

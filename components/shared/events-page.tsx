@@ -529,7 +529,7 @@ export default function EventsPage() {
 								aria-label="Close"
 								className="absolute top-3 right-3 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-none cursor-pointer flex items-center justify-center text-[var(--primary-dark)] z-10 backdrop-blur-sm bg-white/80"
 							>
-								<X size={14} />
+								<X size={15} />
 							</button>
 						</div>
 

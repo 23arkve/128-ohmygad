@@ -203,7 +203,7 @@ export function SearchBar({ containerStyle, className = "", onClear, ...props }:
           onClick={onClear}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray)] hover:text-[var(--primary-dark)] bg-transparent border-none cursor-pointer p-1 rounded-full hover:bg-[var(--lavender)] transition-all flex items-center justify-center"
         >
-          <X size={14} />
+          <X size={15} />
         </button>
       )}
     </div>
