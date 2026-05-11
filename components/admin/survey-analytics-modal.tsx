@@ -13,9 +13,13 @@
 */
 
 import { useEffect, useState, useMemo } from "react";
-import { X, Loader2, BarChart3, Users, ClipboardList } from "lucide-react";
+import { X, BarChart3, Users, ClipboardList } from "lucide-react";
 import { Card, Badge, PulsingLoader } from "@/components/ui";
-import type { SurveyFormData } from "@/components/admin/survey-form";
+import {
+	type SurveyFormData,
+	deriveStatus,
+} from "@/components/admin/survey-form";
+import { SURVEY_STATUS_VARIANT as STATUS_VARIANT } from "@/lib/constants";
 import { getSurveyAnalytics } from "@/app/admin/surveys/actions";
 import {
   MultipleChoiceChart,
@@ -59,6 +63,7 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
   const [responses, setResponses] = useState<ResponseRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const computedStatus = deriveStatus(survey.open_at, survey.close_at);
 
   // fetch questions + responses on mount / survey change
   useEffect(() => {
@@ -140,15 +145,15 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
 
 					<div className="flex items-center gap-3 shrink-0">
 						{!loading && (
-							<div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--lavender)]">
-								<Users
-									size={13}
-									className="text-[var(--gray)]"
-								/>
-								<span className="text-[16px] font-semibold text-[var(--primary-dark)]">
+							<div className="flex items-center">
+								<Badge variant="periwinkle">
+									<Users
+										size={13}
+										className="text-[var(--periwinkle)] font-bold"
+									/>
 									{totalRespondents} respondent
 									{totalRespondents !== 1 ? "s" : ""}
-								</span>
+								</Badge>
 							</div>
 						)}
 						<button
@@ -190,7 +195,7 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
 									variant="no-shadow"
 									className="flex flex-col gap-2"
 								>
-									<div className="flex items-center gap-2">
+									<div className="flex items-center gap-3 ">
 										<ClipboardList
 											size={16}
 											className="text-[var(--periwinkle)]"
@@ -201,13 +206,7 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
 									</div>
 
 									{survey.description ? (
-										<p
-											className="body text-[var(--primary-dark)]"
-											style={{
-												whiteSpace: "pre-wrap",
-												lineHeight: 1.8,
-											}}
-										>
+										<p className="body text-[var(--primary-dark)] break-all">
 											{survey.description}
 										</p>
 									) : (
@@ -218,32 +217,32 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
 
 									{/* dates + status row */}
 									<div className="flex items-center gap-3 flex-wrap mt-1">
-										{survey.status && (
+										{computedStatus && (
 											<Badge
 												variant={
-													survey.status === "open"
-														? "success"
-														: "dark"
+													STATUS_VARIANT[
+														computedStatus
+													] ?? "periwinkle"
 												}
 											>
 												<span className="capitalize">
-													{survey.status}
+													{computedStatus}
 												</span>
 											</Badge>
 										)}
 										{survey.open_at && (
-											<span className="body text-[var(--gray)]">
+											<span className="label text-[var(--gray)]">
 												Opens{" "}
 												{formatDate(survey.open_at)}
 											</span>
 										)}
 										{survey.open_at && survey.close_at && (
-											<span className="body text-[var(--gray)]">
+											<span className="label text-[var(--gray)]">
 												·
 											</span>
 										)}
 										{survey.close_at && (
-											<span className="body text-[var(--gray)]">
+											<span className="label text-[var(--gray)]">
 												Closes{" "}
 												{formatDate(survey.close_at)}
 											</span>
@@ -267,13 +266,18 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
 
 								{/* no responses */}
 								{totalRespondents === 0 ? (
-									<Card variant="no-shadow">
-										<div className="flex flex-col items-center justify-center gap-3 py-12">
+									<Card
+										variant="no-shadow"
+										className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3"
+									>
+										<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
 											<BarChart3
-												size={28}
-												className="text-[var(--gray)]"
+												size={26}
+												className="text-[var(--periwinkle)]"
 											/>
-											<p className="body">
+										</div>
+										<div>
+											<p className="label text-[var(--primary-dark)]">
 												No responses have been submitted
 												yet.
 											</p>
