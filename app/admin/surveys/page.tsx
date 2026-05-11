@@ -51,13 +51,13 @@ export default function SurveysPage() {
   if (urlSearch !== prevUrlSearch) {
     setPrevUrlSearch(urlSearch);
     setSearch(urlSearch);
+    // clear filters when searching from global search to ensure result is visible
+    if (urlSearch) {
+      setStatusFilters(new Set());
+    }
   }
 
-  useEffect(() => {
-    return () => {
-      setSearch("");
-    };
-  }, []);
+
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [analyticsTarget, setAnalyticsTarget] = useState<SurveyFormData | null>(null);
@@ -98,13 +98,21 @@ export default function SurveysPage() {
 
   useEffect(() => { getSurveys(); }, []);
 
+  // auto-open detail modal when navigated here with ?survey=<id>
+  const autoOpenId = searchParams.get("survey");
+  useEffect(() => {
+    if (!autoOpenId || isLoading || surveys.length === 0) return;
+    const match = surveys.find((e) => e.id === autoOpenId);
+    if (match) setAnalyticsTarget(match);
+  }, [autoOpenId, isLoading, surveys]);
+
   // filter / sort
   useEffect(() => {
     const q = search.toLowerCase();
     let result = surveys;
 
     result = result.filter((s) =>
-      `${s.title} ${s.status || ""}`.toLowerCase().includes(q)
+      `${s.title} ${s.description || ""}`.toLowerCase().includes(q)
     );
 
     if (statusFilters.size > 0)

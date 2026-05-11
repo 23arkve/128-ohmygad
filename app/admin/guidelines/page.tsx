@@ -75,6 +75,19 @@ export default function GuidelinesPage() {
 
   useEffect(() => { getGuidelines(); }, []);
 
+  // auto-open detail modal when navigated here with ?guideline=<id>
+  const autoOpenId = searchParams.get("guideline");
+  useEffect(() => {
+    if (!autoOpenId || isLoading || guidelines.length === 0) return;
+    const match = guidelines.find((e) => e.id === autoOpenId);
+    if (match) {
+      setModalContent({
+        label: match.title,
+        text: match.description || "",
+      });
+    }
+  }, [autoOpenId, isLoading, guidelines]);
+
   // Sync search state with URL parameter synchronously to avoid "previous search" flash
   const [prevUrlSearch, setPrevUrlSearch] = useState(searchParams.get("search") || "");
   const urlSearch = searchParams.get("search") || "";
@@ -82,12 +95,6 @@ export default function GuidelinesPage() {
     setPrevUrlSearch(urlSearch);
     setSearch(urlSearch);
   }
-
-  useEffect(() => {
-    return () => {
-      setSearch("");
-    };
-  }, []);
 
   //  filter / sort 
   useEffect(() => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUpDown, UserPlus, Pencil, Trash2, Loader2, SlidersHorizontal, Users } from "lucide-react";
 import type { Profile, SortState } from "./profile.types";
@@ -62,13 +62,15 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
   if (urlSearch !== prevUrlSearch) {
     setPrevUrlSearch(urlSearch);
     setSearch(urlSearch);
+    // clear filters when searching from global search to ensure result is visible
+    if (urlSearch) {
+      setRoleFilters(new Set());
+      setGsoFilters(new Set());
+      setActiveChip("All");
+    }
   }
 
-  useEffect(() => {
-    return () => {
-      setSearch("");
-    };
-  }, []);
+
 
   const [sort, setSort] = useState<SortState>({ field: "full_name", direction: "asc" });
 
@@ -155,6 +157,15 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
   useEffect(() => {
   setProfiles(initialProfiles);
   }, [initialProfiles]);
+
+  const autoOpenedRef = useRef(false);
+  const autoOpenId = searchParams.get("user");
+  useEffect(() => {
+    if (autoOpenId && !autoOpenedRef.current) {
+        autoOpenedRef.current = true;
+        openDetailModal(autoOpenId);
+    }
+  }, [autoOpenId]);
 
   const showToast = (variant: "success"|"error", title: string, message?: string) => {
     setToast({ variant, title, message });
