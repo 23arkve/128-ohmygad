@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, Search } from "lucide-react";
-import { Card, Badge, Button, Tabs } from "@/components/ui";
+import { Card, Badge, Button } from "@/components/ui";
 import { Pagination } from "@/components/pagination";
 import { paginate, totalPages } from "@/lib/pagination.utils";
 
@@ -135,8 +135,10 @@ function SearchResultsContent({ role }: { role: string }) {
       ) : results.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <Search size={32} style={{ opacity: 0.2 }} />
-            <p className="caption">No results found for your search.</p>
+            <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+              <Search size={26} className="text-[var(--periwinkle)]" />
+            </div>
+            <p className="label text-[var(--primary-dark)]">No results found for your search</p>
             <Button variant={"ghost"} size="sm" onClick={() => router.back()}>
               Go back
             </Button>
@@ -145,8 +147,10 @@ function SearchResultsContent({ role }: { role: string }) {
       ) : filteredResults.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <Search size={32} style={{ opacity: 0.2 }} />
-            <p className="caption">No {activeFilters.length > 0 ? activeFilters.join(", ").toLowerCase() : "results"} found for your search.</p>
+            <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+              <Search size={26} className="text-[var(--periwinkle)]" />
+            </div>
+            <p className="label text-[var(--primary-dark)]">No {activeFilters.length > 0 ? activeFilters.join(", ").toLowerCase() : "results"} found for your search</p>
           </div>
         </Card>
       ) : (

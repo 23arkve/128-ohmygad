@@ -207,8 +207,11 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
               })}
             </div>
           ) : (
-            <div style={{ padding: 24, textAlign: "center", color: "var(--gray)", fontSize: 13 }}>
-              No results found.
+            <div className="flex flex-col items-center justify-center gap-3 py-8">
+              <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+                <Search size={26} className="text-[var(--periwinkle)]" />
+              </div>
+              <p className="label text-[var(--primary-dark)]">No results found</p>
             </div>
           )}
 

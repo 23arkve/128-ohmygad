@@ -8,7 +8,6 @@ import {
 	MapPin,
 	Users,
 	Clock,
-	X,
 	ArrowUpDown,
 	ClipboardList,
     Calendar,
@@ -329,6 +328,7 @@ export default function EventsPage() {
 					{(hasActiveFilters || search) && (
 						<Button
 							variant="ghost"
+                            size="sm"
 							onClick={() => {
 								clearFilters();
 								setSearch("");
@@ -455,7 +455,6 @@ export default function EventsPage() {
 			<Modal
 				open={!!detailEvent}
 				onClose={handleModalClose}
-				hideCloseButton
 				modalStyle={{ maxWidth: 600, padding: 0 }}
 				footer={
 					detailEvent &&
@@ -521,16 +520,6 @@ export default function EventsPage() {
 										] ?? DEFAULT_GRADIENT),
 							}}
 						>
-							<button
-								onClick={() => {
-									setDetailEvent(null);
-									setRegisterError(null);
-								}}
-								aria-label="Close"
-								className="absolute top-3 right-3 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-none cursor-pointer flex items-center justify-center text-[var(--primary-dark)] z-10 backdrop-blur-sm bg-white/80"
-							>
-								<X size={15} />
-							</button>
 						</div>
 
 						<div className="flex flex-col gap-2 p-3 sm:p-5 overflow-y-auto">
