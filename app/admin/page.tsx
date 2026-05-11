@@ -1059,7 +1059,7 @@ export default function DashboardPage() {
 												data={surveyCompletionChartData}
 												margin={{
 													top: 5,
-													right: 30,
+													right: 10,
 													left: 20,
 													bottom: 30,
 												}}
