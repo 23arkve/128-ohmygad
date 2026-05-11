@@ -32,7 +32,7 @@ const NAV_ITEMS = [
 	{ href: "/admin/events", label: "Events", icon: Calendar, exact: false },
 	{ href: "/admin/users", label: "Users", icon: Users, exact: false },
 	{
-		href: "/admin/courses",
+		href: "/admin/guidelines",
 		label: "Guidelines",
 		icon: BookOpen,
 		exact: false,
@@ -49,7 +49,7 @@ const PAGE_LABELS: Record<string, string> = {
 	dashboard: "Dashboard",
 	events: "Events Management",
 	users: "Users Management",
-	courses: "Guidelines Management",
+	guidelines: "Guidelines Management",
 	surveys: "Surveys Management",
 };
 
