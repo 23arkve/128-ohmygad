@@ -266,8 +266,8 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 
 					{/* Action Button */}
 					{search && (
-						<Button variant="ghost" onClick={() => setSearch("")}>
-							Clear search
+						<Button variant="ghost" size="sm" onClick={() => setSearch("")}>
+							Clear search &amp; filters
 						</Button>
 					)}
 				</Card>

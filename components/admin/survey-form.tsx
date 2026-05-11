@@ -44,7 +44,7 @@ type SurveyFormProps = {
   mode: "create" | "edit";
   initialData?: SurveyFormData;
   initialQuestions?: SurveyQuestion[];
-  onSuccess?: () => void;
+  onSuccess?: (title: string) => void;
   onCancel?: () => void;
 };
 
@@ -310,7 +310,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
       }
 
       if (onSuccess) {
-        onSuccess();
+        onSuccess(title.trim());
       } else {
         router.push("/admin/surveys");
         router.refresh();

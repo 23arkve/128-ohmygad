@@ -56,6 +56,7 @@ export default function AdminProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<ToastState>(null);
+  const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState("Personal");
 
   const supabase = createClient();
@@ -100,38 +101,39 @@ export default function AdminProfilePage() {
 
   async function handleSave() {
     setSaving(true);
+    setError(null);
 
     const nameErr = validateFullName(profile.full_name);
     if (nameErr) {
-      setToast({ type: "error", message: nameErr });
+      setError(nameErr);
       setSaving(false);
       return;
     }
 
     const displayErr = validateDisplayName(profile.display_name);
     if (displayErr) {
-      setToast({ type: "error", message: displayErr });
+      setError(displayErr);
       setSaving(false);
       return;
     }
 
     const contactErr = validateContactNum(profile.contact_num);
     if (contactErr) {
-      setToast({ type: "error", message: contactErr });
+      setError(contactErr);
       setSaving(false);
       return;
     }
 
     const addressErr = validateAddress(profile.address);
     if (addressErr) {
-      setToast({ type: "error", message: addressErr });
+      setError(addressErr);
       setSaving(false);
       return;
     }
 
     const officeErr = validateOffice(profile.office);
     if (officeErr) {
-      setToast({ type: "error", message: officeErr });
+      setError(officeErr);
       setSaving(false);
       return;
     }
@@ -144,8 +146,8 @@ export default function AdminProfilePage() {
       if (error) throw error;
       setInitialProfile({ ...profile });
       setToast({ type: "success", message: "Profile saved successfully." });
-    } catch {
-      setToast({ type: "error", message: "Failed to save changes." });
+    } catch (error: any) {
+      setError(error.message || "Failed to save changes.");
     } finally {
       setSaving(false);
     }
@@ -156,6 +158,7 @@ export default function AdminProfilePage() {
   ) => setProfile((p) => ({ ...p, [field]: e.target.value }));
 
   const isChanged = initialProfile ? JSON.stringify(profile) !== JSON.stringify(initialProfile) : false;
+  const displayed = initialProfile ?? profile;
 
   if (loading) {
     return (
@@ -177,16 +180,16 @@ export default function AdminProfilePage() {
           <Card variant="no-hover" className="flex flex-col items-center text-center p-4 lg:p-6">
 
             {/* user details */}
-            <h2 className="heading-lg mb-1">{profile.full_name || "Your Name"}</h2>
+            <h2 className="heading-lg mb-1">{displayed.full_name || "Your Name"}</h2>
             <p className="text-sm text-[var(--gray)] mb-4">
-              {profile.display_name ? `${profile.display_name}` : "No display name set"}
+              {displayed.display_name ? `${displayed.display_name}` : "No display name set"}
             </p>
 
             <div className="flex flex-wrap justify-center gap-2 mb-6">
               <Badge variant="dark" dot>Administrator</Badge>
-              {profile.office && (
+              {displayed.office && (
                 <Badge variant="pink-light" className="whitespace-normal break-all h-auto py-1.5 px-3 text-center leading-tight max-w-[200px]">
-                  {profile.office}
+                  {displayed.office}
                 </Badge>
               )}
             </div>
@@ -194,55 +197,55 @@ export default function AdminProfilePage() {
             {/* gso progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.gso_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.gso_attended ?? 0) / 2) * 100, 100)}
                 variant="gradient"
                 label="GSO Attendance"
-                sublabel={`${profile.gso_attended ?? 0} / 2 completed`}
+                sublabel={`${displayed.gso_attended ?? 0} / 2 completed`}
               />
             </div>
             {/* asho progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.asho_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.asho_attended ?? 0) / 2) * 100, 100)}
                 variant="gradient"
                 label="ASHO Attendance"
-                sublabel={`${profile.asho_attended ?? 0} / 2 completed`}
+                sublabel={`${displayed.asho_attended ?? 0} / 2 completed`}
               />
             </div>
             {/* forums progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.forum_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.forum_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Forums Attended"
-                sublabel={`${profile.forum_attended ?? 0} attended`}
+                sublabel={`${displayed.forum_attended ?? 0} attended`}
               />
             </div>
             {/* research progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.research_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.research_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Research Attended"
-                sublabel={`${profile.research_attended ?? 0} attended`}
+                sublabel={`${displayed.research_attended ?? 0} attended`}
               />
             </div>
             {/* training progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.training_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.training_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Trainings Attended"
-                sublabel={`${profile.training_attended ?? 0} attended`}
+                sublabel={`${displayed.training_attended ?? 0} attended`}
               />
             </div>
             {/* workshops progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={Math.min(((profile.workshop_attended ?? 0) / 2) * 100, 100)}
+                value={Math.min(((displayed.workshop_attended ?? 0) / 2) * 100, 100)}
                 variant="periwinkle"
                 label="Workshops Attended"
-                sublabel={`${profile.workshop_attended ?? 0} attended`}
+                sublabel={`${displayed.workshop_attended ?? 0} attended`}
               />
             </div>
 
@@ -353,7 +356,12 @@ export default function AdminProfilePage() {
           </Card>
 
           {/* save button positioned directly below the right card */}
-          <div className="flex justify-end shrink-0 pt-2 lg:pt-0">
+          <div className="flex flex-col items-end gap-3 shrink-0 pt-2 lg:pt-0">
+            {error && (
+              <div className="toast toast-error py-2 px-4 w-full md:w-auto">
+                <span className="text-sm font-semibold text-[var(--error)]">{error}</span>
+              </div>
+            )}
             <Button
               variant="primary"
               onClick={handleSave}

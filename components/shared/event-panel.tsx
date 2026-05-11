@@ -421,7 +421,8 @@ export const EventPanel = (): JSX.Element => {
 								>
 									<button
 										onClick={() => setDetailEvent(null)}
-										className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/80 flex items-center justify-center cursor-pointer"
+										aria-label="Close"
+										className="modal-close"
 									>
 										<X size={15} />
 									</button>

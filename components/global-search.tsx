@@ -13,16 +13,17 @@ interface GlobalSearchProps {
 interface SearchResult {
   id: string;
   title: string;
-  type: "Course" | "Event" | "User" | "Survey";
+  type: "Guideline" | "Event" | "User" | "Survey";
 }
 
-export default function GlobalSearch({ role, placeholder = "Search events, users, courses, surveys..." }: GlobalSearchProps) {
+export default function GlobalSearch({ role, placeholder = "Search events, users, guidelines, surveys..." }: GlobalSearchProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -34,13 +35,14 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
   useEffect(() => {
     setOpen(false);
     setQuery("");
+    setSelectedIndex(-1);
     isNavigating.current = false;
   }, [pathname, searchParams]);
 
   const AVAILABLE_CATEGORIES = useMemo(() => [
     { id: "Events",     type: "Event"  },
     ...(role === "admin" ? [{ id: "Users", type: "User" }] : []),
-    { id: "Guidelines", type: "Course" },
+    { id: "Guidelines", type: "Guideline" },
     { id: "Surveys",    type: "Survey" },
   ], [role]);
 
@@ -58,6 +60,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
     if (debouncedQuery.trim().length < 1) {
       setResults([]);
       setLoading(false);
+      setSelectedIndex(-1);
       return;
     }
 
@@ -70,6 +73,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
           if (!isNavigating.current) {
             setResults(data.results || []);
             setOpen(true);
+            setSelectedIndex(-1);
           }
         }
       } catch (err) {
@@ -92,15 +96,17 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [open]);
 
-  const handleSelect = useCallback((r: SearchResult, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleSelect = useCallback((r: SearchResult, e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     isNavigating.current = true;
     setOpen(false);
     inputRef.current?.blur();
 
-    if (r.type === "Course") {
-      router.push(`/${role}/courses?search=${encodeURIComponent(r.title)}`);
+    if (r.type === "Guideline") {
+      router.push(`/${role}/guidelines?search=${encodeURIComponent(r.title)}`);
     } else if (r.type === "Event") {
       router.push(`/${role}/events?search=${encodeURIComponent(r.title)}`);
     } else if (r.type === "User" && role === "admin") {
@@ -112,18 +118,40 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
+    setSelectedIndex(-1);
     if (!open && e.target.value.trim().length >= 1 && !isNavigating.current) {
       setOpen(true);
     }
   }, [open]);
 
+  const flattenedResults = useMemo(() => {
+    const list: SearchResult[] = [];
+    AVAILABLE_CATEGORIES.forEach(c => {
+      const catResults = results.filter(r => r.type === c.type).slice(0, 3);
+      list.push(...catResults);
+    });
+    return list;
+  }, [results, AVAILABLE_CATEGORIES]);
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && query.trim().length >= 1) {
+    if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev < flattenedResults.length - 1 ? prev + 1 : prev));
+    } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === "Enter") {
       e.preventDefault();
-      setOpen(false);
-      router.push(`/${role}/search?q=${encodeURIComponent(query.trim())}`);
+      if (selectedIndex >= 0 && selectedIndex < flattenedResults.length) {
+        handleSelect(flattenedResults[selectedIndex]);
+      } else if (query.trim().length >= 1) {
+        setOpen(false);
+        router.push(`/${role}/search?q=${encodeURIComponent(query.trim())}`);
+      }
+    } else if (e.key === "Escape") {
+        setOpen(false);
     }
-  }, [query, role, router]);
+  }, [query, role, router, selectedIndex, flattenedResults, handleSelect]);
 
   const handleFocus = useCallback(() => {
     if (query.trim().length >= 1) setOpen(true);
@@ -166,24 +194,11 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
 
                 return (
                   <div key={c.id} className="border-b border-black/[0.05] last:border-0 pb-2">
-                    <div className="px-4 py-3 flex items-center justify-between border-b border-black/[0.02]">
-                      <span className="text-[14px] font-bold text-[var(--primary-dark)]">{c.id}</span>
-                      <span className="bg-[var(--lavender)] text-[var(--primary-dark)] px-2 py-0.5 rounded-full text-[11px] font-semibold">{catResults.length}</span>
-                    </div>
-                    <div className="flex flex-col">
-                      {catResults.slice(0, 3).map(r => (
-                        <div
-                          key={r.id + r.type}
-                          onClick={(e) => handleSelect(r, e)}
-                          className="px-4 py-2.5 flex items-center justify-between hover:bg-[var(--cream)] cursor-pointer group transition-colors"
-                        >
-                          <span className="text-[14px] text-[var(--primary-dark)] font-medium truncate group-hover:underline">{r.title}</span>
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--gray)]"><ExternalLink size={14} /></span>
-                        </div>
-                      ))}
-                    </div>
-                    {catResults.length >= 4 && (
-                      <div className="px-4 pt-1">
+                    <div className="px-4 py-3 flex items-center gap-3">
+                      <span className="text-[12px] uppercase tracking-wider font-bold text-[var(--gray)]">{c.id}</span>
+                      <span className="bg-[var(--lavender)] text-[var(--primary-dark)] px-2 py-0.5 rounded-full text-[10px] font-bold">{catResults.length}</span>
+                      
+                      {catResults.length >= 4 && (
                         <button
                           onClick={(e) => {
                             e.preventDefault();
@@ -191,24 +206,55 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
                             isNavigating.current = true;
                             setOpen(false);
                             inputRef.current?.blur();
-                            if (c.id === "Guidelines") router.push(`/${role}/courses?search=${encodeURIComponent(query)}`);
+                            if (c.id === "Guidelines") router.push(`/${role}/guidelines?search=${encodeURIComponent(query)}`);
                             else if (c.id === "Events") router.push(`/${role}/events?search=${encodeURIComponent(query)}`);
                             else if (c.id === "Users") router.push(`/admin/users?search=${encodeURIComponent(query)}`);
                             else if (c.id === "Surveys") router.push(`/${role}/surveys?search=${encodeURIComponent(query)}`);
                           }}
-                          className="text-[13px] font-semibold text-black-600 hover:text-black-700 hover:underline bg-transparent border-none cursor-pointer flex items-center gap-1 mt-1 transition-colors"
+                          className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline bg-transparent border-none cursor-pointer flex items-center gap-1 transition-colors"
                         >
-                          See all {c.id} results <ExternalLink size={12} />
+                          See all <ExternalLink size={12} />
                         </button>
-                      </div>
-                    )}
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      {catResults.slice(0, 3).map(r => {
+                        const isSelected = flattenedResults.indexOf(r) === selectedIndex;
+                        
+                        // Highlight match logic
+                        const parts = query.trim() ? r.title.split(new RegExp(`(${query.trim()})`, 'gi')) : [r.title];
+
+                        return (
+                          <div
+                            key={r.id + r.type}
+                            onClick={(e) => handleSelect(r, e)}
+                            className={`px-4 py-2.5 flex items-center justify-between cursor-pointer group hover:bg-[rgba(45,42,74,0.04)] transition-colors`}
+                            style={isSelected ? { borderLeft: "3px solid var(--primary-dark)", paddingLeft: 13, background: "rgba(45,42,74,0.04)" } : {}}
+                          >
+                            <span className="text-[14px] text-[var(--primary-dark)] font-medium truncate">
+                              {parts.map((part, i) => 
+                                part.toLowerCase() === query.trim().toLowerCase() ? (
+                                  <span key={i} className="font-bold border-b-2 border-[var(--soft-pink)]">{part}</span>
+                                ) : (
+                                  <span key={i}>{part}</span>
+                                )
+                              )}
+                            </span>
+                            <span className={`transition-opacity text-[var(--gray)] ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}><ExternalLink size={14} /></span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div style={{ padding: 24, textAlign: "center", color: "var(--gray)", fontSize: 13 }}>
-              No results found.
+            <div className="flex flex-col items-center justify-center gap-3 py-8">
+              <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+                <Search size={26} className="text-[var(--periwinkle)]" />
+              </div>
+              <p className="label text-[var(--primary-dark)]">No results found</p>
             </div>
           )}
 

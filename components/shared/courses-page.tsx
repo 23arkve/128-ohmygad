@@ -208,6 +208,18 @@ export default function CoursesPage() {
 							No guidelines found.{" "}
 						</p>
 					</div>
+                    {/* Action Button */}
+                    {(search) && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                setSearch("");
+                            }}
+                        >
+                            Clear search &amp; filters
+                        </Button>
+                    )}
 				</Card>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -258,7 +270,7 @@ export default function CoursesPage() {
 				}}
 			>
 				{detailCourse && (
-					<div className="flex flex-col gap-4 pb-8 md:pb-1 pb-[max(env(safe-area-inset-bottom),2.5rem)]">
+					<div className="flex flex-col gap-4 pb-8 md:pb-1">
 						<div className="divider mt-0 mb-2 border-t border-black" />
 
 						<div className="space-y-2">

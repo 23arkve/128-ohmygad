@@ -8,7 +8,6 @@ import {
 	MapPin,
 	Users,
 	Clock,
-	X,
 	ArrowUpDown,
 	ClipboardList,
     Calendar,
@@ -307,7 +306,10 @@ export default function EventsPage() {
 				<Card className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4">
 					{/* Decorative Icon Circle */}
 					<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
-						<Calendar size={26} className="text-[var(--periwinkle)]" />
+						<Calendar
+							size={26}
+							className="text-[var(--periwinkle)]"
+						/>
 					</div>
 
 					{/* Text Content */}
@@ -329,6 +331,7 @@ export default function EventsPage() {
 					{(hasActiveFilters || search) && (
 						<Button
 							variant="ghost"
+							size="sm"
 							onClick={() => {
 								clearFilters();
 								setSearch("");
@@ -455,7 +458,6 @@ export default function EventsPage() {
 			<Modal
 				open={!!detailEvent}
 				onClose={handleModalClose}
-				hideCloseButton
 				modalStyle={{ maxWidth: 600, padding: 0 }}
 				footer={
 					detailEvent &&
@@ -520,23 +522,14 @@ export default function EventsPage() {
 											detailEvent.category ?? ""
 										] ?? DEFAULT_GRADIENT),
 							}}
-						>
-							<button
-								onClick={() => {
-									setDetailEvent(null);
-									setRegisterError(null);
-								}}
-								aria-label="Close"
-								className="absolute top-3 right-3 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-none cursor-pointer flex items-center justify-center text-[var(--primary-dark)] z-10 backdrop-blur-sm bg-white/80"
-							>
-								<X size={15} />
-							</button>
-						</div>
+						></div>
 
 						<div className="flex flex-col gap-2 p-3 sm:p-5 overflow-y-auto">
+							{/* -------------- title -------------- */}
 							<h2 className="heading-md m-0">
 								{detailEvent.title}
 							</h2>
+							{/* -------------- category -------------- */}
 							<div className="flex gap-2 items-center">
 								<Badge variant="ghost">
 									{detailEvent.category ?? "Uncategorized"}
@@ -562,6 +555,7 @@ export default function EventsPage() {
 							</div>
 
 							<div className="flex flex-col gap-1.5">
+								{/* -------------- dates -------------- */}
 								<div className="flex items-start gap-3 caption sm:text-sm text-[var(--gray)]">
 									<CalendarDays
 										size={15}
@@ -597,8 +591,9 @@ export default function EventsPage() {
 											)}
 									</span>
 								</div>
-								<div className="flex items-center gap-x-4 gap-y-1.5 flex-wrap caption sm:text-sm text-[var(--gray)]">
-									<div className="flex items-center gap-2">
+								{/* -------------- time -------------- */}
+								<div className="flex items-center gap-x-4 gap-y-1.5 caption sm:text-sm text-[var(--gray)]">
+									<div className="flex items-center gap-3">
 										<Clock size={15} className="shrink-0" />
 										<span>
 											{detailEvent.start_date
@@ -631,7 +626,10 @@ export default function EventsPage() {
 												)}
 										</span>
 									</div>
-									<div className="flex items-center gap-2 min-w-0">
+								</div>
+								{/* -------------- loc -------------- */}
+								<div className="flex items-center gap-x-4 gap-y-1.5 caption sm:text-sm text-[var(--gray)]">
+									<div className="flex items-center gap-3">
 										<MapPin
 											size={15}
 											className="shrink-0"
@@ -641,12 +639,14 @@ export default function EventsPage() {
 										</span>
 									</div>
 								</div>
+								{/* -------------- capacity -------------- */}
 								<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
 									<Users size={15} className="shrink-0" />
 									<span>
 										Capacity: {detailEvent.capacity ?? "—"}
 									</span>
 								</div>
+								{/* -------------- registration -------------- */}
 								{(detailEvent.registration_open ||
 									detailEvent.registration_close) && (
 									<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">

@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 
 export interface TimelineEvent {
   id: string;
@@ -62,9 +62,12 @@ export function TodayTimeline({ events, loading, onEventClick }: TodayTimelinePr
 
       /* empty state */
       ) : events.length === 0 ? (
-        <p className="caption text-center py-4">
-          No events scheduled today
-        </p>
+        <div className="flex flex-col items-center justify-center text-center gap-3 py-6">
+          <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+            <Calendar size={26} className="text-[var(--periwinkle)]" />
+          </div>
+          <p className="label text-[var(--primary-dark)]">No events scheduled today</p>
+        </div>
 
       /* event list */
       ) : (

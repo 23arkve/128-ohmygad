@@ -34,7 +34,7 @@ const NAV_ITEMS = [
 	},
 	{ href: "/faculty/events", label: "Events", icon: Calendar, exact: false },
 	{
-		href: "/faculty/courses",
+		href: "/faculty/guidelines",
 		label: "I've GAD to Know",
 		icon: BookOpen,
 		exact: false,

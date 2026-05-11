@@ -75,7 +75,7 @@ export async function GET(request: Request) {
     }
 
     const results = [
-      ...(courses?.map(c => ({ id: c.id, title: c.title, type: "Course" })) || []),
+      ...(courses?.map(c => ({ id: c.id, title: c.title, type: "Guideline" })) || []),
       ...(events?.map(e => ({ id: e.id, title: e.title, type: "Event" })) || []),
       ...(surveys?.map(s => ({ id: s.id, title: s.title, type: "Survey" })) || []),
       ...(users?.map(u => ({ id: u.id, title: u.full_name || u.email, type: "User" })) || []),
