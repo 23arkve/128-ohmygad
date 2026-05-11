@@ -57,22 +57,6 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [prevUrlSearch, setPrevUrlSearch] = useState(searchParams.get("search") || "");
-
-  // Sync search state with URL parameter synchronously to avoid "previous search" flash
-  const urlSearch = searchParams.get("search") || "";
-  if (urlSearch !== prevUrlSearch) {
-    setPrevUrlSearch(urlSearch);
-    setSearch(urlSearch);
-    // clear filters when searching from global search to ensure result is visible
-    if (urlSearch) {
-      setRoleFilters(new Set());
-      setGsoFilters(new Set());
-      setActiveChip("All");
-    }
-  }
-
-
-
   const [sort, setSort] = useState<SortState>({ field: "full_name", direction: "asc" });
 
   // Role change confirmation state
@@ -152,6 +136,19 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deletePassword, setDeletePassword] = useState("");
+
+  // Sync search state with URL parameter synchronously to avoid "previous search" flash
+  const urlSearch = searchParams.get("search") || "";
+  if (urlSearch !== prevUrlSearch) {
+    setPrevUrlSearch(urlSearch);
+    setSearch(urlSearch);
+    // clear filters when searching from global search to ensure result is visible
+    if (urlSearch) {
+      setRoleFilters(new Set());
+      setGsoFilters(new Set());
+      setActiveChip("All");
+    }
+  }
 
   const [toast, setToast] = useState<{ variant: "success"|"error"; title: string; message?: string } | null>(null);
 
