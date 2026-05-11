@@ -271,7 +271,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
                     minLength={10}
-                    maxLength={5000}
+                    maxLength={3000}
                   />
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                       onClick={removeBanner}
                       className="absolute top-2 right-2 w-4 h-4 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--primary-dark)] border-none cursor-pointer"
                     >
-                      <X size={14} />
+                      <X size={15} />
                     </button>
                   </div>
                 ) : (
@@ -338,7 +338,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                       setCapacity(null);
                     } else {
                       const num = Number(val);
-                      setCapacity(Math.min(500, Math.max(0, num)));
+                      setCapacity(Math.min(500, Math.max(1, num)));
                     }
                   }}
                   onKeyDown={(e) => {

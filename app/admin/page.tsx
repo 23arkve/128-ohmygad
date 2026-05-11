@@ -827,6 +827,7 @@ export default function DashboardPage() {
 													paddingAngle={2}
 													dataKey="value"
 													nameKey="name"
+                                                    stroke=""
 												>
 													{sexAtBirthData.map(
 														(
@@ -918,6 +919,7 @@ export default function DashboardPage() {
 													paddingAngle={2}
 													dataKey="value"
 													nameKey="name"
+                                                    stroke=""
 												>
 													{filteredGenders.map(
 														(

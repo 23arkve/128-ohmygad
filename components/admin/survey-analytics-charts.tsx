@@ -129,8 +129,7 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
             paddingAngle={3}
             dataKey="value"
             nameKey="name"
-            stroke="white"
-            strokeWidth={2}
+            stroke=""
             style={{ pointerEvents: "none" }}
           >
             {data.map((_, i) => (

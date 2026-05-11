@@ -423,7 +423,7 @@ export const EventPanel = (): JSX.Element => {
 										onClick={() => setDetailEvent(null)}
 										className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/80 flex items-center justify-center cursor-pointer"
 									>
-										<X size={14} />
+										<X size={15} />
 									</button>
 									{detailEvent.category && (
 										<div className="absolute bottom-3 left-3">

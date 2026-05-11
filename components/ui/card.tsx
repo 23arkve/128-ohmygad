@@ -10,11 +10,8 @@ import {
 	GraduationCap,
 	Building2,
 	BookOpen,
-	Layers,
-	UserRound,
 	User,
 	Heart,
-	CalendarCheck,
 	CheckCircle2,
 	VenusAndMars,
 	IdCard,
@@ -433,7 +430,7 @@ export function UserCard({
                     </div>
 
                     {/* name */}
-                    <div className="heading-lg-dark break-all mb-2.5 pr-10">
+                    <div className="heading-lg-dark break-all hyphens-auto mb-2.5 pr-10">
                         {name || "—"}
                     </div>
 
