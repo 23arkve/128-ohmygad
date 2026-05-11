@@ -448,16 +448,6 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
               </div>
             )}
 
-            {/* Question count error — shown after submit attempt */}
-            {submitAttempted && questionCountError && (
-              <Toast variant="error" title="Questions Required" message={questionCountError} />
-            )}
-
-            {/* Per-question validation error — shown after submit attempt */}
-            {submitAttempted && !questionCountError && validationQuestionError && (
-              <Toast variant="error" title="Question Error" message={validationQuestionError} />
-            )}
-
             {questions.map((question, qIndex) => (
               <div
                 key={qIndex}
@@ -545,6 +535,24 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
               </div>
             ))}
 
+            {/* Question count error — shown after submit attempt */}
+            {submitAttempted && questionCountError && (
+              <Toast variant="error" title="Questions Required" message={questionCountError} />
+            )}
+
+            {(submitAttempted || questions.some(q => q.question_text.length > 0)) && !questionCountError && validationQuestionError && (
+              <Toast 
+                variant="error" 
+                title="Question Error" 
+                message={validationQuestionError ?? undefined} 
+              />
+            )}
+
+            {/* Per-question validation error — shown after submit attempt */}
+            {submitAttempted && !questionCountError && validationQuestionError && (
+              <Toast variant="error" title="Question Error" message={validationQuestionError} />
+            )}
+
             <button
               type="button"
               onClick={addQuestion}
@@ -572,7 +580,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
             <Button
               type="submit"
               variant="primary"
-              disabled={isLoading || (isEdit && !hasChanges)}
+              disabled={isLoading || (isEdit && !hasChanges) || hasFieldErrors}
               className="px-8"
             >
               {isLoading
