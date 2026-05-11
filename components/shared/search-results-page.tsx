@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, Search } from "lucide-react";
-import { Card, Badge, Button } from "@/components/ui";
+import { Card, Badge, Button, Tabs } from "@/components/ui";
 import { Pagination } from "@/components/pagination";
 import { paginate, totalPages } from "@/lib/pagination.utils";
 

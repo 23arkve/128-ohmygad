@@ -10,7 +10,7 @@ import { MobileMenuProvider } from '@/components/ui/mobile-menu-context';
 const PAGE_LABELS: Record<string, string> = {
   dashboard: "Dashboard",
   events:    "Discover Events",
-  courses:   "I've GAD to Know",
+  guidelines: "I've GAD to Know",
   surveys:   "Surveys",
   profile:   "Profile",
   settings:  "Settings",

@@ -16,7 +16,7 @@ interface SearchResult {
   type: "Guideline" | "Event" | "User" | "Survey";
 }
 
-export default function GlobalSearch({ role, placeholder = "Search events, users, courses, surveys..." }: GlobalSearchProps) {
+export default function GlobalSearch({ role, placeholder = "Search events, users, guidelines, surveys..." }: GlobalSearchProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -206,7 +206,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
                             isNavigating.current = true;
                             setOpen(false);
                             inputRef.current?.blur();
-                            if (c.id === "Guidelines") router.push(`/${role}/courses?search=${encodeURIComponent(query)}`);
+                            if (c.id === "Guidelines") router.push(`/${role}/guidelines?search=${encodeURIComponent(query)}`);
                             else if (c.id === "Events") router.push(`/${role}/events?search=${encodeURIComponent(query)}`);
                             else if (c.id === "Users") router.push(`/admin/users?search=${encodeURIComponent(query)}`);
                             else if (c.id === "Surveys") router.push(`/${role}/surveys?search=${encodeURIComponent(query)}`);
