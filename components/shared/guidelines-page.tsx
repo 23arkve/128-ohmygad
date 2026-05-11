@@ -113,11 +113,11 @@ export default function GuidelinesPage() {
     async function fetchGuidelines() {
       try {
         setIsLoading(true);
-        const res = await fetch("/api/courses");
+        const res = await fetch("/api/guidelines");
         const json = await res.json();
-        if (json.success) setGuidelines(json.courses);
+        if (json.success) setGuidelines(json.guidelines);
       } catch (err) {
-        setToast({ variant: "error", title: "Failed to load courses" });
+        setToast({ variant: "error", title: "Failed to load guidelines" });
       } finally {
         setIsLoading(false);
       }
@@ -161,7 +161,7 @@ export default function GuidelinesPage() {
         if (aVal > bVal) return sort.direction === "asc" ? 1 : -1;
         return 0;
       });
-  }, [courses, search, sort]);
+  }, [guidelines, search, sort]);
 
   const handleSort = (field: SortField) =>
     setSort((prev) => ({ field, direction: prev.field === field && prev.direction === "asc" ? "desc" : "asc" }));
@@ -235,25 +235,25 @@ export default function GuidelinesPage() {
 				</Card>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-					{filteredAndSorted.map((course) => (
+					{filteredAndSorted.map((guideline) => (
 						<div
 							className="group card relative cursor-pointer hover:shadow-md transition-shadow flex flex-col h-full overflow-hidden"
-							key={course.id}
-							onClick={() => setDetailGuideline(course)}
+							key={guideline.id}
+							onClick={() => setDetailGuideline(guideline)}
 						>
 							<h3
 								className="heading-sm mb-2 pr-12 line-clamp-1"
-								title={course.title}
+								title={guideline.title}
 							>
-								{course.title}
+								{guideline.title}
 							</h3>
 
 							<div className="flex flex-col gap-2 text-sm text-gray-500 mt-1">
 								<div
 									className="line-clamp-2 leading-snug min-h-[2.5rem] break-words mb-2"
-									title={course.description}
+									title={guideline.description}
 								>
-									{course.description ||
+									{guideline.description ||
 										"No Description Available"}
 								</div>
 

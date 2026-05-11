@@ -20,7 +20,7 @@ export default function EditGuidelinePage() {
     const fetchGuideline = async () => {
       const supabase = createClient();
       const { data, error } = await supabase
-        .from("course")
+        .from("guideline")
         .select("*")
         .eq("id", id)
         .single();

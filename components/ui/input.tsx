@@ -60,7 +60,7 @@ SearchBar --------------------------------------------------------
   SAMPLE USAGE
   const [q, setQ] = useState("");
   <SearchBar
-    placeholder="Search events, courses…"
+    placeholder="Search events, guidelines…"
     value={q}
     onChange={e => setQ(e.target.value)}
     containerStyle={{ maxWidth: 400 }}

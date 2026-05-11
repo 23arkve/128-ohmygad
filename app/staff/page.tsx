@@ -187,7 +187,7 @@ export default function DashboardPage() {
 
 	// quick action modals
 	const [activeModal, setActiveModal] = useState<
-		"event" | "user" | "course" | "survey" | null
+		"event" | "user" | "guideline" | "survey" | null
 	>(null);
 	const [quickToast, setQuickToast] = useState<{ title: string } | null>(null);
 	const closeModal = () => setActiveModal(null);

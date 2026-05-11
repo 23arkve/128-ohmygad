@@ -46,7 +46,7 @@ export default function GuidelineForm({ initialData, mode, onSuccess, onCancel }
     };
 
     try {
-      const result = await submitFormData("course", payload, mode, initialData?.id);
+      const result = await submitFormData("guideline", payload, mode, initialData?.id);
 
       if (result?.success) {
         if (onSuccess) {

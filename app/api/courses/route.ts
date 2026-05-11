@@ -8,13 +8,13 @@ export async function GET() {
     const supabase = createAdminClient(url, key || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
     // use wildcard select so we don't need to know exact casing of end_time column
-    const { data, error } = await supabase.from("course").select("*");
+    const { data, error } = await supabase.from("guideline").select("*");
     if (error) {
         return NextResponse.json({ success: false, error: "Failed to fetch guidelines." }, { status: 500 });
     }
 
     // normalize column name for end_time if the DB uses weird casing
-    const courses = (data || []).map((row: any) => {
+    const guidelines = (data || []).map((row: any) => {
       if (row.End_time && !row.end_time) {
         row.end_time = row.End_time;
         delete row.End_time;
@@ -22,7 +22,7 @@ export async function GET() {
       return row;
     });
 
-    return NextResponse.json({ success: true, courses });
+    return NextResponse.json({ success: true, guidelines });
   } catch (err) {
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
   }
@@ -41,7 +41,7 @@ function parseTimeToMinutes(time?: string | null) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    // the course table may have End_time instead of end_time depending on how it was created
+    // the guideline table may have End_time instead of end_time depending on how it was created
     const { title, description = "", start_time = null, end_time = null, instructor_id = null, status = "active", semester = "" } = body;
 
     // validate times
@@ -72,13 +72,13 @@ export async function POST(req: Request) {
       insertObj.end_time = end_time;
       insertObj.End_time = end_time;
     }
-    const { data, error } = await supabase.from("course").insert([insertObj]).select();
+    const { data, error } = await supabase.from("guideline").insert([insertObj]).select();
     
     if (error) {
       return NextResponse.json({ success: false, error: "Failed to create guideline." }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, course: data?.[0] || null });
+    return NextResponse.json({ success: true, guideline: data?.[0] || null });
   } catch (err) {
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
   }

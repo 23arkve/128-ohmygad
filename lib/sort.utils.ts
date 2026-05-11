@@ -4,11 +4,11 @@ Generic sort utility for admin list views.
 Handles null values, date-field parsing, and case-insensitive string
 comparison so each page doesn't need its own sort implementation.
  
-Extracted from the inline `sortCourses` function in:
-app/admin/courses/page.tsx 
+Extracted from the inline `sortGuidelines` function in:
+app/admin/guidelines/page.tsx 
 
 Currently used by:
-app/admin/courses/page.tsx  (replaces inline `sortCourses`)
+app/admin/guidelines/page.tsx  (replaces inline `sortGuidelines`)
 Can be adopted by events/page.tsx and users in the future
 */
 
@@ -22,7 +22,7 @@ Key for later use:
 @param dateFields – optional set of field names that should be parsed as Date objects for numeric comparison
 
 Used in:
-app/admin/courses/page.tsx  (sorting course list by title, semester, status, or start_time)
+app/admin/guidelines/page.tsx  (sorting guideline list by title, semester, status, or start_time)
 */
 export function sortItems<T>(
   items: T[],

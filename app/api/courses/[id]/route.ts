@@ -27,7 +27,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
       const supabase = createAdminClient(url, key || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
-      const { data: existing, error: fetchError } = await supabase.from("course").select("start_time, end_time").eq("id", id).single();
+      const { data: existing, error: fetchError } = await supabase.from("guideline").select("start_time, end_time").eq("id", id).single();
       if (fetchError) {
           return NextResponse.json({ success: false, error: "Failed to fetch guideline." }, { status: 500 });
       }
@@ -51,12 +51,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const supabase = createAdminClient(url, key || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
-    const { data, error } = await supabase.from("course").update(body).eq("id", id).select();
+    const { data, error } = await supabase.from("guideline").update(body).eq("id", id).select();
     if (error) {
       return NextResponse.json({ success: false, error: "Failed to update guideline." }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, course: data?.[0] || null });
+    return NextResponse.json({ success: true, guideline: data?.[0] || null });
   } catch (err) {
     return NextResponse.json({ success: false, error: "Failed to update guideline." }, { status: 500 });
   }
@@ -69,7 +69,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const supabase = createAdminClient(url, key || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
-    const { error } = await supabase.from("course").delete().eq("id", id);
+    const { error } = await supabase.from("guideline").delete().eq("id", id);
     if (error) {
       return NextResponse.json({ success: false, error: "Failed to delete guideline." }, { status: 500 });
     }

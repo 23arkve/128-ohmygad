@@ -29,7 +29,7 @@ type SortField = typeof SORT_FIELDS[number];
 type SortDirection = "asc" | "desc";
 
 
-// courses page proper
+// guidelines page proper
 export default function GuidelinesPage() {
 
   // delete constant
@@ -64,7 +64,7 @@ export default function GuidelinesPage() {
   const getGuidelines = async () => {
     const supabase = createClient();
     const { data, error } = await supabase
-      .from("course")
+      .from("guideline")
       .select("id, title, description")
       .order("created_at", { ascending: false });
 
@@ -174,7 +174,7 @@ const confirmDelete = async () => {
   setDeletingId(deleteTarget.id);
 
   const { error } = await supabase
-    .from("course")
+    .from("guideline")
     .delete()
     .eq("id", deleteTarget.id);
 
@@ -201,13 +201,13 @@ const confirmDelete = async () => {
       key: "title",
       header: "Title",
       width: "20%",
-      render: (course) => (
+      render: (guideline) => (
         <span
           className="font-semibold truncate block"
           style={{ color: "var(--primary-dark)", fontSize: 13 }}
-          title={course.title}
+          title={guideline.title}
         >
-          {course.title}
+          {guideline.title}
         </span>
       ),
     },
@@ -215,13 +215,13 @@ const confirmDelete = async () => {
       key: "description",
       header: "Description",
       width: "65%",
-      render: (course) => (
+      render: (guideline) => (
         <span
           style={{ color: "var(--primary-dark)", fontSize: 13 }}
           className="capitalize truncate block"
-          title={course.description}
+          title={guideline.description}
         >
-          {course.description}
+          {guideline.description}
         </span>
       ),
     },
@@ -229,14 +229,14 @@ const confirmDelete = async () => {
       key: "actions",
       header: <div className="text-center">Actions</div>,
       width: "15%",
-      render: (course) => (
+      render: (guideline) => (
         <div className="text-center">
           <Button
             variant="icon"
             title="Edit guideline"
             onClick={(e) => {
               e.stopPropagation();
-              setEditTarget(course);
+              setEditTarget(guideline);
             }}
           >
             <Pencil size={14} />
@@ -244,18 +244,18 @@ const confirmDelete = async () => {
           <Button
             variant="icon"
             title="Delete guideline"
-            disabled={deletingId === course.id}
+            disabled={deletingId === guideline.id}
             style={
-              deletingId === course.id
+              deletingId === guideline.id
                 ? { opacity: 0.5 }
                 : { color: "var(--error)" }
             }
             onClick={(e) => {
               e.stopPropagation();
-              setDeleteTarget({ id: course.id!, title: course.title });
+              setDeleteTarget({ id: guideline.id!, title: guideline.title });
             }}
           >
-            {deletingId === course.id ? (
+            {deletingId === guideline.id ? (
               <Loader2 size={14} className="animate-spin" />
             ) : (
               <Trash2 size={14} />
@@ -349,11 +349,11 @@ const confirmDelete = async () => {
 				<DataTable
 					columns={columns}
 					rows={paginate(filtered, page, PER_PAGE)}
-					keyExtractor={(course) => course.id!}
-					onRowClick={(course) =>
+					keyExtractor={(guideline) => guideline.id!}
+					onRowClick={(guideline) =>
 						setModalContent({
-							label: course.title,
-							text: course.description,
+							label: guideline.title,
+							text: guideline.description,
 						})
 					}
 				/>
