@@ -59,22 +59,37 @@ export function validateEmail(email: string): string | null {
   return null;
 }
 
-export function validateGsoSessions(value: string | number | undefined | null): string | null {
+export function validateSessionCount(label: string, value: string | number | undefined | null): string | null {
   if (value === "" || value === undefined || value === null) return null;
   const str = String(value);
-  if (!/^\d+$/.test(str)) return "GSO Sessions Attended must be a whole number.";
+  if (!/^\d+$/.test(str)) return `${label} must be a whole number.`;
   const num = Number(str);
-  if (num < 0 || num > 5) return "GSO Sessions Attended must be between 0 and 5.";
+  if (num < 0 || num > 5) return `${label} must be between 0 and 5.`;
   return null;
 }
 
+export function validateGsoSessions(value: string | number | undefined | null): string | null {
+  return validateSessionCount("GSO Sessions Attended", value);
+}
+
 export function validateAshoSessions(value: string | number | undefined | null): string | null {
-  if (value === "" || value === undefined || value === null) return null;
-  const str = String(value);
-  if (!/^\d+$/.test(str)) return "ASHO Sessions Attended must be a whole number.";
-  const num = Number(str);
-  if (num < 0 || num > 5) return "ASHO Sessions Attended must be between 0 and 5.";
-  return null;
+  return validateSessionCount("ASHO Sessions Attended", value);
+}
+
+export function validateForumSessions(value: string | number | undefined | null): string | null {
+  return validateSessionCount("Forum Sessions Attended", value);
+}
+
+export function validateResearchSessions(value: string | number | undefined | null): string | null {
+  return validateSessionCount("Research Sessions Attended", value);
+}
+
+export function validateTrainingSessions(value: string | number | undefined | null): string | null {
+  return validateSessionCount("Training Sessions Attended", value);
+}
+
+export function validateWorkshopSessions(value: string | number | undefined | null): string | null {
+  return validateSessionCount("Workshop Sessions Attended", value);
 }
 
 export function validateAddress(address: string): string | null {
