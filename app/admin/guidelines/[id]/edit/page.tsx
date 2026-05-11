@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, ArrowLeft } from "lucide-react";
-import CourseForm, { type CourseFormData } from "@/components/admin/guideline-form";
+import GuidelineForm, { type GuidelineFormData } from "@/components/admin/guideline-form";
 import { Button, Card } from "@/components/ui";
 
 export default function EditCoursePage() {
   const { id } = useParams<{ id: string }>();
   const router  = useRouter();
 
-  const [guideline,   setGuideline]   = useState<CourseFormData | null>(null);
+  const [guideline,   setGuideline]   = useState<GuidelineFormData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error,     setError]     = useState<string | null>(null);
 
@@ -82,7 +82,7 @@ export default function EditCoursePage() {
         <h1 className="heading-md">Edit Guideline</h1>
       </div>
 
-      <CourseForm mode="edit" initialData={guideline} />
+      <GuidelineForm mode="edit" initialData={guideline} />
     </div>
   );
 }

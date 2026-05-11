@@ -47,7 +47,7 @@ import GlobalSearch from "@/components/global-search";
 import EventForm, { type EventFormData } from "@/components/admin/event-form";
 import { EventDetailModal } from "@/components/admin/event-detail-modal";
 import UserForm from "@/components/admin/user-form";
-import CourseForm from "@/components/admin/guideline-form";
+import GuidelineForm from "@/components/admin/guideline-form";
 import SurveyForm from "@/components/admin/survey-form";
 
 // constants ------------------------------------------------
@@ -1265,7 +1265,7 @@ export default function DashboardPage() {
 				title="Add Guideline"
 				modalStyle={{ maxWidth: 860 }}
 			>
-				<CourseForm
+				<GuidelineForm
 					mode="create"
 					onSuccess={closeModal}
 					onCancel={closeModal}
