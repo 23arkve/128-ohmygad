@@ -36,7 +36,6 @@ import {
 	Legend,
 	BarChart,
 	Bar,
-	LabelList,
 } from "recharts";
 import { useDashboardData, type RawEvent } from "@/app/admin/hooks/use-dashboard-data";
 import { EventDetailModal } from "@/components/admin/event-detail-modal";
