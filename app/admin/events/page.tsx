@@ -424,7 +424,7 @@ export default function EventsPage() {
 		} else {
 			// avoids a full refetch after delete
 			setEvents((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-			showToast("success", `"Event ${deleteTarget.title}" deleted successfully.`);
+			showToast("success", `Event "${deleteTarget.title}" deleted successfully.`);
 			setDeleteTarget(null);
 			setDeletePassword("");
 			setDeleteError(null);
@@ -439,7 +439,7 @@ export default function EventsPage() {
 		(title: string) => {
 			getEvents();
 			setCreateModalOpen(false);
-			showToast("success", `"Event ${title}" created successfully!`);
+			showToast("success", `Event "${title}" created successfully!`);
 		},
 		[getEvents, showToast],
 	);
@@ -452,7 +452,7 @@ export default function EventsPage() {
 			}
 			setDetailEvent(null);
 			setEditTarget(null);
-			showToast("success", `"Event ${title}" updated successfully!`);
+			showToast("success", `Event "${title}" updated successfully!`);
 		},
 		[getEvents, showToast],
 	);

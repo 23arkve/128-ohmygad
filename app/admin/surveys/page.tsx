@@ -212,7 +212,7 @@ export default function SurveysPage() {
       showToast("error", "Failed to delete survey. Please try again.");
     } else {
       setSurveys((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-      showToast("success", `"Survey ${deleteTarget.title}" deleted successfully!`);
+      showToast("success", `Survey "${deleteTarget.title}" deleted successfully!`);
     }
 
     setDeletingId(null);
@@ -530,7 +530,7 @@ export default function SurveysPage() {
               onSuccess={(title) => {
                 setEditTarget(null);
                 getSurveys();
-                showToast("success", `"Survey ${title}" updated successfully!`);
+                showToast("success", `Survey "${title}" updated successfully!`);
               }}
               onCancel={() => setEditTarget(null)}
             />
