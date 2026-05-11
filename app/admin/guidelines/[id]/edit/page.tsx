@@ -4,19 +4,20 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, ArrowLeft } from "lucide-react";
-import CourseForm, { type CourseFormData } from "@/components/admin/guideline-form";
+import GuidelineForm, { type GuidelineFormData } from "@/components/admin/guideline-form";
 import { Button, Card } from "@/components/ui";
+import { PulsingLoader } from "@/components/ui";
 
-export default function EditCoursePage() {
+export default function EditGuidelinePage() {
   const { id } = useParams<{ id: string }>();
   const router  = useRouter();
 
-  const [guideline,   setGuideline]   = useState<CourseFormData | null>(null);
+  const [guideline,   setGuideline]   = useState<GuidelineFormData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error,     setError]     = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchGuideline = async () => {
       const supabase = createClient();
       const { data, error } = await supabase
         .from("course")
@@ -30,22 +31,21 @@ export default function EditCoursePage() {
       setIsLoading(false);
     };
 
-    fetchCourse();
+    fetchGuideline();
   }, [id]);
 
   // loading 
   if (isLoading) {
     return (
-      <Card>
-        <div
-          className="flex items-center justify-center gap-3 py-12"
-          style={{ color: "var(--gray)" }}
-        >
-          <Loader2 size={20} className="animate-spin" />
-          <span className="caption">Loading guideline…</span>
-        </div>
-      </Card>
-    );
+		<Card>
+			<div
+				className="flex items-center justify-center gap-3 py-12"
+				style={{ color: "var(--gray)" }}
+			>
+				<PulsingLoader variant="breath" />
+			</div>
+		</Card>
+	);
   }
 
   // error / not found 
@@ -82,7 +82,7 @@ export default function EditCoursePage() {
         <h1 className="heading-md">Edit Guideline</h1>
       </div>
 
-      <CourseForm mode="edit" initialData={guideline} />
+      <GuidelineForm mode="edit" initialData={guideline} />
     </div>
   );
 }

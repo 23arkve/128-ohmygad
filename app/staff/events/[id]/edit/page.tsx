@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import EventForm, { type EventFormData } from "@/components/admin/event-form";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, PulsingLoader } from "@/components/ui";
 
 export default function EditEventPage() {
   const { id } = useParams<{ id: string }>();
@@ -36,16 +36,15 @@ export default function EditEventPage() {
   // loading 
   if (isLoading) {
     return (
-      <Card>
-        <div
-          className="flex items-center justify-center gap-3 py-12"
-          style={{ color: "var(--gray)" }}
-        >
-          <Loader2 size={20} className="animate-spin" />
-          <span className="caption">Loading event…</span>
-        </div>
-      </Card>
-    );
+		<Card>
+			<div
+				className="flex items-center justify-center gap-3 py-12"
+				style={{ color: "var(--gray)" }}
+			>
+				<PulsingLoader variant="breath" />
+			</div>
+		</Card>
+	);
   }
 
   // error / not found 

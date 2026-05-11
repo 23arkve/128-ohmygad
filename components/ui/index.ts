@@ -18,6 +18,7 @@ export { DashboardFilter, DashboardFilterChips, EmptyFilters, hasActiveFilters }
 export type { DashboardFilters, FilterOptions } from "./dashboard-filter";
 export { MiniCalendar } from "./mini-calendar"
 export { TodayTimeline } from "./today-timeline"
+export { default as PulsingLoader } from "./pulsing-loader"
 
 export type { EventCardProps } from "./card";
 export type { NavItem } from "./sidebar";

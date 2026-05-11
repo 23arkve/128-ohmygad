@@ -28,11 +28,12 @@ import {
   DropdownItem,
   DropdownDivider,
   Toast,
+  PulsingLoader,
 } from "@/components/ui";
 
 // --- Types & Constants ---
 
-type Course = {
+type Guideline = {
   id: string;
   title: string;
   description?: string;
@@ -83,11 +84,11 @@ function CheckItem({ label, active, onToggle }: { label: string; active: boolean
 
 // --- Main Component ---
 
-export default function CoursesPage() {
+export default function GuidelinesPage() {
   const searchParams = useSearchParams();
 
   // State
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [guidelines, setGuidelines] = useState<Guideline[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [prevUrlSearch, setPrevUrlSearch] = useState(searchParams.get("search") || "");
@@ -99,7 +100,7 @@ export default function CoursesPage() {
     setSearch(urlSearch);
   }
   const [sort, setSort] = useState<SortState>({ field: "title", direction: "desc" });
-  const [detailCourse, setDetailCourse] = useState<Course | null>(null);
+  const [detailGuideline, setDetailGuideline] = useState<Guideline | null>(null);
   const [toast, setToast] = useState<{ variant: "success" | "error"; title: string } | null>(null);
 
   function SortIcon({ field }: { field: SortField }) {
@@ -109,34 +110,34 @@ export default function CoursesPage() {
 
   // Fetch Logic
   useEffect(() => {
-    async function fetchCourses() {
+    async function fetchGuidelines() {
       try {
         setIsLoading(true);
         const res = await fetch("/api/courses");
         const json = await res.json();
-        if (json.success) setCourses(json.courses);
+        if (json.success) setGuidelines(json.courses);
       } catch (err) {
         setToast({ variant: "error", title: "Failed to load courses" });
       } finally {
         setIsLoading(false);
       }
     }
-    fetchCourses();
+    fetchGuidelines();
   }, []);
 
   // auto-open detail modal when ?guideline=<id> is present
   useEffect(() => {
-    if (!courses.length || isLoading) return;
+    if (!guidelines.length || isLoading) return;
     const targetId = searchParams.get("guideline");
     if (!targetId) return;
-    const match = courses.find((c) => c.id === targetId);
-    if (match) setDetailCourse(match);
-  }, [courses, isLoading, searchParams]);
+    const match = guidelines.find((g) => g.id === targetId);
+    if (match) setDetailGuideline(match);
+  }, [guidelines, isLoading, searchParams]);
 
   // Filter & Sort Logic
  
   const filteredAndSorted = useMemo(() => {
-    return courses
+    return guidelines
       .filter((c) => {
         const matchesSearch = `${c.title} ${c.description || ""}`.toLowerCase().includes(search.toLowerCase());
         
@@ -144,8 +145,8 @@ export default function CoursesPage() {
         return matchesSearch;
       })
       .sort((a, b) => {
-        let aVal: any = a[sort.field as keyof Course];
-        let bVal: any = b[sort.field as keyof Course];
+        let aVal: any = a[sort.field as keyof Guideline];
+        let bVal: any = b[sort.field as keyof Guideline];
 
         if (aVal == null && bVal == null) return 0;
         if (aVal == null) return sort.direction === "asc" ? 1 : -1;
@@ -187,15 +188,15 @@ export default function CoursesPage() {
 
 					<div className="flex items-center gap-2">
 						{/* Sort */}
-								<Button
-						variant="ghost"
-						onClick={() => handleSort("title")}
-						className="flex items-center gap-2"
-					>
-						<ArrowUpDown size={12} />
-						<span>Sort by Title</span>
-						<SortIcon field="title" />
-					</Button>
+						<Button
+							variant="ghost"
+							onClick={() => handleSort("title")}
+							className="flex items-center gap-2"
+						>
+							<ArrowUpDown size={12} />
+							<span>Sort by Title</span>
+							<SortIcon field="title" />
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -203,13 +204,15 @@ export default function CoursesPage() {
 			{/* Grid */}
 			{isLoading ? (
 				<Card className="flex items-center justify-center py-20 text-gray-400">
-					<Loader2 className="animate-spin mr-2" size={20} /> Loading
-					catalog...
+					<PulsingLoader variant="breath" />
 				</Card>
 			) : filteredAndSorted.length === 0 ? (
 				<Card className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4">
 					<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
-						<BookOpen size={26} className="text-[var(--periwinkle)]" />
+						<BookOpen
+							size={26}
+							className="text-[var(--periwinkle)]"
+						/>
 					</div>
 					<div>
 						<p className="label text-[var(--primary-dark)]">
@@ -217,18 +220,18 @@ export default function CoursesPage() {
 							No guidelines found.{" "}
 						</p>
 					</div>
-                    {/* Action Button */}
-                    {(search) && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                setSearch("");
-                            }}
-                        >
-                            Clear search &amp; filters
-                        </Button>
-                    )}
+					{/* Action Button */}
+					{search && (
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => {
+								setSearch("");
+							}}
+						>
+							Clear search &amp; filters
+						</Button>
+					)}
 				</Card>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -236,7 +239,7 @@ export default function CoursesPage() {
 						<div
 							className="group card relative cursor-pointer hover:shadow-md transition-shadow flex flex-col h-full overflow-hidden"
 							key={course.id}
-							onClick={() => setDetailCourse(course)}
+							onClick={() => setDetailGuideline(course)}
 						>
 							<h3
 								className="heading-sm mb-2 pr-12 line-clamp-1"
@@ -266,19 +269,19 @@ export default function CoursesPage() {
 
 			{/* Detail Modal */}
 			<Modal
-				open={!!detailCourse}
-				onClose={() => setDetailCourse(null)}
-				title={detailCourse?.title}
+				open={!!detailGuideline}
+				onClose={() => setDetailGuideline(null)}
+				title={detailGuideline?.title}
 				modalStyle={{
 					maxWidth: "70vw",
 					maxHeight: "70vh",
 				}}
-				contentStyle={{ 
+				contentStyle={{
 					paddingTop: "0px", // Remove top padding to align with title
-					overflowY: "auto" // Let the content area handle the scroll
+					overflowY: "auto", // Let the content area handle the scroll
 				}}
 			>
-				{detailCourse && (
+				{detailGuideline && (
 					<div className="flex flex-col gap-4 pb-8 md:pb-1">
 						<div className="divider mt-0 mb-2 border-t border-black" />
 
@@ -286,7 +289,7 @@ export default function CoursesPage() {
 							<p className="font-semibold text-sm uppercase tracking-wider text-gray-500">
 								Description
 							</p>
-							
+
 							<p
 								className="text-gray-600 whitespace-pre-wrap break-words leading-relaxed"
 								lang="en"
@@ -295,7 +298,8 @@ export default function CoursesPage() {
 									hyphens: "auto",
 								}}
 							>
-								{detailCourse.description || "No description provided."}
+								{detailGuideline.description ||
+									"No description provided."}
 							</p>
 						</div>
 					</div>

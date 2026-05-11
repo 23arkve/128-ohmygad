@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Plus, ArrowUpDown, Pencil, Trash2, Loader2, ChevronUp, ChevronDown, X, BookOpen } from "lucide-react";
-import CourseForm, { type CourseFormData } from "@/components/admin/guideline-form";
+import GuidelineForm, { type GuidelineFormData } from "@/components/admin/guideline-form";
 import { paginate, totalPages, PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
+import { PulsingLoader } from "@/components/ui";
 
 import {
   Input,
@@ -36,14 +37,14 @@ export default function GuidelinesPage() {
 
   const searchParams = useSearchParams();
 
-  const [guidelines, setGuidelines] = useState<CourseFormData[]>([]);
-  const [filtered, setFiltered] = useState<CourseFormData[]>([]);
+  const [guidelines, setGuidelines] = useState<GuidelineFormData[]>([]);
+  const [filtered, setFiltered] = useState<GuidelineFormData[]>([]);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [modalContent, setModalContent] = useState<{ label: string; text: string } | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [editTarget, setEditTarget] = useState<CourseFormData | null>(null);
+  const [editTarget, setEditTarget] = useState<GuidelineFormData | null>(null);
   const [sort, setSort] = useState<{ field: SortField; direction: SortDirection }>({ field: "title", direction: "desc" });
 
   const [page, setPage] = useState(1);
@@ -107,8 +108,8 @@ export default function GuidelinesPage() {
 
     // Sorting (multi-field)
     result = result.sort((a, b) => {
-      let aVal: any = a[sort.field as keyof CourseFormData];
-      let bVal: any = b[sort.field as keyof CourseFormData];
+      let aVal: any = a[sort.field as keyof GuidelineFormData];
+      let bVal: any = b[sort.field as keyof GuidelineFormData];
 
       if (aVal == null && bVal == null) return 0;
       if (aVal == null) return sort.direction === "asc" ? 1 : -1;
@@ -195,7 +196,7 @@ const confirmDelete = async () => {
   const hasActiveFilters = false;
 
   // DataTable columns 
-  const columns: Column<CourseFormData>[] = [
+  const columns: Column<GuidelineFormData>[] = [
     {
       key: "title",
       header: "Title",
@@ -306,8 +307,7 @@ const confirmDelete = async () => {
 						className="flex items-center justify-center gap-3 py-10"
 						style={{ color: "var(--gray)" }}
 					>
-						<Loader2 size={20} className="animate-spin" />
-						<span className="caption">Loading guidelines…</span>
+						<PulsingLoader variant="breath" />
 					</div>
 				</Card>
 			) : filtered.length === 0 ? (
@@ -383,12 +383,15 @@ const confirmDelete = async () => {
 				title="Add Guideline"
 				modalStyle={{ maxWidth: 860 }}
 			>
-				<CourseForm
+				<GuidelineForm
 					mode="create"
 					onSuccess={(title) => {
 						setCreateModalOpen(false);
 						getGuidelines();
-						showToast("success", `"Guideline ${title}" created successfully`);
+						showToast(
+							"success",
+							`"Guideline ${title}" created successfully`,
+						);
 					}}
 					onCancel={() => setCreateModalOpen(false)}
 				/>
@@ -403,14 +406,17 @@ const confirmDelete = async () => {
 				modalStyle={{ maxWidth: 860 }}
 			>
 				{editTarget && (
-					<CourseForm
+					<GuidelineForm
 						key={editTarget.id}
 						mode="edit"
 						initialData={editTarget}
 						onSuccess={(title) => {
 							setEditTarget(null);
 							getGuidelines();
-							showToast("success", `"Guideline ${title}" updated successfully`);
+							showToast(
+								"success",
+								`"Guideline ${title}" updated successfully`,
+							);
 						}}
 						onCancel={() => setEditTarget(null)}
 					/>
@@ -422,10 +428,15 @@ const confirmDelete = async () => {
 				open={!!modalContent}
 				onClose={() => setModalContent(null)}
 				title={modalContent?.label}
-				modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", hyphens: "auto", overflowWrap: "break-word",}}
-				contentStyle={{wordBreak: "break-word", hyphens: "auto" }}
+				modalStyle={{
+					maxWidth: "70vw",
+					maxHeight: "70vh",
+					overflowY: "auto",
+					hyphens: "auto",
+					overflowWrap: "break-word",
+				}}
+				contentStyle={{ wordBreak: "break-word", hyphens: "auto" }}
 			>
-			
 				<p
 					style={{
 						fontSize: 14,
@@ -433,12 +444,11 @@ const confirmDelete = async () => {
 						color: "var(--primary-dark)",
 						whiteSpace: "pre-wrap",
 						overflowWrap: "break-word",
-						hyphens: "auto"
+						hyphens: "auto",
 					}}
 				>
 					{modalContent?.text || "No description provided."}
 				</p>
-			
 			</Modal>
 
 			{/* confirm delete modal */}

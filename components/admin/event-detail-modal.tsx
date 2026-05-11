@@ -23,6 +23,7 @@ import {
 	Card,
 	Checkbox,
 	Tabs,
+    PulsingLoader,
 } from "@/components/ui";
 import { deriveStatus } from "@/components/admin/event-form";
 import {
@@ -316,15 +317,26 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 						style={{
 							background: event.banner_url
 								? `url(${event.banner_url}) center/cover no-repeat`
-								: (CATEGORY_GRADIENT[event.category ?? ""] ?? DEFAULT_GRADIENT),
+								: (CATEGORY_GRADIENT[event.category ?? ""] ??
+									DEFAULT_GRADIENT),
 						}}
 					>
 						<div className="absolute bottom-3 right-3 flex gap-2 z-10">
-							<Button variant="primary" size="sm" onClick={handleExportCSV} title="Export event details to CSV">
+							<Button
+								variant="primary"
+								size="sm"
+								onClick={handleExportCSV}
+								title="Export event details to CSV"
+							>
 								<Upload size={15} /> Export CSV
 							</Button>
 							{onEdit && (
-								<Button variant="primary" size="sm" onClick={() => onEdit(event)} title="Edit event details">
+								<Button
+									variant="primary"
+									size="sm"
+									onClick={() => onEdit(event)}
+									title="Edit event details"
+								>
 									<Pencil size={15} /> Edit event
 								</Button>
 							)}
@@ -332,17 +344,30 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 					</div>
 
 					{/* two-column body */}
-					<div className="flex gap-6 p-5 sm:p-7 overflow-y-auto">
+					<div className="flex gap-6 p-7 overflow-y-auto">
 						{/* left column */}
 						<div className="flex flex-col gap-4 flex-1 min-w-0">
 							<h2 className="heading-md">{event.title}</h2>
 							<div className="flex gap-2 items-center">
-								<Badge variant="ghost">{event.category ?? "Uncategorized"}</Badge>
+								<Badge variant="ghost">
+									{event.category ?? "Uncategorized"}
+								</Badge>
 								{(() => {
-									const computedStatus = deriveStatus(event.start_date ?? "", event.end_date ?? "");
+									const computedStatus = deriveStatus(
+										event.start_date ?? "",
+										event.end_date ?? "",
+									);
 									return computedStatus ? (
-										<Badge variant={EVENT_STATUS_VARIANT[computedStatus] ?? "dark"}>
-											<span className="capitalize">{computedStatus}</span>
+										<Badge
+											variant={
+												EVENT_STATUS_VARIANT[
+													computedStatus
+												] ?? "dark"
+											}
+										>
+											<span className="capitalize">
+												{computedStatus}
+											</span>
 										</Badge>
 									) : null;
 								})()}
@@ -350,47 +375,98 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 
 							<div className="flex flex-col gap-3">
 								<div className="flex items-start gap-3 caption sm:text-sm text-[var(--gray)]">
-									<Calendar size={15} className="shrink-0 mt-0.5" />
+									<Calendar
+										size={15}
+										className="shrink-0 mt-0.5"
+									/>
 									<span
 										title={
-												event.start_date 
-													? `${new Date(event.start_date).toLocaleDateString("en-PH", {month: 'long', day: 'numeric', year: 'numeric' })}` + 
-													(event.end_date && event.end_date !== event.start_date 
-														? ` — ${new Date(event.end_date).toLocaleDateString("en-PH", {month: 'long', day: 'numeric', year: 'numeric' })}` 
-														: '')
-													: "No date set"
-											}
+											event.start_date
+												? `${new Date(event.start_date).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}` +
+													(event.end_date &&
+													event.end_date !==
+														event.start_date
+														? ` — ${new Date(event.end_date).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}`
+														: "")
+												: "No date set"
+										}
 									>
 										{event.start_date
-											? new Date(event.start_date).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })
+											? new Date(
+													event.start_date,
+												).toLocaleDateString("en-PH", {
+													month: "long",
+													day: "numeric",
+													year: "numeric",
+												})
 											: "—"}
-										{event.end_date && event.end_date !== event.start_date && (
-											<> — {new Date(event.end_date).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}</>
-										)}
+										{event.end_date &&
+											event.end_date !==
+												event.start_date && (
+												<>
+													{" "}
+													—{" "}
+													{new Date(
+														event.end_date,
+													).toLocaleDateString(
+														"en-PH",
+														{
+															month: "long",
+															day: "numeric",
+															year: "numeric",
+														},
+													)}
+												</>
+											)}
 									</span>
 								</div>
 								<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
 									<Clock size={15} className="shrink-0" />
 									<span
 										title={
-												event.start_date 
-													? `${new Date(event.start_date).toLocaleTimeString("en-PH", { hour: 'numeric', minute: '2-digit' })}` + 
-													(event.end_date ? ` — ${new Date(event.end_date).toLocaleTimeString("en-PH", { hour: 'numeric', minute: '2-digit' })}` : '')
-													: "No date set"
-											}
+											event.start_date
+												? `${new Date(event.start_date).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}` +
+													(event.end_date
+														? ` — ${new Date(event.end_date).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}`
+														: "")
+												: "No date set"
+										}
 									>
 										{event.start_date
-											? new Date(event.start_date).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })
+											? new Date(
+													event.start_date,
+												).toLocaleTimeString("en-PH", {
+													hour: "numeric",
+													minute: "2-digit",
+												})
 											: "—"}
-										{event.end_date && event.end_date !== event.start_date && (
-											<> — {new Date(event.end_date).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}</>
-										)}
+										{event.end_date &&
+											event.end_date !==
+												event.start_date && (
+												<>
+													{" "}
+													—{" "}
+													{new Date(
+														event.end_date,
+													).toLocaleTimeString(
+														"en-PH",
+														{
+															hour: "numeric",
+															minute: "2-digit",
+														},
+													)}
+												</>
+											)}
 									</span>
 								</div>
 								<div className="flex items-start gap-3 caption sm:text-sm text-[var(--gray)]">
-									<MapPin size={15} className="shrink-0 mt-0.5" />
+									<MapPin
+										size={15}
+										className="shrink-0 mt-0.5"
+									/>
 									<span
-										className="break-words" title={event.location ?? "—"}
+										className="break-words"
+										title={event.location ?? "—"}
 									>
 										{event.location ?? "—"}
 									</span>
@@ -403,26 +479,50 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 										Capacity: {event.capacity ?? "—"}
 									</span>
 								</div>
-								{(event.registration_open || event.registration_close) && (
+								{(event.registration_open ||
+									event.registration_close) && (
 									<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
-										<ClipboardList size={15} className="shrink-0" />
+										<ClipboardList
+											size={15}
+											className="shrink-0"
+										/>
 										<span
-										title={
-												event.registration_open 
-													? `Registration: ${new Date(event.registration_open).toLocaleDateString("en-PH", {month: 'long', day: 'numeric', year: 'numeric' })}` + 
-													(event.registration_close && event.registration_close !== event.registration_open 
-														? ` — ${new Date(event.registration_close).toLocaleDateString("en-PH", {month: 'long', day: 'numeric', year: 'numeric' })}` 
-														: '')
+											title={
+												event.registration_open
+													? `Registration: ${new Date(event.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}` +
+														(event.registration_close &&
+														event.registration_close !==
+															event.registration_open
+															? ` — ${new Date(event.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}`
+															: "")
 													: "No date set"
-											}										
+											}
 										>
 											Registration:&nbsp;
 											{event.registration_open
-												? new Date(event.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: 'numeric' })
+												? new Date(
+														event.registration_open,
+													).toLocaleDateString(
+														"en-PH",
+														{
+															month: "long",
+															day: "numeric",
+															year: "numeric",
+														},
+													)
 												: "?"}
 											&nbsp;—&nbsp;
 											{event.registration_close
-												? new Date(event.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: 'numeric' })
+												? new Date(
+														event.registration_close,
+													).toLocaleDateString(
+														"en-PH",
+														{
+															month: "long",
+															day: "numeric",
+															year: "numeric",
+														},
+													)
 												: "?"}
 										</span>
 									</div>
@@ -431,26 +531,48 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 
 							<div className="divider" />
 
-							<div className="flex flex-col gap-3">
+							<div className="flex flex-col gap-3 pb-8">
 								<p className="label">ABOUT THIS EVENT</p>
-								<p className="body whitespace-pre-wrap">{event.description || "No description provided."}</p>
+								<p className="body whitespace-pre-line">
+									{event.description ||
+										"No description provided."}
+								</p>
 							</div>
 						</div>
 
 						{/* right column */}
-						<div className="flex flex-col gap-3 flex-1 min-w-0">
+						<div className="flex flex-col gap-3 flex-1 min-w-0 pb-8">
 							<Tabs
 								tabs={["Registrations", "Attendance"]}
-								icons={[<Users key="reg" size={14} />, <ClipboardCheck key="att" size={14} />]}
-								defaultTab={detailTab === "registrations" ? "Registrations" : "Attendance"}
-								onChange={(tab) => setDetailTab(tab === "Registrations" ? "registrations" : "attendance")}
+								icons={[
+									<Users key="reg" size={14} />,
+									<ClipboardCheck key="att" size={14} />,
+								]}
+								defaultTab={
+									detailTab === "registrations"
+										? "Registrations"
+										: "Attendance"
+								}
+								onChange={(tab) =>
+									setDetailTab(
+										tab === "Registrations"
+											? "registrations"
+											: "attendance",
+									)
+								}
 								className="w-fit"
 							/>
 
 							<SearchBar
-								placeholder={detailTab === "registrations" ? "Search registered users…" : "Search attendees…"}
+								placeholder={
+									detailTab === "registrations"
+										? "Search registered users…"
+										: "Search attendees…"
+								}
 								value={registrantSearch}
-								onChange={(e) => setRegistrantSearch(e.target.value)}
+								onChange={(e) =>
+									setRegistrantSearch(e.target.value)
+								}
 								onClear={() => setRegistrantSearch("")}
 								containerStyle={SEARCHBAR_FULL_WIDTH}
 							/>
@@ -460,53 +582,101 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 								<div className="flex flex-col gap-3">
 									<div className="flex items-center justify-between gap-3">
 										<div className="flex items-center gap-2">
-											<Users size={15} className="text-[var(--gray)]" />
+											<Users
+												size={15}
+												className="text-[var(--gray)]"
+											/>
 											{loadingRegs ? (
-												<span className="caption text-[var(--gray)]">Loading…</span>
+												<PulsingLoader variant="breath" />
 											) : (
 												<span className="caption">
-													<strong>{registrations.length}</strong> registered user{registrations.length !== 1 ? "s" : ""}
+													<strong>
+														{registrations.length}
+													</strong>{" "}
+													registered user
+													{registrations.length !== 1
+														? "s"
+														: ""}
 												</span>
 											)}
 										</div>
-										{!loadingRegs && registrations.length > 0 && (
-											<Button variant="soft" size="sm" onClick={() => handleCopyEmails(registrations)} title="Copy all emails to clipboard">
-												{copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy emails</>}
-											</Button>
-										)}
+										{!loadingRegs &&
+											registrations.length > 0 && (
+												<Button
+													variant="soft"
+													size="sm"
+													onClick={() =>
+														handleCopyEmails(
+															registrations,
+														)
+													}
+													title="Copy all emails to clipboard"
+												>
+													{copied ? (
+														<>
+															<Check size={13} />{" "}
+															Copied!
+														</>
+													) : (
+														<>
+															<Copy size={13} />{" "}
+															Copy emails
+														</>
+													)}
+												</Button>
+											)}
 									</div>
 
 									{loadingRegs ? (
 										<div className="flex items-center justify-center gap-2 py-8 text-[var(--gray)]">
-											<Loader2 size={18} className="animate-spin" />
-											<span className="caption">Loading registrations…</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : filteredRegistrations.length === 0 ? (
-										<Card variant="no-shadow" className="border border-dashed border-[rgba(45,42,74,0.12)] flex flex-col items-center justify-center text-center min-h-[160px] gap-3">
+										<Card
+											variant="no-shadow"
+											className="border border-dashed border-[rgba(45,42,74,0.12)] flex flex-col items-center justify-center text-center min-h-[160px] gap-3"
+										>
 											<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
-												<Users size={26} className="text-[var(--periwinkle)]" />
+												<Users
+													size={26}
+													className="text-[var(--periwinkle)]"
+												/>
 											</div>
 											<p className="label text-[var(--primary-dark)]">
-												{registrantSearch ? "No users found" : "No registrations yet"}
+												{registrantSearch
+													? "No users found"
+													: "No registrations yet"}
 											</p>
 										</Card>
 									) : (
 										<div className="flex flex-col max-h-[420px] overflow-y-auto pr-1">
 											<div className="grid grid-cols-[1fr_1fr_44px] gap-3 px-3 sticky top-0 bg-white">
-												<span className="label">Name</span>
-												<span className="label">Email</span>
-												<span className="label text-center">Present</span>
+												<span className="label">
+													Name
+												</span>
+												<span className="label">
+													Email
+												</span>
+												<span className="label text-center">
+													Present
+												</span>
 											</div>
 											<div className="divider my-0" />
-											{filteredRegistrations.map((user, i) => (
-												<UserRow
-													key={user.registration_id}
-													user={user}
-													i={i}
-													showCheckbox
-													onToggle={handleToggleAttendance}
-												/>
-											))}
+											{filteredRegistrations.map(
+												(user, i) => (
+													<UserRow
+														key={
+															user.registration_id
+														}
+														user={user}
+														i={i}
+														showCheckbox
+														onToggle={
+															handleToggleAttendance
+														}
+													/>
+												),
+											)}
 										</div>
 									)}
 								</div>
@@ -517,39 +687,80 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 								<div className="flex flex-col gap-3">
 									<div className="flex items-center justify-between gap-3">
 										<div className="flex items-center gap-2">
-											<ClipboardCheck size={15} className="text-[var(--gray)]" />
+											<ClipboardCheck
+												size={15}
+												className="text-[var(--gray)]"
+											/>
 											{loadingRegs ? (
-												<span className="caption text-[var(--gray)]">Loading…</span>
+												<PulsingLoader variant="breath" />
 											) : (
 												<span className="caption">
-													<strong>{attendanceCount}</strong> attended out of <strong>{registrations.length}</strong> registered
+													<strong>
+														{attendanceCount}
+													</strong>{" "}
+													attended out of{" "}
+													<strong>
+														{registrations.length}
+													</strong>{" "}
+													registered
 												</span>
 											)}
 										</div>
-										{!loadingRegs && attendedUsers.length > 0 && (
-											<Button variant="soft" size="sm" onClick={() => handleCopyEmails(attendedUsers)} title="Copy emails to clipboard">
-												{copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy emails</>}
-											</Button>
-										)}
+										{!loadingRegs &&
+											attendedUsers.length > 0 && (
+												<Button
+													variant="soft"
+													size="sm"
+													onClick={() =>
+														handleCopyEmails(
+															attendedUsers,
+														)
+													}
+													title="Copy emails to clipboard"
+												>
+													{copied ? (
+														<>
+															<Check size={13} />{" "}
+															Copied!
+														</>
+													) : (
+														<>
+															<Copy size={13} />{" "}
+															Copy emails
+														</>
+													)}
+												</Button>
+											)}
 									</div>
 
 									{loadingRegs ? (
 										<div className="flex items-center justify-center gap-2 py-8 text-[var(--gray)]">
-											<Loader2 size={18} className="animate-spin" />
-											<span className="caption">Loading…</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : attendedUsers.length === 0 ? (
-										<Card variant="no-shadow" className="border border-dashed border-[rgba(45,42,74,0.12)] flex flex-col items-center justify-center text-center min-h-[160px] gap-3">
+										<Card
+											variant="no-shadow"
+											className="border border-dashed border-[rgba(45,42,74,0.12)] flex flex-col items-center justify-center text-center min-h-[160px] gap-3"
+										>
 											<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
-												<ClipboardCheck size={26} className="text-[var(--periwinkle)]" />
+												<ClipboardCheck
+													size={26}
+													className="text-[var(--periwinkle)]"
+												/>
 											</div>
-											<p className="label text-[var(--primary-dark)]">No attendees marked yet</p>
+											<p className="label text-[var(--primary-dark)]">
+												No attendees marked yet
+											</p>
 										</Card>
 									) : (
 										<div className="flex flex-col max-h-[420px] overflow-y-auto pr-1">
 											<div className="grid grid-cols-[1fr_1fr] gap-3 px-3 sticky top-0 bg-white">
-												<span className="label">Name</span>
-												<span className="label">Email</span>
+												<span className="label">
+													Name
+												</span>
+												<span className="label">
+													Email
+												</span>
 											</div>
 											<div className="divider my-0" />
 											{filteredAttended.map((user, i) => (
@@ -558,7 +769,9 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 													user={user}
 													i={i}
 													showCheckbox={false}
-													onToggle={handleToggleAttendance}
+													onToggle={
+														handleToggleAttendance
+													}
 												/>
 											))}
 										</div>

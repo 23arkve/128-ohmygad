@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { Loader2 } from "lucide-react";
 import { UsersClient } from "./users-client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { Profile } from "./profile.types";
+import { PulsingLoader } from "@/components/ui";
 
 async function getProfiles() {
   await connection();
@@ -24,18 +24,17 @@ async function UserPage() {
 
 export default function UsersPage() {
   return (
-    <Suspense
-      fallback={
-        <div
-          className="flex items-center justify-center gap-3 py-16"
-          style={{ color: "var(--gray)" }}
-        >
-          <Loader2 size={22} className="animate-spin" />
-          <span className="caption">Loading users…</span>
-        </div>
-      }
-    >
-      <UserPage />
-    </Suspense>
+		<Suspense
+			fallback={
+				<div
+					className="flex items-center justify-center gap-3 py-16"
+					style={{ color: "var(--gray)" }}
+				>
+					<PulsingLoader variant="breath" />
+				</div>
+			}
+		>
+			<UserPage />
+		</Suspense>
   );
 }
