@@ -166,6 +166,7 @@ export default function StaffProfilePage() {
   ) => setProfile((p) => ({ ...p, [field]: e.target.value }));
 
   const isChanged = initialProfile ? JSON.stringify(profile) !== JSON.stringify(initialProfile) : false;
+  const displayed = initialProfile ?? profile;
 
   if (loading) {
     return (
@@ -187,16 +188,16 @@ export default function StaffProfilePage() {
           <Card variant="no-hover" className="flex flex-col items-center text-center p-4 lg:p-6">
 
             {/* user details */}
-            <h2 className="heading-lg mb-1">{profile.full_name || "Your Name"}</h2>
+            <h2 className="heading-lg mb-1">{displayed.full_name || "Your Name"}</h2>
             <p className="text-sm text-[var(--gray)] mb-4">
-              {profile.display_name ? `${profile.display_name}` : "No display name set"}
+              {displayed.display_name ? `${displayed.display_name}` : "No display name set"}
             </p>
 
             <div className="flex flex-wrap justify-center gap-2 mb-6">
               <Badge variant="dark" dot>Staff</Badge>
-              {profile.office && (
+              {displayed.office && (
                 <Badge variant="pink-light" className="whitespace-normal break-all h-auto py-1.5 px-3 text-center leading-tight max-w-[200px]">
-                  {profile.office}
+                  {displayed.office}
                 </Badge>
               )}
             </div>
@@ -204,19 +205,19 @@ export default function StaffProfilePage() {
             {/* gso progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={profile.gso_attended === 2 ? 100 : profile.gso_attended === 1 ? 50 : 0}
+                value={displayed.gso_attended === 2 ? 100 : displayed.gso_attended === 1 ? 50 : 0}
                 variant="gradient"
                 label="GSO Attendance"
-                sublabel={`${profile.gso_attended ?? 0} / 2 completed`}
+                sublabel={`${displayed.gso_attended ?? 0} / 2 completed`}
               />
             </div>
             {/* asho progress bar */}
             <div className="w-full text-left pt-3 border-t border-[rgba(45,42,74,0.08)]">
               <ProgressBar
-                value={profile.asho_attended === 2 ? 100 : profile.asho_attended === 1 ? 50 : 0}
+                value={displayed.asho_attended === 2 ? 100 : displayed.asho_attended === 1 ? 50 : 0}
                 variant="gradient"
                 label="ASHO Attendance"
-                sublabel={`${profile.asho_attended ?? 0} / 2 completed`}
+                sublabel={`${displayed.asho_attended ?? 0} / 2 completed`}
               />
             </div>
             {/* forums progress bar */}
