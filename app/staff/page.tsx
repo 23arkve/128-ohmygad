@@ -16,9 +16,12 @@ import {
 	TodayTimeline,
 	DateRangePicker,
 	DashboardFilter,
+	DashboardFilterChips,
 	EmptyFilters,
 	Modal,
 	SearchBar,
+	Toast,
+    PulsingLoader,
 } from "@/components/ui";
 import { Pagination } from "@/components/pagination";
 import type { DateRange, DashboardFilters } from "@/components/ui";
@@ -186,7 +189,12 @@ export default function DashboardPage() {
 	const [activeModal, setActiveModal] = useState<
 		"event" | "user" | "course" | "survey" | null
 	>(null);
+	const [quickToast, setQuickToast] = useState<{ title: string } | null>(null);
 	const closeModal = () => setActiveModal(null);
+	const showQuickToast = useCallback((title: string) => {
+		setQuickToast({ title });
+		setTimeout(() => setQuickToast(null), 3000);
+	}, []);
 
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 	const [selectedEvent, setSelectedEvent] = useState<RawEvent | null>(null);
@@ -210,10 +218,11 @@ export default function DashboardPage() {
 		};
 	}
 
-	const handleEditSuccess = useCallback(async () => {
+	const handleEditSuccess = useCallback(async (title: string) => {
 		const prev = editFromDetailRef.current;
 		editFromDetailRef.current = null;
 		setEditTarget(null);
+		showQuickToast(`Event "${title}" edited successfully!`);
 		if (!prev) return;
 		const supabase = createClient();
 		const { data } = await supabase
@@ -234,7 +243,7 @@ export default function DashboardPage() {
 			registration_open: data.registration_open ?? null,
 			registration_close: data.registration_close ?? null,
 		} : prev);
-	}, []);
+	}, [showQuickToast]);
 
 	const handleEditCancel = useCallback(() => {
 		const prev = editFromDetailRef.current;
@@ -389,8 +398,19 @@ export default function DashboardPage() {
 	return (
 		<div className="flex flex-col gap-5 w-full animate-in fade-in duration-500">
 			{/* greeting ------------------------------------------------ */}
-			<div className="flex items-center justify-between w-full">
+			<div className="flex flex-col gap-2 w-full">
 				<h2 className="heading-md">Good day, Staff!</h2>
+				<DashboardFilterChips value={filters} onChange={setFilters} />
+			</div>
+
+			{/* search + filter ------------------------------------------ */}
+			<div className="flex items-center gap-3 w-full">
+				<div className="flex-1">
+					<GlobalSearch
+						role="staff"
+						placeholder="Search events, guidelines, surveys..."
+					/>
+				</div>
 				<DashboardFilter
 					value={filters}
 					onChange={setFilters}
@@ -402,61 +422,55 @@ export default function DashboardPage() {
 			<div className="flex flex-col xl:flex-row gap-5">
 				<div className="flex flex-col gap-5 flex-1 min-w-0 pb-2">
 					{/* KPI section ------------------------------------------------ */}
-					<div className="flex flex-col gap-5">
-						<GlobalSearch
-							role="staff"
-							placeholder="Search events, guidelines, surveys..."
+					<div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+						<StatCard
+							variant="no-hover"
+							icon={
+								<Users
+									size={20}
+									className="text-[var(--periwinkle)]"
+								/>
+							}
+							iconBg="var(--periwinkle-light)"
+							value={userStats?.total ?? 0}
+							label="Registered Users"
 						/>
-						<div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-							<StatCard
-								variant="no-hover"
-								icon={
-									<Users
-										size={20}
-										className="text-[var(--periwinkle)]"
-									/>
-								}
-								iconBg="var(--periwinkle-light)"
-								value={userStats?.total ?? 0}
-								label="Registered Users"
-							/>
-							<StatCard
-								variant="no-hover"
-								icon={
-									<UserCheck
-										size={20}
-										className="text-[var(--success)]"
-									/>
-								}
-								iconBg="rgba(109,197,160,0.15)"
-								value={userStats?.onboarded ?? 0}
-								label="Onboarded Users"
-							/>
-							<StatCard
-								variant="no-hover"
-								icon={
-									<Calendar
-										size={20}
-										className="text-[var(--soft-pink)]"
-									/>
-								}
-								iconBg="var(--pink-light)"
-								value={gadEventsCount ?? 0}
-								label="GAD Events"
-							/>
-							<StatCard
-								variant="no-hover"
-								icon={
-									<ClipboardList
-										size={20}
-										className="text-[var(--warning)]"
-									/>
-								}
-								iconBg="rgba(244,201,122,0.18)"
-								value={surveysCount}
-								label="Active Surveys"
-							/>
-						</div>
+						<StatCard
+							variant="no-hover"
+							icon={
+								<UserCheck
+									size={20}
+									className="text-[var(--success)]"
+								/>
+							}
+							iconBg="rgba(109,197,160,0.15)"
+							value={userStats?.onboarded ?? 0}
+							label="Onboarded Users"
+						/>
+						<StatCard
+							variant="no-hover"
+							icon={
+								<Calendar
+									size={20}
+									className="text-[var(--soft-pink)]"
+								/>
+							}
+							iconBg="var(--pink-light)"
+							value={gadEventsCount ?? 0}
+							label="GAD Events"
+						/>
+						<StatCard
+							variant="no-hover"
+							icon={
+								<ClipboardList
+									size={20}
+									className="text-[var(--warning)]"
+								/>
+							}
+							iconBg="rgba(244,201,122,0.18)"
+							value={surveysCount}
+							label="Active Surveys"
+						/>
 					</div>
 
 					{/* attendance and quick actions ------------------------------------------------ */}
@@ -485,10 +499,7 @@ export default function DashboardPage() {
 							<div className="flex-1 w-full min-h-[200px] cursor-default select-none relative">
 								{attendanceLoading ? (
 									<div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-xl z-10">
-										<span className="caption animate-pulse">
-											{" "}
-											Loading…{" "}
-										</span>
+										<PulsingLoader variant="breath" />
 									</div>
 								) : eventAttendanceData?.length === 0 ? (
 									<Card
@@ -622,10 +633,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[170px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : filteredColleges.length === 0 ? (
 										<Card
@@ -733,10 +741,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[190px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : !sexAtBirthData?.length ? (
 										<Card
@@ -825,10 +830,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[190px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : !filteredGenders.length ? (
 										<Card
@@ -939,10 +941,7 @@ export default function DashboardPage() {
 							<div className="w-full min-h-[220px] cursor-default select-none mt-2">
 								{surveyCompletionLoading ? (
 									<div className="flex items-center justify-center h-full">
-										<span className="caption animate-pulse">
-											{" "}
-											Loading survey data…{" "}
-										</span>
+										<PulsingLoader variant="breath" />
 									</div>
 								) : (surveyCompletionData?.length ?? 0) ===
 								  0 ? (
@@ -1171,7 +1170,12 @@ export default function DashboardPage() {
 			>
 				<EventForm
 					mode="create"
-					onSuccess={closeModal}
+					onSuccess={(title) => {
+						closeModal();
+						showQuickToast(
+							`Event "${title}" created successfully!`,
+						);
+					}}
 					onCancel={closeModal}
 				/>
 			</Modal>
@@ -1185,7 +1189,12 @@ export default function DashboardPage() {
 			>
 				<SurveyForm
 					mode="create"
-					onSuccess={closeModal}
+					onSuccess={(title) => {
+						closeModal();
+						showQuickToast(
+							`Survey "${title}" created successfully!`,
+						);
+					}}
 					onCancel={closeModal}
 				/>
 			</Modal>
@@ -1206,7 +1215,10 @@ export default function DashboardPage() {
 				{selectedDateEvents && selectedDateEvents.length === 0 ? (
 					<div className="flex flex-col items-center justify-center text-center gap-3 py-12">
 						<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
-							<Calendar size={26} className="text-[var(--periwinkle)]" />
+							<Calendar
+								size={26}
+								className="text-[var(--periwinkle)]"
+							/>
 						</div>
 						<div>
 							<p className="label text-[var(--primary-dark)]">
@@ -1220,7 +1232,9 @@ export default function DashboardPage() {
 							<button
 								key={i}
 								onClick={() => {
-									const full = allEvents.find((e) => e.id === event.id);
+									const full = allEvents.find(
+										(e) => e.id === event.id,
+									);
 									setSelectedDate(null);
 									if (full) setSelectedEvent(full);
 								}}
@@ -1230,11 +1244,17 @@ export default function DashboardPage() {
 									{event.time}
 								</span>
 								<div className="flex-1 min-w-0">
-									<p title={event.title} className="caption-bold truncate">
+									<p
+										title={event.title}
+										className="caption-bold truncate"
+									>
 										{event.title}
 									</p>
 									{event.location && (
-										<p title={event.location} className="caption text-[var(--gray)] mt-0.5 truncate">
+										<p
+											title={event.location}
+											className="caption text-[var(--gray)] mt-0.5 truncate"
+										>
 											{event.location}
 										</p>
 									)}
@@ -1277,6 +1297,12 @@ export default function DashboardPage() {
 					/>
 				)}
 			</Modal>
+
+			{quickToast && (
+				<div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[9999] animate-in fade-in-50">
+					<Toast variant="success" title={quickToast.title} />
+				</div>
+			)}
 		</div>
 	);
 }
