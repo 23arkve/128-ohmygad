@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUserWithRole } from "@/lib/auth/get-current-user";
 import AdminShell from "@/components/ui/admin-shell";
+import { PulsingLoader } from "@/components/ui";
 
 // auth guard - if unauthenticated or not admin user tries to enter admin dashboard
 async function AdminAuthGuard({ children }: { children: React.ReactNode }) {
@@ -17,24 +18,24 @@ async function AdminAuthGuard({ children }: { children: React.ReactNode }) {
 // layout server component wrapped in suspense
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense
-        fallback={
-            <div className="flex flex-1 items-center justify-center text-sm text-[var(--gray)]">
-                Loading...
-            </div>
-        }
-    >
-        <AdminShell>
-            <Suspense
-                fallback={
-                <div className="flex flex-1 items-center justify-center text-sm text-[var(--gray)]">
-                    Loading...
-                </div>
-                }
-            >
-                <AdminAuthGuard>{children}</AdminAuthGuard>
-            </Suspense>
-        </AdminShell>
-    </Suspense>
+		<Suspense
+			fallback={
+				<div className="flex flex-1 items-center justify-center text-sm text-[var(--gray)]">
+					<PulsingLoader variant="breath" />
+				</div>
+			}
+		>
+			<AdminShell>
+				<Suspense
+					fallback={
+						<div className="flex flex-1 items-center justify-center text-sm text-[var(--gray)]">
+							<PulsingLoader variant="breath" />
+						</div>
+					}
+				>
+					<AdminAuthGuard>{children}</AdminAuthGuard>
+				</Suspense>
+			</AdminShell>
+		</Suspense>
   );
 }

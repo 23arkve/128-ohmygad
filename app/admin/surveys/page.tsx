@@ -23,6 +23,7 @@ import {
   Modal,
   Toast,
   Checkbox,
+  PulsingLoader,
 } from "@/components/ui";
 
 import { SURVEY_STATUS_OPTIONS, SURVEY_STATUS_VARIANT as STATUS_VARIANT } from "@/lib/constants";
@@ -433,8 +434,7 @@ export default function SurveysPage() {
             className="flex items-center justify-center gap-3 py-10"
             style={{ color: "var(--gray)" }}
           >
-            <Loader2 size={20} className="animate-spin" />
-            <span className="caption">Loading surveys…</span>
+            <PulsingLoader variant="breath" />
           </div>
         </Card>
       ) : filtered.length === 0 ? (
@@ -526,8 +526,7 @@ export default function SurveysPage() {
               className="flex items-center justify-center gap-3 py-10"
               style={{ color: "var(--gray)" }}
             >
-              <Loader2 size={20} className="animate-spin" />
-              <span className="caption">Loading survey…</span>
+              <PulsingLoader variant="breath" />
             </div>
           ) : (
             <SurveyForm

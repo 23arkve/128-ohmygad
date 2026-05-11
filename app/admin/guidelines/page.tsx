@@ -7,6 +7,7 @@ import { Plus, ArrowUpDown, Pencil, Trash2, Loader2, ChevronUp, ChevronDown, X, 
 import GuidelineForm, { type GuidelineFormData } from "@/components/admin/guideline-form";
 import { paginate, totalPages, PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
+import { PulsingLoader } from "@/components/ui";
 
 import {
   Input,
@@ -306,8 +307,7 @@ const confirmDelete = async () => {
 						className="flex items-center justify-center gap-3 py-10"
 						style={{ color: "var(--gray)" }}
 					>
-						<Loader2 size={20} className="animate-spin" />
-						<span className="caption">Loading guidelines…</span>
+						<PulsingLoader variant="breath" />
 					</div>
 				</Card>
 			) : filtered.length === 0 ? (
@@ -388,7 +388,10 @@ const confirmDelete = async () => {
 					onSuccess={(title) => {
 						setCreateModalOpen(false);
 						getGuidelines();
-						showToast("success", `"Guideline ${title}" created successfully`);
+						showToast(
+							"success",
+							`"Guideline ${title}" created successfully`,
+						);
 					}}
 					onCancel={() => setCreateModalOpen(false)}
 				/>
@@ -410,7 +413,10 @@ const confirmDelete = async () => {
 						onSuccess={(title) => {
 							setEditTarget(null);
 							getGuidelines();
-							showToast("success", `"Guideline ${title}" updated successfully`);
+							showToast(
+								"success",
+								`"Guideline ${title}" updated successfully`,
+							);
 						}}
 						onCancel={() => setEditTarget(null)}
 					/>
@@ -422,10 +428,15 @@ const confirmDelete = async () => {
 				open={!!modalContent}
 				onClose={() => setModalContent(null)}
 				title={modalContent?.label}
-				modalStyle={{ maxWidth: "70vw", maxHeight: "70vh", overflowY: "auto", hyphens: "auto", overflowWrap: "break-word",}}
-				contentStyle={{wordBreak: "break-word", hyphens: "auto" }}
+				modalStyle={{
+					maxWidth: "70vw",
+					maxHeight: "70vh",
+					overflowY: "auto",
+					hyphens: "auto",
+					overflowWrap: "break-word",
+				}}
+				contentStyle={{ wordBreak: "break-word", hyphens: "auto" }}
 			>
-			
 				<p
 					style={{
 						fontSize: 14,
@@ -433,12 +444,11 @@ const confirmDelete = async () => {
 						color: "var(--primary-dark)",
 						whiteSpace: "pre-wrap",
 						overflowWrap: "break-word",
-						hyphens: "auto"
+						hyphens: "auto",
 					}}
 				>
 					{modalContent?.text || "No description provided."}
 				</p>
-			
 			</Modal>
 
 			{/* confirm delete modal */}

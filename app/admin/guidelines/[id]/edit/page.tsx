@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Loader2, ArrowLeft } from "lucide-react";
 import GuidelineForm, { type GuidelineFormData } from "@/components/admin/guideline-form";
 import { Button, Card } from "@/components/ui";
+import { PulsingLoader } from "@/components/ui";
 
 export default function EditGuidelinePage() {
   const { id } = useParams<{ id: string }>();
@@ -36,16 +37,15 @@ export default function EditGuidelinePage() {
   // loading 
   if (isLoading) {
     return (
-      <Card>
-        <div
-          className="flex items-center justify-center gap-3 py-12"
-          style={{ color: "var(--gray)" }}
-        >
-          <Loader2 size={20} className="animate-spin" />
-          <span className="caption">Loading guideline…</span>
-        </div>
-      </Card>
-    );
+		<Card>
+			<div
+				className="flex items-center justify-center gap-3 py-12"
+				style={{ color: "var(--gray)" }}
+			>
+				<PulsingLoader variant="breath" />
+			</div>
+		</Card>
+	);
   }
 
   // error / not found 
