@@ -139,12 +139,27 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
     let no = 0;
     let total = 0;
     for (const r of responses) {
-      if (r.response_value?.toLowerCase() === "yes") { yes++; total++; }
-      else if (r.response_value?.toLowerCase() === "no") { no++; total++; }
+      if (r.response_value?.toLowerCase() === "yes") {
+        yes++;
+        total++;
+      } else if (r.response_value?.toLowerCase() === "no") {
+        no++;
+        total++;
+      }
     }
     return [
-      { name: "Yes", value: yes, pct: total ? Math.round((yes / total) * 100) : 0 },
-      { name: "No", value: no, pct: total ? Math.round((no / total) * 100) : 0 },
+      {
+        name: "Yes",
+        value: yes,
+        pct: total ? Math.round((yes / total) * 100) : 0,
+        color: YES_NO_COLORS[0],
+      },
+      {
+        name: "No",
+        value: no,
+        pct: total ? Math.round((no / total) * 100) : 0,
+        color: YES_NO_COLORS[1],
+      },
     ].filter((d) => d.value > 0);
   }, [responses]);
 
@@ -179,17 +194,13 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
             cy="45%"
             innerRadius="55%"
             outerRadius="78%"
-            paddingAngle={3}
+            paddingAngle={2}
             dataKey="value"
             nameKey="name"
-            stroke="white"
-            strokeWidth={2}
+            stroke=""
           >
-            {data.map((_, i) => (
-              <Cell
-                key={`yn-${i}`}
-                fill={YES_NO_COLORS[i % YES_NO_COLORS.length]}
-              />
+            {data.map((entry, i) => (
+              <Cell key={`yn-${i}`} fill={entry.color} />
             ))}
           </Pie>
           <Tooltip content={<YesNoTooltip />} />
