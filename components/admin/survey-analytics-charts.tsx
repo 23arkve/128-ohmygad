@@ -8,7 +8,7 @@
     components/admin/survey-analytics-modal.tsx (QuestionCard)
 */
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { mean, median, stddev } from "@/lib/stats.utils";
@@ -61,6 +61,27 @@ export function MultipleChoiceChart({
       .sort((a, b) => b.value - a.value);
   }, [question.options, responses]);
 
+  const MCTooltip = useCallback(
+    ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
+      if (!active || !payload?.length) return null;
+      const entry = payload[0];
+      return (
+        <div className="bg-white/95 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-3 min-w-[120px]">
+          <div className="flex items-center gap-2">
+            <span
+              className="w-4 h-4 rounded-full shrink-0"
+              style={{ background: entry.color ?? entry.payload?.fill }}
+            />
+            <span className="text-[13px] font-semibold text-[var(--primary-dark)]">
+              {label}: {entry.value}
+            </span>
+          </div>
+        </div>
+      );
+    },
+    [],
+  );
+
   return (
     <div className="w-full min-h-[200px] cursor-default select-none" style={{ height: Math.max(200, data.length * 48) }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -85,8 +106,8 @@ export function MultipleChoiceChart({
             width={120}
             label={{ value: "Options", angle: -90, position: "insideLeft", offset: -10, fill: TICK_COLOR, fontSize: 13, fontWeight: 750, style: { textAnchor: "middle" } }}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(45,42,74,0.03)" }} />
-          <Bar dataKey="value" name="Responses" radius={[0, 6, 6, 0]} barSize={28} style={{ pointerEvents: "none" }}>
+          <Tooltip content={<MCTooltip />} cursor={{ fill: "rgba(45,42,74,0.03)" }} />
+          <Bar dataKey="value" name="Responses" radius={[0, 6, 6, 0]} barSize={28}>
             {data.map((_, idx) => (
               <Cell key={`mc-${idx}`} fill={BRAND_COLORS[idx % BRAND_COLORS.length]} />
             ))}
@@ -129,11 +150,14 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
             paddingAngle={3}
             dataKey="value"
             nameKey="name"
-            stroke=""
-            style={{ pointerEvents: "none" }}
+            stroke="white"
+            strokeWidth={2}
           >
             {data.map((_, i) => (
-              <Cell key={`yn-${i}`} fill={YES_NO_COLORS[i % YES_NO_COLORS.length]} />
+              <Cell
+                key={`yn-${i}`}
+                fill={YES_NO_COLORS[i % YES_NO_COLORS.length]}
+              />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
@@ -143,7 +167,7 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
             iconType="circle"
             wrapperStyle={{ paddingTop: 14 }}
             formatter={(v) => (
-              <span className="text-[12px] font-bold text-[var(--gray)] uppercase tracking-wider">
+              <span className="caption tracking-wider">
                 {v as string}
               </span>
             )}
@@ -169,8 +193,31 @@ function StatBox({ label, value }: { label: string; value: string }) {
 }
 
 export function LikertChart({ responses }: { responses: ResponseRow[] }) {
+  // Track the currently-hovered bar key without causing re-renders
+  const hoveredBarKey = useRef<string | null>(null);
+
+  // Tooltip that shows only the hovered segment (not all 5 stacked entries)
+  const LikertTooltip = useCallback(
+    ({ active, payload }: { active?: boolean; payload?: { dataKey?: string; name?: string; value?: number; color?: string; fill?: string }[] }) => {
+      if (!active || !payload?.length || !hoveredBarKey.current) return null;
+      const entry = payload.find((p) => p.dataKey === hoveredBarKey.current);
+      if (!entry) return null;
+      return (
+        <div className="bg-white/95 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-3 min-w-[120px]">
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 rounded-full shrink-0" style={{ background: entry.color ?? entry.fill }} />
+            <span className="text-[13px] font-semibold text-[var(--primary-dark)] capitalize">
+              {entry.name}: {entry.value}
+            </span>
+          </div>
+        </div>
+      );
+    },
+    [],
+  );
+
   const { chartData, stats } = useMemo(() => {
-    const counts = [0, 0, 0, 0, 0]; // index 0→rating 1, etc.
+    const counts = [0, 0, 0, 0, 0]; // index 0 → rating 1, etc.
     const nums: number[] = [];
 
     for (const r of responses) {
@@ -229,7 +276,7 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
               width={80}
               label={{ value: "Metrics", angle: -90, position: "insideLeft", offset: -25, fill: TICK_COLOR, fontSize: 13, fontWeight: 750, style: { textAnchor: "middle" } }}
             />
-            <Tooltip content={<CustomTooltip />} cursor={false} />
+            <Tooltip content={<LikertTooltip />} cursor={false} />
             {[1, 2, 3, 4, 5].map((n) => (
               <Bar
                 key={n}
@@ -244,7 +291,8 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
                       ? [0, 6, 6, 0]
                       : [0, 0, 0, 0]
                 }
-                style={{ pointerEvents: "none" }}
+                onMouseEnter={() => { hoveredBarKey.current = `r${n}`; }}
+                onMouseLeave={() => { hoveredBarKey.current = null; }}
               />
             ))}
           </BarChart>
@@ -259,8 +307,8 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
               className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ background: LIKERT_COLORS[i] }}
             />
-            <span className="text-[13px] text-[var(--gray)] font-medium">
-              {label} ({stats.counts[i]})
+            <span className="caption tracking-wider">
+              {label}
             </span>
           </div>
         ))}
