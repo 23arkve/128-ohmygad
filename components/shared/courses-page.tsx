@@ -109,7 +109,7 @@ export default function CoursesPage() {
 
   // Fetch Logic
   useEffect(() => {
-    async function fetchCourses() {
+    async function fetchGuidelines() {
       try {
         setIsLoading(true);
         const res = await fetch("/api/courses");
@@ -121,7 +121,7 @@ export default function CoursesPage() {
         setIsLoading(false);
       }
     }
-    fetchCourses();
+    fetchGuidelines();
   }, []);
 
   // auto-open detail modal when ?guideline=<id> is present
