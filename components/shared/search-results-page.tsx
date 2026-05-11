@@ -58,13 +58,13 @@ function SearchResultsContent({ role }: { role: string }) {
 
   const handleSelect = (r: SearchResult) => {
     if (r.type === "Guideline") {
-      router.push(`/${role}/guidelines?search=${encodeURIComponent(r.title)}`);
+      router.push(`/${role}/guidelines?search=${encodeURIComponent(r.title)}&guideline=${r.id}`);
     } else if (r.type === "Event") {
-      router.push(`/${role}/events?search=${encodeURIComponent(r.title)}`);
+      router.push(`/${role}/events?search=${encodeURIComponent(r.title)}&event=${r.id}`);
     } else if (r.type === "User" && role === "admin") {
-      router.push(`/admin/users?search=${encodeURIComponent(r.title)}`);
+      router.push(`/admin/users?search=${encodeURIComponent(r.title)}&user=${r.id}`);
     } else if (r.type === "Survey") {
-      router.push(`/${role}/surveys?search=${encodeURIComponent(r.title)}`);
+      router.push(`/${role}/surveys?search=${encodeURIComponent(r.title)}&survey=${r.id}`);
     }
   };
 
@@ -126,7 +126,7 @@ function SearchResultsContent({ role }: { role: string }) {
             <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
               <Search size={26} className="text-[var(--periwinkle)]" />
             </div>
-            <p className="label text-[var(--primary-dark)]">No {activeFilters.length > 0 ? activeFilters.join(", ").toLowerCase() : "results"} found for your search</p>
+            <p className="label text-[var(--primary-dark)]">No {activeTab !== "All" ? activeTab.toLowerCase() : "results"} found for your search</p>
           </div>
         </Card>
       ) : (
