@@ -471,7 +471,7 @@ export default function UserForm({
 
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
 							<Input
-								label="Full Name"
+								label="Full Name *"
 								required
 								prefixIcon={<User size={15} />}
 								maxLength={100}
@@ -480,7 +480,7 @@ export default function UserForm({
 								onChange={(e) => setFullName(e.target.value)}
 							/>
 							<Input
-								label="Email"
+								label="Email *"
 								type="email"
 								required
 								prefixIcon={<Mail size={15} />}
@@ -508,7 +508,7 @@ export default function UserForm({
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 							<Select
-								label="Role"
+								label="Role *"
 								required
 								value={pendingRole ?? role}
 								onChange={(e) => {
@@ -563,7 +563,7 @@ export default function UserForm({
 								<div className="flex flex-col gap-1">
 									<Select
 										required
-										label="Year Level"
+										label="Year Level *"
 										value={year_level}
 										onChange={(e) =>
 											setYearLevel(e.target.value)
@@ -819,7 +819,7 @@ export default function UserForm({
 			<div className="grid grid-cols-1 gap-x-5 gap-y-2 items-start">
 				<SectionLabel>Account Information</SectionLabel>
 				<Input
-					label="Full Name"
+					label="Full Name *"
 					required
 					prefixIcon={<User size={15} />}
 					maxLength={64}
@@ -828,7 +828,7 @@ export default function UserForm({
 					onChange={(e) => setFullName(e.target.value)}
 				/>
 				<Input
-					label="Email"
+					label="Email *"
 					type="email"
 					required
 					prefixIcon={<Mail size={15} />}
@@ -853,8 +853,8 @@ export default function UserForm({
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 				<Select
-					label="Role"
-					required
+					label="Role *"
+					required 
 					value={pendingRole ?? role}
 					onChange={(e) => {
 						handleRoleSelect(e.target.value);
@@ -900,7 +900,7 @@ export default function UserForm({
 					<div className="flex flex-col gap-1">
 						<Select
 							required
-							label="Year Level"
+							label="Year Level *"
 							value={year_level}
 							onChange={(e) => setYearLevel(e.target.value)}
 							options={[
@@ -922,7 +922,7 @@ export default function UserForm({
 						label={
 							role === "student" || !role
 								? "College *"
-								: "College"
+								: "College *"
 						}
 						required={role === "student" || !role}
 						value={college}
