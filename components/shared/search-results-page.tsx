@@ -10,7 +10,7 @@ import { paginate, totalPages } from "@/lib/pagination.utils";
 interface SearchResult {
   id: string;
   title: string;
-  type: "Course" | "Event" | "User" | "Survey";
+  type: "Guideline" | "Event" | "User" | "Survey";
 }
 
 function SearchResultsContent({ role }: { role: string }) {
@@ -29,7 +29,7 @@ function SearchResultsContent({ role }: { role: string }) {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [activeFilters, setActiveFilters] = useState<string[]>(categoryTabs);
+  const [activeTab, setActiveTab] = useState("All");
   const PER_PAGE_SEARCH = 10;
 
   useEffect(() => {
@@ -57,8 +57,8 @@ function SearchResultsContent({ role }: { role: string }) {
   }, [query]);
 
   const handleSelect = (r: SearchResult) => {
-    if (r.type === "Course") {
-      router.push(`/${role}/courses?search=${encodeURIComponent(r.title)}`);
+    if (r.type === "Guideline") {
+      router.push(`/${role}/guidelines?search=${encodeURIComponent(r.title)}`);
     } else if (r.type === "Event") {
       router.push(`/${role}/events?search=${encodeURIComponent(r.title)}`);
     } else if (r.type === "User" && role === "admin") {
@@ -69,31 +69,16 @@ function SearchResultsContent({ role }: { role: string }) {
   };
 
   const filteredResults = results.filter((r) => {
-    if (activeFilters.includes("Events") && r.type === "Event") return true;
-    if (activeFilters.includes("Users") && r.type === "User") return true;
-    if (activeFilters.includes("Guidelines") && r.type === "Course") return true;
-    if (activeFilters.includes("Surveys") && r.type === "Survey") return true;
+    if (activeTab === "All") return true;
+    if (activeTab === "Events" && r.type === "Event") return true;
+    if (activeTab === "Users" && r.type === "User") return true;
+    if (activeTab === "Guidelines" && r.type === "Guideline") return true;
+    if (activeTab === "Surveys" && r.type === "Survey") return true;
     return false;
   });
 
   const paginatedResults = paginate(filteredResults, page, PER_PAGE_SEARCH);
   const total = totalPages(filteredResults.length, PER_PAGE_SEARCH);
-
-  const toggleFilter = (c: string) => {
-    if (c === "All") {
-      if (activeFilters.length === categoryTabs.length) {
-        setActiveFilters([]);
-      } else {
-        setActiveFilters(categoryTabs);
-      }
-    } else {
-      setActiveFilters((prev) => {
-        if (prev.includes(c)) return prev.filter((f) => f !== c);
-        return [...prev, c];
-      });
-    }
-    setPage(1);
-  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -103,24 +88,15 @@ function SearchResultsContent({ role }: { role: string }) {
         </h2>
         
         {!loading && results.length > 0 && (
-          <div className="pt-2">
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {availableTabs.map((c) => {
-                const isActive = c === "All" 
-                  ? activeFilters.length === categoryTabs.length 
-                  : activeFilters.includes(c);
-                const className = ["chip", isActive ? "active" : ""].filter(Boolean).join(" ");
-                return (
-                  <button
-                    key={c}
-                    className={className}
-                    onClick={() => toggleFilter(c)}
-                  >
-                    {c}
-                  </button>
-                );
-              })}
-            </div>
+          <div className="pt-2 overflow-x-auto pb-1" style={{ maxWidth: '100vw' }}>
+            <Tabs 
+              tabs={availableTabs} 
+              defaultTab={activeTab} 
+              onChange={(tab) => {
+                setActiveTab(tab);
+                setPage(1);
+              }} 
+            />
           </div>
         )}
       </div>
@@ -168,10 +144,20 @@ function SearchResultsContent({ role }: { role: string }) {
                       className="font-medium text-[var(--primary-dark)] group-hover:underline underline-offset-2"
                       style={{ fontSize: 15 }}
                     >
-                      {r.title}
+                      {query.trim() ? (
+                        r.title.split(new RegExp(`(${query.trim()})`, 'gi')).map((part, i) => 
+                          part.toLowerCase() === query.trim().toLowerCase() ? (
+                            <span key={i} className="font-bold border-b-2 border-[#16b8c4]">{part}</span>
+                          ) : (
+                            <span key={i}>{part}</span>
+                          )
+                        )
+                      ) : (
+                        r.title
+                      )}
                     </span>
                   </div>
-                  <Badge variant={r.type === "User" ? "pink-light" : r.type === "Course" ? "periwinkle" : r.type === "Survey" ? "pink-light" : "dark"}>
+                  <Badge variant={r.type === "User" ? "pink-light" : r.type === "Guideline" ? "periwinkle" : r.type === "Survey" ? "pink-light" : "dark"}>
                     {r.type}
                   </Badge>
                 </div>
