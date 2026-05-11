@@ -105,12 +105,7 @@ export default function EventsPage() {
 		}
 	}
 
-	useEffect(() => {
-		return () => {
-			setSearchInput("");
-			setSearch("");
-		};
-	}, []);
+
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);

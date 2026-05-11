@@ -70,11 +70,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
     }
   }
 
-  useEffect(() => {
-    return () => {
-      setSearch("");
-    };
-  }, []);
+
 
   const [sort, setSort] = useState<SortState>({ field: "full_name", direction: "asc" });
 

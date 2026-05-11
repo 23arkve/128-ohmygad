@@ -96,12 +96,6 @@ export default function GuidelinesPage() {
     setSearch(urlSearch);
   }
 
-  useEffect(() => {
-    return () => {
-      setSearch("");
-    };
-  }, []);
-
   //  filter / sort 
   useEffect(() => {
     const q = search.toLowerCase();
