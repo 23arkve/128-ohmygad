@@ -2038,6 +2038,13 @@ header {
   color: var(--primary-dark);
 }
 
+.dtp-preset.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: transparent;
+  pointer-events: none;
+}
+
 /* confirm button */
 .dtp-confirm-btn {
   display: flex;
