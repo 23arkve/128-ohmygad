@@ -26,7 +26,7 @@ export type EventFormData = {
 type EventFormProps = {
   initialData?: EventFormData;
   mode: "create" | "edit";
-  onSuccess?: () => void;
+  onSuccess?: (title: string) => void;
   onCancel?: () => void;
 };
 
@@ -223,7 +223,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
 
     if (result.success) {
       if (onSuccess) {
-        onSuccess();
+        onSuccess(title);
       } else {
         router.push("/admin/events");
         router.refresh();

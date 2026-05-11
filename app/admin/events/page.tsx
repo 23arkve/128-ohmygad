@@ -430,7 +430,7 @@ export default function EventsPage() {
 		} else {
 			// avoids a full refetch after delete
 			setEvents((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-			showToast("success", "Event deleted successfully.");
+			showToast("success", `Event "${deleteTarget.title}" deleted successfully.`);
 			setDeleteTarget(null);
 			setDeletePassword("");
 			setDeleteError(null);
@@ -442,34 +442,23 @@ export default function EventsPage() {
 	// stable callbacks for modal success handlers
 	// props on every render and prevents unnecessary child re-renders
 	const handleCreateSuccess = useCallback(
-		(newEvent?: EventFormData) => {
-			if (newEvent) {
-				setEvents((prev) => [newEvent, ...prev]);
-			} else {
-				getEvents();
-			}
+		(title: string) => {
+			getEvents();
 			setCreateModalOpen(false);
-			showToast("success", "Event created successfully!");
+			showToast("success", `Event "${title}" created successfully!`);
 		},
 		[getEvents, showToast],
 	);
 
 	const handleEditSuccess = useCallback(
-		(updated?: EventFormData) => {
-			if (updated) {
-				setEvents((prev) =>
-					prev.map((e) => (e.id === updated.id ? updated : e)),
-				);
-				// reopen detail with fresh data if edit was from detail modal
-				if (editFromDetailRef.current) {
-					setDetailEvent(updated);
-					editFromDetailRef.current = null;
-				}
-			} else {
-				getEvents();
+		(title: string) => {
+			getEvents();
+			if (editFromDetailRef.current) {
+				editFromDetailRef.current = null;
 			}
+			setDetailEvent(null);
 			setEditTarget(null);
-			showToast("success", "Event updated successfully!");
+			showToast("success", `Event "${title}" updated successfully!`);
 		},
 		[getEvents, showToast],
 	);

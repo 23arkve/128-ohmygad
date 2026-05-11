@@ -15,7 +15,7 @@ export type CourseFormData = {
 type CourseFormProps = {
   initialData?: CourseFormData;
   mode: "create" | "edit";
-  onSuccess?: () => void;
+  onSuccess?: (title: string) => void;
   onCancel?: () => void;
 };
 
@@ -50,7 +50,7 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
 
       if (result?.success) {
         if (onSuccess) {
-          onSuccess();
+          onSuccess(title);
         } else {
           router.push("/admin/guidelines");
           router.refresh();
