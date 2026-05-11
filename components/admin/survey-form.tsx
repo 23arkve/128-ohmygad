@@ -353,7 +353,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
-                    maxLength={250}
+                    maxLength={5000}
                   />
                 </div>
               </div>
