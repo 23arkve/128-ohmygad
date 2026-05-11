@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
 	LayoutDashboard,
@@ -22,10 +22,6 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { motion } from "framer-motion";
-
-const SPRING = { type: "spring", stiffness: 700, damping: 40 } as const;
-const FADE = { duration: 0.15, ease: "easeInOut" } as const;
 
 const NAV_ITEMS = [
 	{ href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -66,17 +62,15 @@ function isActive(pathname: string, href: string, exact = false) {
 function AdminSidebarPanel() {
 	const pathname = usePathname();
 
-	const [open, setOpen] = useState(() => {
-		if (typeof window === "undefined") return true;
-		const saved = window.localStorage.getItem("admin-sidebar-expanded");
-		return saved === null ? true : JSON.parse(saved);
-	});
+	const [open, setOpen] = useState(true);
+
+	useLayoutEffect(() => {
+		const saved = localStorage.getItem("admin-sidebar-expanded");
+		if (saved !== null) setOpen(JSON.parse(saved));
+	}, []);
 
 	useEffect(() => {
-		window.localStorage.setItem(
-			"admin-sidebar-expanded",
-			JSON.stringify(open),
-		);
+		localStorage.setItem("admin-sidebar-expanded", JSON.stringify(open));
 	}, [open]);
 
 	useEffect(() => {
@@ -93,43 +87,32 @@ function AdminSidebarPanel() {
 	const BTN = 28;
 
 	return (
-		<motion.div
-            animate={{ width: open ? EXPANDED : COLLAPSED }}
-            transition={SPRING}
-            style={{ position: "relative", flexShrink: 0 }}
-            className="hidden md:block"
-        >
-            <aside
-                data-state={open ? "expanded" : "collapsed"}
-                className="group/sidebar flex h-full flex-col overflow-hidden pr-2"
-                style={{ background: "var(--primary-dark)" }}
-            >
-                {/* logo */}
-                <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
-                    <div
-                        className="flex shrink-0 items-center"
-                        style={{ width: COLLAPSED, height: "100%" }}
-                    >
-                        <Image
-                            src="/kasarian-upb-logo.svg"
-                            alt="Kasarian UP Baguio"
-                            width={55}
-                            height={55}
-                        />
-                    </div>
-                    <motion.div
-                        animate={{ opacity: open ? 1 : 0 }}
-                        transition={FADE}
-                        className="flex flex-col justify-center overflow-hidden pr-3"
-                    >
-                        <span className="body-dark whitespace-nowrap">
-                            UP BAGUIO
-                        </span>
-                        <span className="heading-md-dark uppercase whitespace-nowrap">
-                            Kasarian
-                        </span>
-                    </motion.div>
-                </div>
+		<div style={{ position: "relative", flexShrink: 0, width: open ? EXPANDED : COLLAPSED }} className="hidden md:block">
+			<aside
+				data-state={open ? "expanded" : "collapsed"}
+				className="group/sidebar flex h-full flex-col overflow-hidden pr-2"
+				style={{ background: "var(--primary-dark)" }}
+			>
+				{/* logo */}
+				<div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
+					<div
+						className="flex shrink-0 items-center"
+						style={{ width: COLLAPSED, height: "100%" }}
+					>
+						<Image
+							src="/kasarian-upb-logo.svg"
+							alt="Kasarian UP Baguio"
+							width={55}
+							height={55}
+						/>
+					</div>
+					{open && (
+						<div className="flex flex-col justify-center overflow-hidden pr-3">
+							<span className="body-dark whitespace-nowrap">UP BAGUIO</span>
+							<span className="heading-md-dark uppercase whitespace-nowrap">Kasarian</span>
+						</div>
+					)}
+				</div>
 
 				{/* nav */}
 				<nav className="flex flex-col flex-1 gap-3 py-3 overflow-y-auto overflow-x-hidden">
@@ -146,32 +129,19 @@ function AdminSidebarPanel() {
 
 							const linkContent = (
 								<>
-									<motion.div
-										animate={{ width: open ? 24 : "100%" }}
-										transition={SPRING}
-										className="flex justify-center shrink-0"
-									>
+									<div style={{ width: open ? 24 : "100%" }} className="flex justify-center shrink-0">
 										<Icon size={18} />
-									</motion.div>
-									<motion.span
-										animate={{
-											opacity: open ? 1 : 0,
-											width: open ? 140 : 0,
-										}}
-										transition={FADE}
-										className="overflow-hidden block truncate pl-[10px] whitespace-nowrap text-left"
-									>
-										{label}
-									</motion.span>
+									</div>
+									{open && (
+										<span className="overflow-hidden block truncate pl-[10px] whitespace-nowrap text-left">
+											{label}
+										</span>
+									)}
 								</>
 							);
 
 							return open ? (
-								<Link
-									key={href}
-									href={href}
-									className={linkClass}
-								>
+								<Link key={href} href={href} className={linkClass}>
 									{linkContent}
 								</Link>
 							) : (
@@ -181,10 +151,7 @@ function AdminSidebarPanel() {
 											{linkContent}
 										</Link>
 									</TooltipTrigger>
-									<TooltipContent
-										side="right"
-										sideOffset={10}
-									>
+									<TooltipContent side="right" sideOffset={10}>
 										{label}
 									</TooltipContent>
 								</Tooltip>
@@ -195,14 +162,12 @@ function AdminSidebarPanel() {
 			</aside>
 
 			{/* toggle button */}
-			<motion.button
+			<button
 				onClick={() => setOpen((o: boolean) => !o)}
 				aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
-				animate={{ x: (open ? EXPANDED : COLLAPSED) - BTN / 2 }}
-				transition={SPRING}
 				style={{
 					position: "absolute",
-					left: 0,
+					left: (open ? EXPANDED : COLLAPSED) - BTN / 2,
 					top: "50%",
 					marginTop: -(BTN / 2),
 					width: BTN,
@@ -219,8 +184,8 @@ function AdminSidebarPanel() {
 				}}
 			>
 				{open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-			</motion.button>
-		</motion.div>
+			</button>
+		</div>
 	);
 }
 
