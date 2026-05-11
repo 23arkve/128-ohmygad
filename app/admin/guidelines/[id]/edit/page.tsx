@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, ArrowLeft } from "lucide-react";
-import CourseForm, { type CourseFormData } from "@/components/admin/course-form";
+import CourseForm, { type CourseFormData } from "@/components/admin/guideline-form";
 import { Button, Card } from "@/components/ui";
 
 export default function EditCoursePage() {

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Plus, ArrowUpDown, Pencil, Trash2, Loader2, ChevronUp, ChevronDown, X, BookOpen } from "lucide-react";
-import CourseForm, { type CourseFormData } from "@/components/admin/course-form";
+import CourseForm, { type CourseFormData } from "@/components/admin/guideline-form";
 import { paginate, totalPages, PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
 
