@@ -100,7 +100,7 @@ export function Modal({ open, onClose, title, subtitle, children, footer, modalS
         {(title || subtitle) && (
           <div
             style={{
-              marginBottom: 24,
+              marginBottom: 10,
               flexShrink: 0,
               position: "sticky",
               top: 0,
@@ -115,7 +115,21 @@ export function Modal({ open, onClose, title, subtitle, children, footer, modalS
         )}
  
         {/* makes the body scroll */}
-        <div style={{ flex: 1, overflowY: "auto", marginTop: -3, marginLeft: -3, marginRight: -3, marginBottom: footer ? 21 : -3, padding: 3, minHeight: 0, ...contentStyle }}>{children}</div>
+        <div style={{
+           flex: 1, 
+           overflowY: "auto", 
+           marginTop: -3,
+           marginLeft: -3, 
+           marginRight: -3, 
+           marginBottom: footer ? 21 : -3, 
+           paddingTop: 18,
+           paddingLeft: 3,
+           paddingRight: 3,
+           paddingBottom: 18, 
+           minHeight: 0, 
+           ...contentStyle }}>
+            {children}
+        </div>
  
         {/* footer sticks to bottom */}
         {footer && <div style={{ flexShrink: 0 }}>{footer}</div>}
