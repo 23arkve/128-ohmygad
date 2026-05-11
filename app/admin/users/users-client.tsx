@@ -337,7 +337,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
         setProfiles((prev) => prev.filter((p) => p.id !== deleteTarget.id));
         router.refresh();
         closeDeleteModal();
-        showToast("success", "User deleted successfully");
+        showToast("success", `User "${deleteTarget.full_name}" deleted successfully`);
       }
     } catch (err: any) {
       setDeleteError("Failed to delete user. Please try again.");
@@ -667,9 +667,10 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 				title="Add User"
 			>
 				<UserForm
-					onSuccess={() => {
+					onSuccess={(name) => {
 						setCreateModalOpen(false);
 						router.refresh();
+						showToast("success", `User "${name}" created successfully`);
 					}}
 					onCancel={() =>
 						requestClose(() => setCreateModalOpen(false))
@@ -715,10 +716,10 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 					<UserForm
 						initialData={editUser}
 						onCancel={() => requestClose(closeEditModal)}
-						onSuccess={() => {
+						onSuccess={(name) => {
 							closeEditModal();
 							router.refresh();
-							showToast("success", "User updated successfully");
+							showToast("success", `User "${name}" updated successfully`);
 						}}
 						onRoleChangeRequest={handleRoleChangeRequest}
 						onDirtyChange={setIsFormDirty}

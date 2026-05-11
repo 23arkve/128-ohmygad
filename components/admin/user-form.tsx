@@ -55,7 +55,7 @@ interface EditUserData extends Partial<CreateUserData> {
 
 interface UserFormProps {
 	initialData?: EditUserData;
-	onSuccess?: () => void;
+	onSuccess?: (name: string) => void;
 	onCancel?: () => void;
 	layout?: "modal" | "page";
 	onRoleChangeRequest?: (role: string) => void;
@@ -416,7 +416,7 @@ export default function UserForm({
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.error || "Failed to save user");
 
-			if (onSuccess) onSuccess();
+			if (onSuccess) onSuccess(full_name);
 			else {
 				router.push("/admin/users");
 				router.refresh();
