@@ -228,15 +228,15 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
                           <div
                             key={r.id + r.type}
                             onClick={(e) => handleSelect(r, e)}
-                            className={`px-4 py-2.5 flex items-center justify-between cursor-pointer group`}
-                            style={isSelected ? { borderLeft: "3px solid var(--primary-dark)", paddingLeft: 13 } : {}}
+                            className={`px-4 py-2.5 flex items-center justify-between cursor-pointer group hover:bg-[rgba(45,42,74,0.04)] transition-colors`}
+                            style={isSelected ? { borderLeft: "3px solid var(--primary-dark)", paddingLeft: 13, background: "rgba(45,42,74,0.04)" } : {}}
                           >
                             <span className="text-[14px] text-[var(--primary-dark)] font-medium truncate">
                               {parts.map((part, i) => 
                                 part.toLowerCase() === query.trim().toLowerCase() ? (
-                                  <span key={i} className="font-bold border-b-2 border-[#16b8c4]">{part}</span>
+                                  <span key={i} className="font-bold border-b-2 border-[var(--soft-pink)]">{part}</span>
                                 ) : (
-                                  <span key={i} className={isSelected ? "underline decoration-1 underline-offset-2" : "group-hover:underline decoration-1 underline-offset-2"}>{part}</span>
+                                  <span key={i}>{part}</span>
                                 )
                               )}
                             </span>

@@ -137,17 +137,17 @@ function SearchResultsContent({ role }: { role: string }) {
                 <div
                   key={r.id + r.type + i}
                   onClick={() => handleSelect(r)}
-                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 cursor-pointer hover:bg-[rgba(45,42,74,0.02)] transition-colors border-b border-black/[0.05] last:border-0"
+                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 cursor-pointer hover:bg-[rgba(45,42,74,0.04)] transition-colors border-b border-black/[0.05] last:border-0"
                 >
                   <div className="flex flex-col gap-1">
                     <span
-                      className="font-medium text-[var(--primary-dark)] group-hover:underline underline-offset-2"
+                      className="font-medium text-[var(--primary-dark)]"
                       style={{ fontSize: 15 }}
                     >
                       {query.trim() ? (
                         r.title.split(new RegExp(`(${query.trim()})`, 'gi')).map((part, i) => 
                           part.toLowerCase() === query.trim().toLowerCase() ? (
-                            <span key={i} className="font-bold border-b-2 border-[#16b8c4]">{part}</span>
+                            <span key={i} className="font-bold border-b-2 border-[var(--soft-pink)]">{part}</span>
                           ) : (
                             <span key={i}>{part}</span>
                           )
