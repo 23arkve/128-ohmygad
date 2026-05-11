@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     let surveyQuery = supabaseAdmin
       .from("survey")
       .select("id, title")
-      .or(`title.ilike.%${query}%,status.ilike.%${query}%`);
+      .or(`title.ilike.%${query}%,description.ilike.%${query}%`);
 
     if (role !== "admin" && role !== "staff") {
       const today = new Date();
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
       const { data } = await supabaseAdmin
         .from("profile")
         .select("id, full_name, email")
-        .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
+        .or(`full_name.ilike.%${query}%,email.ilike.%${query}%,role.ilike.%${query}%`)
         .limit(limitAmount);
       users = data || [];
     }

@@ -98,14 +98,15 @@ export default function EventsPage() {
 		setPrevUrlSearch(urlSearch);
 		setSearchInput(urlSearch);
 		setSearch(urlSearch);
+		// clear filters when searching from global search to ensure result is visible
+		if (urlSearch) {
+			setStatusFilters(new Set());
+			setCategoryFilters(new Set());
+			setActiveChip("All");
+		}
 	}
 
-	useEffect(() => {
-		return () => {
-			setSearchInput("");
-			setSearch("");
-		};
-	}, []);
+
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);

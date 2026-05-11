@@ -125,6 +125,15 @@ export default function CoursesPage() {
     fetchCourses();
   }, []);
 
+  // auto-open detail modal when ?guideline=<id> is present
+  useEffect(() => {
+    if (!courses.length || isLoading) return;
+    const targetId = searchParams.get("guideline");
+    if (!targetId) return;
+    const match = courses.find((c) => c.id === targetId);
+    if (match) setDetailCourse(match);
+  }, [courses, isLoading, searchParams]);
+
   // Filter & Sort Logic
  
   const filteredAndSorted = useMemo(() => {

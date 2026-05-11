@@ -6,20 +6,20 @@ import { submitFormData } from "@/lib/form-submit.utils";
 import { AlignLeft, Type } from "lucide-react";
 import { Input, Button } from "@/components/ui";
 
-export type CourseFormData = {
+export type GuidelineFormData = {
   id?: string;
   title: string;
   description: string;
 };
 
-type CourseFormProps = {
-  initialData?: CourseFormData;
+type GuidelineFormProps = {
+  initialData?: GuidelineFormData;
   mode: "create" | "edit";
   onSuccess?: (title: string) => void;
   onCancel?: () => void;
 };
 
-export default function CourseForm({ initialData, mode, onSuccess, onCancel }: CourseFormProps) {
+export default function GuidelineForm({ initialData, mode, onSuccess, onCancel }: GuidelineFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

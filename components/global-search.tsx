@@ -106,13 +106,13 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
     inputRef.current?.blur();
 
     if (r.type === "Guideline") {
-      router.push(`/${role}/guidelines?search=${encodeURIComponent(r.title)}`);
+      router.push(`/${role}/guidelines?search=${encodeURIComponent(r.title)}&guideline=${r.id}`);
     } else if (r.type === "Event") {
-      router.push(`/${role}/events?search=${encodeURIComponent(r.title)}`);
+      router.push(`/${role}/events?search=${encodeURIComponent(r.title)}&event=${r.id}`);
     } else if (r.type === "User" && role === "admin") {
-      router.push(`/admin/users?search=${encodeURIComponent(r.title)}`);
+      router.push(`/admin/users?search=${encodeURIComponent(r.title)}&user=${r.id}`);
     } else if (r.type === "Survey") {
-      router.push(`/${role}/surveys?search=${encodeURIComponent(r.title)}`);
+      router.push(`/${role}/surveys?search=${encodeURIComponent(r.title)}&survey=${r.id}`);
     }
   }, [router, role]);
 
