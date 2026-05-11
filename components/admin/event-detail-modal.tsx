@@ -396,10 +396,10 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 										)}
 									</span>
 								</div>
-								<div className="flex items-center gap-3 caption sm:text-sm text-[var(--gray)]">
-									<MapPin size={15} className="shrink-0" />
+								<div className="flex items-start gap-3 caption sm:text-sm text-[var(--gray)]">
+									<MapPin size={15} className="shrink-0 mt-0.5" />
 									<span
-										className="truncate" title={event.location ?? "—"}
+										className="break-words" title={event.location ?? "—"}
 									>
 										{event.location ?? "—"}
 									</span>
