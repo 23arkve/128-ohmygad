@@ -258,7 +258,7 @@ export default function CoursesPage() {
 				}}
 			>
 				{detailCourse && (
-					<div className="flex flex-col gap-3 pb-8 md:pb-1 pb-[max(env(safe-area-inset-bottom),2.5rem)]">
+					<div className="flex flex-col gap-4 pb-8 md:pb-1 pb-[max(env(safe-area-inset-bottom),2.5rem)]">
 						<div className="divider mt-0 mb-2 border-t border-black" />
 
 						<div className="space-y-2">
