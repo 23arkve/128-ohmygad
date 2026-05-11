@@ -400,6 +400,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 required
                 value={end_date}
                 onChange={setEndDate}
+                minDate={start_date ? new Date(start_date) : new Date()}
               />
 
               <DateTimePicker
@@ -416,6 +417,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                 required
                 value={registration_close}
                 onChange={setRegistrationClose}
+                minDate={registration_open ? new Date(registration_open) : new Date()}
               />
             </div>
 

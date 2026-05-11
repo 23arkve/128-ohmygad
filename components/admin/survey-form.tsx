@@ -403,6 +403,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                 mode="datetime"
                 value={close_at}
                 onChange={setCloseAt}
+                minDate={open_at ? new Date(open_at) : new Date()}
               />
             
           </div>
