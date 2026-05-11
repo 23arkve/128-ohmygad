@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
 	LayoutDashboard,
@@ -24,6 +24,7 @@ import { useMobileMenu } from "@/components/ui/mobile-menu-context";
 
 const SPRING = { type: "spring", stiffness: 400, damping: 38 } as const;
 const FADE = { duration: 0.15, ease: "easeInOut" } as const;
+
 
 const NAV_ITEMS = [
 	{
@@ -169,21 +170,17 @@ export default function FacultySidebar() {
 	const [open, setOpen] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
 
-	// read local storage and check window width only after mount
-	useEffect(() => {
-		// hydrate from localStorage if available
-		const saved = window.localStorage.getItem("faculty-sidebar-expanded");
-		if (saved !== null) {
-			setOpen(JSON.parse(saved));
-		}
+	useLayoutEffect(() => {
+		const saved = localStorage.getItem("faculty-sidebar-expanded");
+		if (saved !== null) setOpen(JSON.parse(saved));
+	}, []);
 
-		// check if on mobile
+	useEffect(() => {
 		const checkMobile = () => {
 			const mobile = window.innerWidth < 768;
 			setIsMobile(mobile);
 			if (mobile) setOpen(false);
 		};
-
 		checkMobile();
 		window.addEventListener("resize", checkMobile);
 		return () => window.removeEventListener("resize", checkMobile);
@@ -205,6 +202,7 @@ export default function FacultySidebar() {
 
 	return (
 		<motion.div
+			initial={false}
 			animate={{ width: open ? EXPANDED : COLLAPSED }}
 			transition={SPRING}
 			style={{ position: "relative", flexShrink: 0 }}
@@ -217,28 +215,17 @@ export default function FacultySidebar() {
 			>
 				{/* logo */}
 				<div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
-					<div
-						className="flex shrink-0 items-center"
-						style={{ width: COLLAPSED, height: "100%" }}
-					>
-						<Image
-							src="/kasarian-upb-logo.svg"
-							alt="Kasarian UP Baguio"
-							width={55}
-							height={55}
-						/>
+					<div className="flex shrink-0 items-center" style={{ width: COLLAPSED, height: "100%" }}>
+						<Image src="/kasarian-upb-logo.svg" alt="Kasarian UP Baguio" width={55} height={55} />
 					</div>
 					<motion.div
+						initial={false}
 						animate={{ opacity: open ? 1 : 0 }}
 						transition={FADE}
 						className="flex flex-col justify-center overflow-hidden pr-3"
 					>
-						<span className="body-dark whitespace-nowrap">
-							UP BAGUIO
-						</span>
-						<span className="heading-md-dark uppercase whitespace-nowrap">
-							Kasarian
-						</span>
+						<span className="body-dark whitespace-nowrap">UP BAGUIO</span>
+						<span className="heading-md-dark uppercase whitespace-nowrap">Kasarian</span>
 					</motion.div>
 				</div>
 
@@ -258,6 +245,7 @@ export default function FacultySidebar() {
 							const linkContent = (
 								<>
 									<motion.div
+										initial={false}
 										animate={{ width: open ? 24 : "100%" }}
 										transition={SPRING}
 										className="flex shrink-0 justify-center"
@@ -265,10 +253,8 @@ export default function FacultySidebar() {
 										<Icon size={18} />
 									</motion.div>
 									<motion.span
-										animate={{
-											opacity: open ? 1 : 0,
-											width: open ? 140 : 0,
-										}}
+										initial={false}
+										animate={{ opacity: open ? 1 : 0, width: open ? 140 : 0 }}
 										transition={FADE}
 										className="block overflow-hidden truncate whitespace-nowrap pl-[10px] text-left"
 									>
@@ -278,26 +264,13 @@ export default function FacultySidebar() {
 							);
 
 							return open ? (
-								<Link
-									key={href}
-									href={href}
-									className={linkClass}
-								>
-									{linkContent}
-								</Link>
+								<Link key={href} href={href} className={linkClass}>{linkContent}</Link>
 							) : (
 								<Tooltip key={href}>
 									<TooltipTrigger asChild>
-										<Link href={href} className={linkClass}>
-											{linkContent}
-										</Link>
+										<Link href={href} className={linkClass}>{linkContent}</Link>
 									</TooltipTrigger>
-									<TooltipContent
-										side="right"
-										sideOffset={10}
-									>
-										{label}
-									</TooltipContent>
+									<TooltipContent side="right" sideOffset={10}>{label}</TooltipContent>
 								</Tooltip>
 							);
 						})}
@@ -306,6 +279,7 @@ export default function FacultySidebar() {
 			</aside>
 
 			<motion.button
+				initial={false}
 				onClick={() => setOpen((o: boolean) => !o)}
 				aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
 				animate={{ x: (open ? EXPANDED : COLLAPSED) - BTN / 2 }}
