@@ -54,7 +54,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
 
   // fetch results
   useEffect(() => {
-    if (debouncedQuery.trim().length < 2) {
+    if (debouncedQuery.trim().length < 1) {
       setResults([]);
       setLoading(false);
       return;
@@ -111,13 +111,13 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    if (!open && e.target.value.trim().length >= 2 && !isNavigating.current) {
+    if (!open && e.target.value.trim().length >= 1 && !isNavigating.current) {
       setOpen(true);
     }
   }, [open]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && query.trim().length >= 2) {
+    if (e.key === "Enter" && query.trim().length >= 1) {
       e.preventDefault();
       setOpen(false);
       router.push(`/${role}/search?q=${encodeURIComponent(query.trim())}`);
@@ -125,7 +125,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
   }, [query, role, router]);
 
   const handleFocus = useCallback(() => {
-    if (query.trim().length >= 2) setOpen(true);
+    if (query.trim().length >= 1) setOpen(true);
   }, [query]);
 
   return (
@@ -150,7 +150,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
         </button>
       )}
 
-      {open && query.trim().length >= 2 && (
+      {open && query.trim().length >= 1 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[var(--radius-lg)] shadow-[var(--shadow-float)] border border-black/[0.05] z-[100] overflow-hidden flex flex-col max-h-[85vh]">
           {/* Results Area */}
           {loading ? (

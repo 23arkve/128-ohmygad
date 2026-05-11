@@ -34,7 +34,7 @@ function SearchResultsContent({ role }: { role: string }) {
 
   useEffect(() => {
     async function fetchAll() {
-      if (!query || query.trim().length < 2) {
+      if (!query || query.trim().length < 1) {
         setResults([]);
         setLoading(false);
         return;

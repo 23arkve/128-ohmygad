@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const isAll = url.searchParams.get("all") === "true";
     const limitAmount = isAll ? 1000 : 5;
 
-    if (!query || query.length < 2) {
+    if (!query || query.length < 1) {
       return NextResponse.json({ results: [] });
     }
 
