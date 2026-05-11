@@ -43,20 +43,25 @@ export function MultipleChoiceChart({
 }) {
   const data = useMemo(() => {
     const counts: Record<string, number> = {};
+    let total = 0;
+
     // initialize with defined options
     if (question.options) {
       for (const opt of question.options) counts[opt] = 0;
     }
+    
     for (const r of responses) {
       if (r.response_value) {
         counts[r.response_value] = (counts[r.response_value] ?? 0) + 1;
+        total++;
       }
     }
+
     return Object.entries(counts)
       .map(([name, value]) => ({
         name,
         value,
-        pct: responses.length ? Math.round((value / responses.length) * 100) : 0,
+        pct: total ? Math.round((value / total) * 100) : 0,
       }))
       .sort((a, b) => b.value - a.value);
   }, [question.options, responses]);
@@ -64,17 +69,22 @@ export function MultipleChoiceChart({
   const MCTooltip = useCallback(
     ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
       if (!active || !payload?.length) return null;
-      const entry = payload[0];
+      const entry = payload[0].payload; // original data object
       return (
-        <div className="bg-white/95 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-3 min-w-[120px]">
-          <div className="flex items-center gap-2">
-            <span
-              className="w-4 h-4 rounded-full shrink-0"
-              style={{ background: entry.color ?? entry.payload?.fill }}
-            />
-            <span className="text-[13px] font-semibold text-[var(--primary-dark)]">
-              {label}: {entry.value}
-            </span>
+        <div className="bg-white/95 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-3 min-w-[140px]">
+          <div className="flex flex-col gap-1">
+            <p className="text-[11px] font-bold text-[var(--gray)] uppercase tracking-wider mb-0.5">
+              {label}
+            </p>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-full shrink-0"
+                style={{ background: payload[0].color ?? payload[0].payload?.fill }}
+              />
+              <span className="text-[13px] font-bold text-[var(--primary-dark)]">
+                {entry.value} ({entry.pct}%)
+              </span>
+            </div>
           </div>
         </div>
       );
@@ -127,15 +137,37 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
   const data = useMemo(() => {
     let yes = 0;
     let no = 0;
+    let total = 0;
     for (const r of responses) {
-      if (r.response_value?.toLowerCase() === "yes") yes++;
-      else if (r.response_value?.toLowerCase() === "no") no++;
+      if (r.response_value?.toLowerCase() === "yes") { yes++; total++; }
+      else if (r.response_value?.toLowerCase() === "no") { no++; total++; }
     }
     return [
-      { name: "Yes", value: yes },
-      { name: "No", value: no },
+      { name: "Yes", value: yes, pct: total ? Math.round((yes / total) * 100) : 0 },
+      { name: "No", value: no, pct: total ? Math.round((no / total) * 100) : 0 },
     ].filter((d) => d.value > 0);
   }, [responses]);
+
+  const YesNoTooltip = useCallback(
+    ({ active, payload }: { active?: boolean; payload?: any[] }) => {
+      if (!active || !payload?.length) return null;
+      const entry = payload[0].payload;
+      return (
+        <div className="bg-white/95 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-3 min-w-[120px]">
+          <div className="flex items-center gap-2">
+            <span
+              className="w-4 h-4 rounded-full shrink-0"
+              style={{ background: payload[0].color ?? payload[0].payload?.fill }}
+            />
+            <span className="text-[13px] font-bold text-[var(--primary-dark)]">
+              {entry.name}: {entry.value} ({entry.pct}%)
+            </span>
+          </div>
+        </div>
+      );
+    },
+    [],
+  );
 
   return (
     <div className="w-full min-h-[260px] cursor-default select-none">
@@ -160,7 +192,7 @@ export function YesNoChart({ responses }: { responses: ResponseRow[] }) {
               />
             ))}
           </Pie>
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<YesNoTooltip />} />
           <Legend
             verticalAlign="bottom"
             align="center"
@@ -193,31 +225,10 @@ function StatBox({ label, value }: { label: string; value: string }) {
 }
 
 export function LikertChart({ responses }: { responses: ResponseRow[] }) {
-  // Track the currently-hovered bar key without causing re-renders
   const hoveredBarKey = useRef<string | null>(null);
 
-  // Tooltip that shows only the hovered segment (not all 5 stacked entries)
-  const LikertTooltip = useCallback(
-    ({ active, payload }: { active?: boolean; payload?: { dataKey?: string; name?: string; value?: number; color?: string; fill?: string }[] }) => {
-      if (!active || !payload?.length || !hoveredBarKey.current) return null;
-      const entry = payload.find((p) => p.dataKey === hoveredBarKey.current);
-      if (!entry) return null;
-      return (
-        <div className="bg-white/95 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-3 min-w-[120px]">
-          <div className="flex items-center gap-2">
-            <span className="w-4 h-4 rounded-full shrink-0" style={{ background: entry.color ?? entry.fill }} />
-            <span className="text-[13px] font-semibold text-[var(--primary-dark)] capitalize">
-              {entry.name}: {entry.value}
-            </span>
-          </div>
-        </div>
-      );
-    },
-    [],
-  );
-
   const { chartData, stats } = useMemo(() => {
-    const counts = [0, 0, 0, 0, 0]; // index 0 → rating 1, etc.
+    const counts = [0, 0, 0, 0, 0];
     const nums: number[] = [];
 
     for (const r of responses) {
@@ -228,9 +239,13 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
       }
     }
 
+    const total = nums.length;
     const row: Record<string, string | number> = { name: "Responses" };
     for (let i = 0; i < 5; i++) {
-      row[`r${i + 1}`] = counts[i];
+      const val = counts[i];
+      const pct = total ? Math.round((val / total) * 100) : 0;
+      row[`r${i + 1}`] = val;
+      row[`r${i + 1}_pct`] = pct;
     }
 
     return {
@@ -240,14 +255,36 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
         med: median(nums),
         sd: stddev(nums),
         counts,
-        total: nums.length,
+        total,
       },
     };
   }, [responses]);
 
+  const LikertTooltip = useCallback(
+    ({ active, payload }: { active?: boolean; payload?: any[] }) => {
+      if (!active || !payload?.length || !hoveredBarKey.current) return null;
+      const entry = payload.find((p) => p.dataKey === hoveredBarKey.current);
+      if (!entry) return null;
+      
+      const pctKey = `${hoveredBarKey.current}_pct`;
+      const pct = entry.payload[pctKey];
+
+      return (
+        <div className="bg-white/95 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-3 min-w-[120px]">
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 rounded-full shrink-0" style={{ background: entry.color ?? entry.fill }} />
+            <span className="text-[13px] font-semibold text-[var(--primary-dark)] capitalize">
+              {entry.name}: {entry.value} ({pct}%)
+            </span>
+          </div>
+        </div>
+      );
+    },
+    [],
+  );
+
   return (
     <div className="flex flex-col gap-5">
-      {/* stacked bar */}
       <div className="w-full min-h-[80px] cursor-default select-none">
         <ResponsiveContainer width="100%" height={80}>
           <BarChart
@@ -299,7 +336,6 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
         </ResponsiveContainer>
       </div>
 
-      {/* legend */}
       <div className="flex flex-wrap items-center justify-center gap-3">
         {LIKERT_LABELS.map((label, i) => (
           <div key={i} className="flex items-center gap-1.5">
@@ -308,13 +344,12 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
               style={{ background: LIKERT_COLORS[i] }}
             />
             <span className="caption tracking-wider">
-              {label}
+              {label} ({stats.counts[i]})
             </span>
           </div>
         ))}
       </div>
 
-      {/* statistics row */}
       <div className="grid grid-cols-3 gap-3">
         <StatBox label="Average" value={stats.avg.toFixed(2)} />
         <StatBox label="Median" value={stats.med.toFixed(1)} />
