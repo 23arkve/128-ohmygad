@@ -152,7 +152,7 @@ function CustomTooltip({
 				if (isCompletion && firstPayload) {
 					const count = e.name === "Completed" 
 						? firstPayload.completedCount 
-						: (firstPayload.respondentCount - firstPayload.completedCount);
+						: ((firstPayload.respondentCount ?? 0) - (firstPayload.completedCount ?? 0));
 					displayValue = `${count} (${e.value}%)`;
 				} else if (isCompletion) {
 					displayValue = `${e.value}%`;
