@@ -1,6 +1,6 @@
 import GuidelineForm from "@/components/admin/guideline-form";
 
-export default function CreateCoursePage() {
+export default function CreateGuidelinePage() {
   return (
     <div className="h-full flex flex-col gap-6">
       <GuidelineForm mode="create" />

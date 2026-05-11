@@ -214,7 +214,7 @@ export default function DashboardPage() {
 
 	// quick action modals
 	const [activeModal, setActiveModal] = useState<
-		"event" | "user" | "course" | "survey" | null
+		"event" | "user" | "guideline" | "survey" | null
 	>(null);
 	const closeModal = () => setActiveModal(null);
 
@@ -447,7 +447,7 @@ export default function DashboardPage() {
 					<div className="flex flex-col gap-5">
 						<GlobalSearch
 							role="admin"
-							placeholder="Search events, courses, surveys..."
+							placeholder="Search events, guidelines, surveys..."
 						/>
 						<div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
 							<StatCard
@@ -670,7 +670,7 @@ export default function DashboardPage() {
 								<Button
 									variant="soft"
 									className="w-full justify-between"
-									onClick={() => setActiveModal("course")}
+									onClick={() => setActiveModal("guideline")}
 								>
 									<BookOpen size={16} /> New Guideline
 								</Button>
@@ -1260,7 +1260,7 @@ export default function DashboardPage() {
 
 			{/* -------------------------------------- guideline modal -------------------------------------- */}
 			<Modal
-				open={activeModal === "course"}
+				open={activeModal === "guideline"}
 				onClose={closeModal}
 				title="Add Guideline"
 				modalStyle={{ maxWidth: 860 }}
