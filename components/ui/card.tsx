@@ -433,7 +433,7 @@ export function UserCard({
                     </div>
 
                     {/* name */}
-                    <div className="heading-lg-dark break-all mb-2.5 pr-10">
+                    <div className="heading-lg-dark break-all hyphens-auto mb-2.5 pr-10">
                         {name || "—"}
                     </div>
 

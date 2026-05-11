@@ -478,7 +478,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                           style={{ color: "var(--error)" }}
                           onClick={() => removeOption(qIndex, oIndex)}
                         >
-                          <X size={14} />
+                          <X size={15} />
                         </button>
                       </div>
                     ))}

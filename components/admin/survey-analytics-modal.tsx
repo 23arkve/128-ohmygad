@@ -134,7 +134,7 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
               </div>
             )}
             <button className="modal-close" style={{ position: "static" }} onClick={onClose}>
-              <X size={18} />
+              <X size={15} />
             </button>
           </div>
         </div>
