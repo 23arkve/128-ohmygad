@@ -16,8 +16,7 @@ export async function GET(request: Request) {
 
     const url = new URL(request.url);
     const query = url.searchParams.get("q") || "";
-    const isAll = url.searchParams.get("all") === "true";
-    const limitAmount = isAll ? 1000 : 25;
+    const limitAmount = 1000;
 
     if (!query || query.length < 1) {
       return NextResponse.json({ results: [] });
@@ -26,25 +25,24 @@ export async function GET(request: Request) {
     const { data: courses } = await supabaseAdmin
       .from("course")
       .select("id, title")
-      .ilike("title", `%${query}%`)
+      .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
       .limit(limitAmount);
-
-    const today = new Date();
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
     const { data: events } = await supabaseAdmin
       .from("event")
       .select("id, title")
-      .ilike("title", `%${query}%`)
-      .or(`end_date.gte.${todayStr},and(end_date.is.null,start_date.gte.${todayStr})`)
+      .or(`title.ilike.%${query}%,category.ilike.%${query}%,location.ilike.%${query}%`)
       .limit(limitAmount);
 
     let surveyQuery = supabaseAdmin
       .from("survey")
       .select("id, title")
-      .ilike("title", `%${query}%`);
+      .or(`title.ilike.%${query}%,status.ilike.%${query}%`);
 
     if (role !== "admin" && role !== "staff") {
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
       const { data: attended } = await supabaseAdmin
         .from("event_registration")
         .select("event_id")
