@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const query = url.searchParams.get("q") || "";
     const isAll = url.searchParams.get("all") === "true";
-    const limitAmount = isAll ? 1000 : 5;
+    const limitAmount = isAll ? 1000 : 25;
 
     if (!query || query.length < 1) {
       return NextResponse.json({ results: [] });
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
       .select("id, title")
       .ilike("title", `%${query}%`);
 
-    if (role !== "admin") {
+    if (role !== "admin" && role !== "staff") {
       const { data: attended } = await supabaseAdmin
         .from("event_registration")
         .select("event_id")
