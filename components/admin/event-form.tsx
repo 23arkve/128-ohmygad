@@ -338,7 +338,7 @@ export default function EventForm({ initialData, mode, onSuccess, onCancel }: Ev
                       setCapacity(null);
                     } else {
                       const num = Number(val);
-                      setCapacity(Math.min(500, Math.max(0, num)));
+                      setCapacity(Math.min(500, Math.max(1, num)));
                     }
                   }}
                   onKeyDown={(e) => {
