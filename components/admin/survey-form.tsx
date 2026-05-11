@@ -339,7 +339,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                 prefixIcon={<Type size={15} />}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                maxLength={100}
+                maxLength={500}
               />
 
               <div className="input-wrap">
