@@ -52,7 +52,7 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
         if (onSuccess) {
           onSuccess(title);
         } else {
-          router.push("/admin/courses");
+          router.push("/admin/guidelines");
           router.refresh();
         }
       } else {
@@ -127,7 +127,7 @@ export default function CourseForm({ initialData, mode, onSuccess, onCancel }: C
         <Button
           type="button"
           variant="ghost"
-          onClick={() => (onCancel ? onCancel() : router.push("/admin/courses"))}
+          onClick={() => (onCancel ? onCancel() : router.push("/admin/guidelines"))}
           disabled={isLoading}
         >
           Cancel

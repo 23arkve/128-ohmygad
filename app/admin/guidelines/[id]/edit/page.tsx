@@ -11,7 +11,7 @@ export default function EditCoursePage() {
   const { id } = useParams<{ id: string }>();
   const router  = useRouter();
 
-  const [course,     setCourse]     = useState<CourseFormData | null>(null);
+  const [guideline,   setGuideline]   = useState<CourseFormData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error,     setError]     = useState<string | null>(null);
 
@@ -24,8 +24,8 @@ export default function EditCoursePage() {
         .eq("id", id)
         .single();
 
-      if (error || !data) setError("Course not found.");
-      else setCourse(data);
+      if (error || !data) setError("Guideline not found.");
+      else setGuideline(data);
 
       setIsLoading(false);
     };
@@ -42,25 +42,25 @@ export default function EditCoursePage() {
           style={{ color: "var(--gray)" }}
         >
           <Loader2 size={20} className="animate-spin" />
-          <span className="caption">Loading course…</span>
+          <span className="caption">Loading guideline…</span>
         </div>
       </Card>
     );
   }
 
   // error / not found 
-  if (error || !course) {
+  if (error || !guideline) {
     return (
       <Card>
         <div className="flex flex-col items-center justify-center gap-4 py-12">
           <p className="caption" style={{ color: "var(--error)" }}>
-            {error ?? "Course not found."}
+            {error ?? "Guideline not found."}
           </p>
           <Button
             variant="ghost"
-            onClick={() => router.push("/admin/courses")}
+            onClick={() => router.push("/admin/guidelines")}
           >
-            <ArrowLeft size={15} /> Back to Courses
+            <ArrowLeft size={15} /> Back to Guidelines
           </Button>
         </div>
       </Card>
@@ -74,15 +74,15 @@ export default function EditCoursePage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/admin/courses")}
+          onClick={() => router.push("/admin/guidelines")}
         >
-          <ArrowLeft size={15} /> Courses
+          <ArrowLeft size={15} /> Guidelines
         </Button>
         <span className="caption">/</span>
-        <h1 className="heading-md">Edit Course</h1>
+        <h1 className="heading-md">Edit Guideline</h1>
       </div>
 
-      <CourseForm mode="edit" initialData={course} />
+      <CourseForm mode="edit" initialData={guideline} />
     </div>
   );
 }

@@ -59,6 +59,7 @@ export default function FacultyProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<ToastState>(null);
+  const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState("Personal");
 
   const supabase = createClient();
@@ -116,45 +117,46 @@ export default function FacultyProfilePage() {
 
   async function handleSave() {
     setSaving(true);
+    setError(null);
 
     const nameErr = validateFullName(profile.full_name);
     if (nameErr) {
-      setToast({ type: "error", message: nameErr });
+      setError(nameErr);
       setSaving(false);
       return;
     }
 
     const displayErr = validateDisplayName(profile.display_name);
     if (displayErr) {
-      setToast({ type: "error", message: displayErr });
+      setError(displayErr);
       setSaving(false);
       return;
     }
 
     const contactErr = validateContactNum(profile.contact_num);
     if (contactErr) {
-      setToast({ type: "error", message: contactErr });
+      setError(contactErr);
       setSaving(false);
       return;
     }
 
     const addressErr = validateAddress(profile.address);
     if (addressErr) {
-      setToast({ type: "error", message: addressErr });
+      setError(addressErr);
       setSaving(false);
       return;
     }
 
     const departmentErr = validateDepartment(profile.department);
     if (departmentErr) {
-      setToast({ type: "error", message: departmentErr });
+      setError(departmentErr);
       setSaving(false);
       return;
     }
 
     const officeErr = validateOffice(profile.office);
     if (officeErr) {
-      setToast({ type: "error", message: officeErr });
+      setError(officeErr);
       setSaving(false);
       return;
     }
@@ -167,8 +169,8 @@ export default function FacultyProfilePage() {
       if (error) throw error;
       setInitialProfile({ ...profile });
       setToast({ type: "success", message: "Profile saved successfully." });
-    } catch {
-      setToast({ type: "error", message: "Failed to save changes." });
+    } catch (error: any) {
+      setError(error.message || "Failed to save changes.");
     } finally {
       setSaving(false);
     }
@@ -385,7 +387,12 @@ export default function FacultyProfilePage() {
           </Card>
 
           {/* save button positioned directly below the right card */}
-          <div className="flex justify-end shrink-0 pt-2 lg:pt-0">
+          <div className="flex flex-col items-end gap-3 shrink-0 pt-2 lg:pt-0">
+            {error && (
+              <div className="toast toast-error py-2 px-4 w-full md:w-auto">
+                <span className="text-sm font-semibold text-[var(--error)]">{error}</span>
+              </div>
+            )}
             <Button
               variant="primary"
               onClick={handleSave}

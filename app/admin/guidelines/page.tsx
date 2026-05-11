@@ -29,14 +29,14 @@ type SortDirection = "asc" | "desc";
 
 
 // courses page proper
-export default function CoursesPage() {
+export default function GuidelinesPage() {
 
   // delete constant
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
 
-  const [courses, setCourses] = useState<CourseFormData[]>([]);
+  const [guidelines, setGuidelines] = useState<CourseFormData[]>([]);
   const [filtered, setFiltered] = useState<CourseFormData[]>([]);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +60,7 @@ export default function CoursesPage() {
   };
 
   //  Fetch 
-  const getCourses = async () => {
+  const getGuidelines = async () => {
     const supabase = createClient();
     const { data, error } = await supabase
       .from("course")
@@ -68,12 +68,12 @@ export default function CoursesPage() {
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      setCourses(data);
+      setGuidelines(data);
     }
     setIsLoading(false);
   };
 
-  useEffect(() => { getCourses(); }, []);
+  useEffect(() => { getGuidelines(); }, []);
 
   // Sync search state with URL parameter synchronously to avoid "previous search" flash
   const [prevUrlSearch, setPrevUrlSearch] = useState(searchParams.get("search") || "");
@@ -92,7 +92,7 @@ export default function CoursesPage() {
   //  filter / sort 
   useEffect(() => {
     const q = search.toLowerCase();
-    let result = courses;
+    let result = guidelines;
 
     result = result.filter((e) =>
       `${e.title} ${e.description}`.toLowerCase().includes(q)
@@ -119,7 +119,7 @@ export default function CoursesPage() {
 
     setFiltered(result);
     setPage(1);
-  }, [search, courses, sort]);
+  }, [search, guidelines, sort]);
 
   function clearAllFilters() {
     // No filters to clear
@@ -173,8 +173,8 @@ const confirmDelete = async () => {
   if (error) {
     setDeleteError("Failed to delete guideline. Please try again.");
   } else {
-    setCourses((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-    showToast("success", `"Guideline ${deleteTarget.title}" deleted successfully`);
+    setGuidelines((prev) => prev.filter((e) => e.id !== deleteTarget.id));
+    showToast("success", "Guideline deleted successfully");
 
     setDeleteTarget(null);
     setDeletePassword("");
@@ -315,12 +315,12 @@ const confirmDelete = async () => {
 						<div>
 							<p className="label text-[var(--primary-dark)]">
 								{search || hasActiveFilters
-									? "No courses found"
-									: "No courses yet"}
+									? "No guidelines found"
+									: "No guidelines yet"}
 							</p>
 							{!search && !hasActiveFilters && (
 								<p className="caption text-[var(--gray)] mt-1">
-									Add your first course to get started.
+									Add your first guideline to get started.
 								</p>
 							)}
 						</div>
@@ -359,7 +359,7 @@ const confirmDelete = async () => {
 						Showing{" "}
 						{Math.min((page - 1) * PER_PAGE + 1, filtered.length)}–
 						{Math.min(page * PER_PAGE, filtered.length)} of{" "}
-						{filtered.length} courses
+						{filtered.length} guidelines
 					</span>
 					<Pagination
 						page={page}
@@ -380,11 +380,7 @@ const confirmDelete = async () => {
 					mode="create"
 					onSuccess={(title) => {
 						setCreateModalOpen(false);
-						getCourses();
-						showToast(
-							"success",
-							`"Guideline ${title}" created successfully`,
-						);
+						getGuidelines();
 					}}
 					onCancel={() => setCreateModalOpen(false)}
 				/>
@@ -405,11 +401,7 @@ const confirmDelete = async () => {
 						initialData={editTarget}
 						onSuccess={(title) => {
 							setEditTarget(null);
-							getCourses();
-							showToast(
-								"success",
-								`"Guideline ${title}" updated successfully`,
-							);
+							getGuidelines();
 						}}
 						onCancel={() => setEditTarget(null)}
 					/>
@@ -450,7 +442,7 @@ const confirmDelete = async () => {
 						setDeleteError(null);
 					}
 				}}
-				title="Delete Course?"
+				title="Delete Guideline?"
 				subtitle="This action cannot be undone."
 				footer={
 					<div className="flex gap-3 w-full">
