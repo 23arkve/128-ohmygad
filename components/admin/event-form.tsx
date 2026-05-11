@@ -76,7 +76,7 @@ const [touched, setTouched] = useState<Record<string, boolean>>({});
   };
 
   // Live Validation Errors
-  const titleError = !title ? "Title is required." : title.length < 5 ? "Title must be at least 5 characters." : undefined;
+  const titleError = !title ? "Title is required." : undefined;
   const descriptionError = !description ? "Description is required." : undefined;
   const locationError = !location ? "Location is required." : undefined;
   const categoryError = !category ? "Category is required." : undefined;
@@ -279,15 +279,19 @@ const [touched, setTouched] = useState<Record<string, boolean>>({});
                 <h3 className="heading-md">Basic Information</h3>
               </div>
 
-              <Input
-                label="Title *"
-                placeholder="e.g. Gender Sensitivity Orientation"
-                required
-                prefixIcon={<Type size={15} />}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxLength={500}
-              />
+              <div className="flex flex-col gap-1">
+                <Input
+                  label="Title *"
+                  placeholder="e.g. Gender Sensitivity Orientation"
+                  required
+                  prefixIcon={<Type size={15} />}
+                  value={title}
+                  onChange={(e) => { setTitle(e.target.value); markTouched("title"); }}
+                  onBlur={() => markTouched("title")}
+                  maxLength={500}
+                />
+                {touched.title && titleError && <Toast variant="error" title="Invalid title" message={titleError} />}
+              </div>
 
               <div className="input-wrap">
                 <label htmlFor="description" className="label">Description</label>
