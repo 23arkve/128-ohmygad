@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, Loader2, ChevronUp, ExternalLink, X, MoveUp, MoveDown } from "lucide-react";
 import { Badge } from "@/components/ui";
 
@@ -24,6 +24,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +35,7 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
     setOpen(false);
     setQuery("");
     isNavigating.current = false;
-  }, [pathname]);
+  }, [pathname, searchParams]);
 
   const AVAILABLE_CATEGORIES = useMemo(() => [
     { id: "Events",     type: "Event"  },
