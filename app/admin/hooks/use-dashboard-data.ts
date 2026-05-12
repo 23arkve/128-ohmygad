@@ -205,9 +205,12 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 					"Training",
 					"Workshop",
 				]);
+			const now = new Date().toISOString();
 			const { count: surveyCount, error: e2 } = await supabase
 				.from("survey")
-				.select("id", { count: "exact", head: true });
+				.select("id", { count: "exact", head: true })
+				.lte("open_at", now)
+				.or(`close_at.is.null,close_at.gt.${now}`);
 			if (e1) throw e1;
 			if (e2) throw e2;
 
