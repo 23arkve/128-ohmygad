@@ -345,6 +345,7 @@ header {
   padding: 12px 28px;
   font-size: 14px;
   box-shadow: 0 4px 16px rgba(45, 42, 74, 0.25);
+  border: 1.5px solid transparent;
 }
 
 .btn-primary:hover {
