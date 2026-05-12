@@ -287,6 +287,7 @@ header {
 
 .divider {
   height: 1px;
+  flex-shrink: 0;
   background: rgba(45, 42, 74, 0.08);
   margin: 10px 0;
 }
@@ -471,6 +472,11 @@ header {
   padding: 7px 11px !important;
   font-size: 12px !important;
   letter-spacing: 0.02em;
+}
+
+.btn-md {
+  padding: 12px 20px !important;
+  font-size: 14px !important;
 }
 
 .btn-lg {
@@ -2735,6 +2741,15 @@ header {
     --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
     --sidebar-border: hsl(240 3.7% 15.9%);
     --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@keyframes logo-breath {
+  0%, 100% { transform: scale(1);    opacity: 1;    }
+  50%       { transform: scale(1.1); opacity: 0.75; }
+}
+
+.animate-logo-breath {
+  animation: logo-breath 1.6s ease-in-out infinite;
 }
 
 @theme inline {
