@@ -49,7 +49,8 @@ export default function DashboardHeader({
 	return (
 		<header
 			ref={headerRef}
-			className="relative shrink-0 flex items-center py-6"
+			// Changed from "flex items-center" to "flex flex-col justify-center" to allow natural stacking
+			className="relative shrink-0 flex flex-col justify-center md:py-6 py-3"
 		>
 			{/* backdrop */}
 			<div
@@ -119,7 +120,8 @@ export default function DashboardHeader({
 
 			{/* mobile page title (non-dashboard) */}
 			{!isDashboard && (
-				<div className="absolute bottom-0 left-0 right-0 flex md:hidden items-center gap-1.5 px-3 pb-2">
+				// Removed "absolute bottom-0" and added standard relative positioning with "mt-4" to space it out below the logo
+				<div className="relative z-10 w-full flex md:hidden items-center gap-1.5 px-3 mt-4">
 					<h1 className="heading-md leading-none">{pageLabel}</h1>
 				</div>
 			)}

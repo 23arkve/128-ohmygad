@@ -8,8 +8,15 @@ import Image from "next/image";
 import { User, Hash, Phone, MapPin, Building2 } from "lucide-react";
 import { Input, Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { validateFullName, validateContactNum, validateStudentNum } from "@/lib/validation";
-import { PulsingLoader } from "@/components/ui";
+import {
+	validateFullName,
+	validateContactNum,
+	validateStudentNum,
+	validateAddress,
+	validateOffice,
+	validateDepartment,
+} from "@/lib/validation";
+import { PulsingLoader, Toast } from "@/components/ui";
 
 import {
 	YEAR_OPTIONS,
@@ -19,6 +26,36 @@ import {
 	UPB_PROGRAMS,
 	PRONOUNS,
 } from "@/lib/constants";
+
+const YEAR_LEVEL_MAP: Record<number, string> = {
+	1: "1st Year",
+	2: "2nd Year",
+	3: "3rd Year",
+	4: "4th Year",
+	5: "5th Year",
+};
+
+const getAcademicYearStart = (): number => {
+	const now = new Date();
+	const month = now.getMonth(); // 0-indexed, so 7 = August
+	return month >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+};
+
+const deriveYearLevel = (studentNum: string): number | null => {
+	const admissionYear = parseInt(studentNum.slice(0, 4), 10);
+	if (isNaN(admissionYear)) return null;
+	const academicStart = getAcademicYearStart();
+	if (admissionYear < 1900 || admissionYear > academicStart) return null;
+	const level = academicStart - admissionYear + 1;
+	if (level < 1) return null;
+	return level;
+};
+
+const deriveYearLevelString = (studentNum: string): string | null => {
+	const derived = deriveYearLevel(studentNum);
+	if (derived === null) return null;
+	return YEAR_LEVEL_MAP[derived] ?? "Extendee";
+};
 
 export function OnboardingForm({
 	className,
@@ -50,6 +87,9 @@ export function OnboardingForm({
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 
+	// live pre-submission field errors
+	const [nameTouched, setNameTouched] = useState(false);
+
 	useEffect(() => {
 		const fetchRole = async () => {
 			const supabase = createClient();
@@ -66,17 +106,82 @@ export function OnboardingForm({
 				.eq("id", user.id)
 				.single();
 
-			setRole(profile?.role ?? null);
+			// Default to student for uniformity if no role is set
+			setRole(profile?.role ?? "student");
 			setIsLoadingRole(false);
 		};
 
 		fetchRole();
 	}, [router]);
 
+	// Helpers
+	const handleStudentNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const digits = e.target.value.replace(/\D/g, "").slice(0, 9);
+		setStudentNum(digits);
+
+		if (digits.length >= 4) {
+			const derived = deriveYearLevelString(digits);
+			if (derived !== null) {
+				setYearLevel(derived);
+			}
+		}
+	};
+
+	const handleContactNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const digits = e.target.value.replace(/\D/g, "");
+		setContactNum(digits);
+	};
+
+	// Validations
+	const fullNameError =
+		nameTouched && !full_name
+			? "Full name is required."
+			: full_name
+				? validateFullName(full_name)
+				: null;
+
+	const derivedYear =
+		student_num.length >= 4 ? deriveYearLevel(student_num) : null;
+	const derivedYearString =
+		student_num.length >= 4 ? deriveYearLevelString(student_num) : null;
+	const admissionYearRaw =
+		student_num.length >= 4 ? parseInt(student_num.slice(0, 4), 10) : NaN;
+	const academicStart = getAcademicYearStart();
+
+	const studentNumError =
+		student_num.length >= 4 && derivedYear === null
+			? !isNaN(admissionYearRaw) &&
+				admissionYearRaw >= 1900 &&
+				admissionYearRaw <= academicStart
+				? "Admission year has not started yet."
+				: "Please check the student number format."
+			: null;
+
+	const yearMismatch =
+		derivedYearString !== null &&
+		year_level !== "" &&
+		year_level !== derivedYearString;
+
+	const yearMismatchError = yearMismatch
+		? `Expected ${derivedYearString} based on student number.`
+		: null;
+
+	const hasFieldErrors = !!(
+		fullNameError ||
+		studentNumError ||
+		yearMismatchError
+	);
+
 	const handleOnboarding = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setIsLoading(true);
 		setError(null);
+
+		if (hasFieldErrors) {
+			setError("Please resolve form errors before submitting.");
+			setIsLoading(false);
+			return;
+		}
 
 		if (!sex_at_birth) {
 			setError("Please select your Sex at Birth.");
@@ -102,6 +207,12 @@ export function OnboardingForm({
 			return;
 		}
 
+		if (role === "student" && !year_level) {
+			setError("Please select a Year Level.");
+			setIsLoading(false);
+			return;
+		}
+
 		if (full_name) {
 			const nameErr = validateFullName(full_name);
 			if (nameErr) {
@@ -120,10 +231,45 @@ export function OnboardingForm({
 			}
 		}
 
+		const addressErr = validateAddress(address || "");
+		if (addressErr) {
+			setError(addressErr);
+			setIsLoading(false);
+			return;
+		}
+
+		if (role === "admin" || role === "staff") {
+			const officeErr = validateOffice(office);
+			if (officeErr) {
+				setError(officeErr);
+				setIsLoading(false);
+				return;
+			}
+		}
+
+		if (role === "faculty") {
+			const deptErr = validateDepartment(department);
+			if (deptErr) {
+				setError(deptErr);
+				setIsLoading(false);
+				return;
+			}
+		}
+
 		if (role === "student" && student_num) {
 			const studentErr = validateStudentNum(student_num);
 			if (studentErr) {
 				setError(studentErr);
+				setIsLoading(false);
+				return;
+			}
+			if (studentNumError) {
+				setError(studentNumError);
+				setIsLoading(false);
+				return;
+			}
+			if (yearMismatchError) {
+				setError(yearMismatchError);
 				setIsLoading(false);
 				return;
 			}
@@ -152,10 +298,14 @@ export function OnboardingForm({
 				college: college || null,
 				program: program || null,
 				is_onboarded: true,
+				role: role, // In case it wasn't set previously and defaults to student
 			};
 
 			if (role === "student") {
-				updatePayload.student_num = student_num || null;
+				const cleanStudentNum = student_num
+					? student_num.replace(/\D/g, "")
+					: null;
+				updatePayload.student_num = cleanStudentNum;
 				updatePayload.year_level = year_level || null;
 			}
 
@@ -166,46 +316,55 @@ export function OnboardingForm({
 
 			if (profileError) throw profileError;
 
-      switch (role) {
-        case "admin":
-          router.push("/admin");
-          break;
-        case "staff":
-          router.push("/staff");
-        case "faculty":
-          router.push("/faculty");
-          break;
-        case "student":
-        default:
-          router.push("/student");
-          break;
-      }
-    } // catching errors: 
-    catch (error: any) {
-      // unique violation error, if it already exists, show this error
-      if (error?.code === '23505' || error?.message?.includes('duplicate key')) {
-        setError("This student number or contact number is already registered to another account.");
-      } else {
-        setError(error?.message || "An error occurred while saving. Please try again.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+			switch (role) {
+				case "admin":
+					router.push("/admin");
+					break;
+				case "staff":
+					router.push("/staff");
+					break;
+				case "faculty":
+					router.push("/faculty");
+					break;
+				case "student":
+				default:
+					router.push("/student");
+					break;
+			}
+		} catch (error: any) {
+			// catching errors:
+			// unique violation error, if it already exists, show this error
+			if (
+				error?.code === "23505" ||
+				error?.message?.includes("duplicate key")
+			) {
+				setError(
+					"This student number or contact number is already registered to another account.",
+				);
+			} else {
+				setError(
+					error?.message ||
+						"An error occurred while saving. Please try again.",
+				);
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-  if (isLoadingRole) {
-    return (
-		<div
-			className={cn(
-				"card max-w-md w-full mx-auto h-fit flex flex-col items-center justify-center p-12",
-				className,
-			)}
-			{...props}
-		>
-			<PulsingLoader variant="breath" />
-		</div>
-	);
-  }
+	if (isLoadingRole) {
+		return (
+			<div
+				className={cn(
+					"card max-w-md w-full mx-auto h-fit flex flex-col items-center justify-center p-12",
+					className,
+				)}
+				{...props}
+			>
+				<PulsingLoader variant="breath" />
+			</div>
+		);
+	}
 
 	return (
 		<div
@@ -247,17 +406,25 @@ export function OnboardingForm({
 					autoComplete="off"
 				>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 pb-4 min-w-0">
-						<div className="md:col-span-2 w-full">
+						<div className="md:col-span-2 w-full flex flex-col gap-1">
 							<Input
 								label="Full Name *"
 								required
 								placeholder="Juan M. Dela Cruz"
 								prefixIcon={<User size={15} />}
 								value={full_name}
+								onBlur={() => setNameTouched(true)}
 								onChange={(e) => setFullName(e.target.value)}
 								autoComplete="off"
 								maxLength={64}
 							/>
+							{fullNameError && (
+								<Toast
+									variant="error"
+									title="Invalid full name"
+									message={fullNameError}
+								/>
+							)}
 						</div>
 						<div className="md:col-span-2 w-full">
 							<Input
@@ -273,32 +440,49 @@ export function OnboardingForm({
 
 						{(role === "student" || !role) && (
 							<>
-								<Input
-									label="Student Number *"
-									required
-									placeholder="202112345"
-									prefixIcon={<Hash size={15} />}
-									value={student_num}
-									onChange={(e) =>
-										setStudentNum(e.target.value)
-									}
-									autoComplete="off"
-									maxLength={9}
-								/>
-								<Select
-									label="Year Level"
-									value={year_level}
-									onChange={(e) =>
-										setYearLevel(e.target.value)
-									}
-									options={[
-										{
-											value: "",
-											label: "Select year level",
-										},
-										...YEAR_OPTIONS,
-									]}
-								/>
+								<div className="flex flex-col gap-1">
+									<Input
+										label="Student Number *"
+										required
+										placeholder="e.g. 202112345"
+										prefixIcon={<Hash size={15} />}
+										value={student_num}
+										onChange={handleStudentNumChange}
+										autoComplete="off"
+										maxLength={9}
+									/>
+									{studentNumError && (
+										<Toast
+											variant="error"
+											title="Invalid student number"
+											message={studentNumError}
+										/>
+									)}
+								</div>
+								<div className="flex flex-col gap-1">
+									<Select
+										label="Year Level *"
+										required
+										value={year_level}
+										onChange={(e) =>
+											setYearLevel(e.target.value)
+										}
+										options={[
+											{
+												value: "",
+												label: "Select year level",
+											},
+											...YEAR_OPTIONS,
+										]}
+									/>
+									{yearMismatchError && (
+										<Toast
+											variant="warning"
+											title="Year level mismatch"
+											message={yearMismatchError}
+										/>
+									)}
+								</div>
 							</>
 						)}
 
@@ -386,10 +570,10 @@ export function OnboardingForm({
 
 						<Input
 							label="Contact Number (optional)"
-							placeholder="09XX XXX XXXX"
+							placeholder="e.g. 09123456789"
 							prefixIcon={<Phone size={15} />}
 							value={contact_num}
-							onChange={(e) => setContactNum(e.target.value)}
+							onChange={handleContactNumChange}
 							autoComplete="off"
 							maxLength={11}
 						/>
@@ -407,7 +591,7 @@ export function OnboardingForm({
 						<div className="md:col-span-2 w-full">
 							<Input
 								label="Address (optional)"
-								placeholder="Baguio City"
+								placeholder="City, Province"
 								prefixIcon={<MapPin size={15} />}
 								value={address}
 								onChange={(e) => setAddress(e.target.value)}
@@ -453,7 +637,7 @@ export function OnboardingForm({
 						<Button
 							type="submit"
 							variant="primary"
-							disabled={isLoading}
+							disabled={isLoading || hasFieldErrors}
 							className="w-full md:w-auto px-10 shrink-0"
 						>
 							{isLoading
