@@ -7,7 +7,7 @@ import {
   Mail, Lock, KeyRound, AlertCircle
 } from "lucide-react";
 
-import { Card, Input, Button, Toast } from "@/components/ui";
+import { Card, Input, Button, Toast, PulsingLoader } from "@/components/ui";
 
 type ToastState = { type: "success" | "error" | "info"; message: string } | null;
 
@@ -29,6 +29,8 @@ export default function SharedSettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const [toast, setToast] = useState<ToastState>(null);
 
@@ -66,11 +68,14 @@ export default function SharedSettingsPage() {
     e.preventDefault();
     if (!newEmail || newEmail === currentEmail) return;
 
-    setSavingEmail(true);
+    setEmailError(null);
     try {
       const { error } = await supabase.auth.updateUser({ email: newEmail });
       
-      if (error) throw error;
+      if (error) {
+        setEmailError(error.message);
+        return;
+      }
       
       setToast({ 
         type: "info", 
@@ -78,35 +83,29 @@ export default function SharedSettingsPage() {
       });
       setNewEmail(""); // clear input
     } catch (error: any) {
-      setToast({ type: "error", message: error.message || "Failed to update email." });
+      setToast({ type: "error", message: "Failed to update email. Please try again." });
     } finally {
       setSavingEmail(false);
     }
   }
 
   // handle password update
-    async function handleUpdatePassword(e: React.FormEvent) {
-        e.preventDefault();
+  async function handleUpdatePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setPasswordError(null);
 
         if (!currentPassword) {
-            setToast({
-                type: "error",
-                message: "Please enter your current password."
-            })
+            setPasswordError("Please enter your current password.");
+            return;
         }
         
         if (newPassword.length < 6) {
-            setToast({
-                type: "error",
-                message: "Password must be at least 6 characters long."
-            });
+            setPasswordError("Password must be at least 6 characters long.");
             return;
         }
         
         if (newPassword !== confirmPassword) {
-            setToast({
-                type: "error",
-                message: "Passwords do not match." });
+            setPasswordError("Passwords do not match.");
             return;
         }
 
@@ -121,10 +120,7 @@ export default function SharedSettingsPage() {
                 }
             );
             if (signInError) {
-                setToast({
-                    type: "error",
-                    message: "Current password is incorrect."
-                });
+                setPasswordError("Current password is incorrect.");
                 return;
             }
 
@@ -141,10 +137,7 @@ export default function SharedSettingsPage() {
             setNewPassword("");
             setConfirmPassword("");
         }   catch (error: any) {
-                setToast({
-                    type: "error",
-                    message: error.message || "Failed to update password."
-                });
+                setPasswordError(error.message || "Failed to update password. Please try again.");
         }   finally {
                 setSavingPassword(false);
             }
@@ -152,10 +145,10 @@ export default function SharedSettingsPage() {
 
         if (loading) {
             return (
-            <div className="flex-1 flex items-center justify-center h-full min-h-0">
-                <div className="w-8 h-8 border-4 border-[var(--periwinkle-light)] border-t-[var(--periwinkle)] rounded-full animate-spin"></div>
-            </div>
-        );
+				<div className="flex-1 flex items-center justify-center h-full min-h-0">
+					<PulsingLoader variant="breath" />
+				</div>
+			);
     }
 
   return (
@@ -192,6 +185,12 @@ export default function SharedSettingsPage() {
               required
               prefixIcon={<Mail size={15} />}
             />
+
+            {emailError && (
+              <div className="toast toast-error py-2 px-3 mt-1">
+                <span className="text-xs font-semibold text-[var(--error)]">{emailError}</span>
+              </div>
+            )}
             <div className="flex justify-end mt-2">
               <Button 
                 type="submit" 
@@ -250,12 +249,11 @@ export default function SharedSettingsPage() {
                     prefixIcon={<KeyRound size={15} />}
                 />
                 
-                {/* inline warning */}
-                {newPassword && confirmPassword && newPassword !== confirmPassword && (
-                <div className="flex items-center gap-2 text-[var(--error)] text-sm mt-1">
-                    <AlertCircle size={14} />
-                    <span>Passwords do not match.</span>
-                </div>
+                {/* inline error */}
+                {passwordError && (
+                  <div className="toast toast-error py-2 px-3 mt-1">
+                    <span className="text-xs font-semibold text-[var(--error)]">{passwordError}</span>
+                  </div>
                 )}
 
                 <div className="flex justify-end mt-2">

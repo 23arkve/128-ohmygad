@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
 	LayoutDashboard,
@@ -22,17 +22,13 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { motion } from "framer-motion";
-
-const SPRING = { type: "spring", stiffness: 700, damping: 40 } as const;
-const FADE = { duration: 0.15, ease: "easeInOut" } as const;
 
 const NAV_ITEMS = [
 	{ href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
 	{ href: "/admin/events", label: "Events", icon: Calendar, exact: false },
 	{ href: "/admin/users", label: "Users", icon: Users, exact: false },
 	{
-		href: "/admin/courses",
+		href: "/admin/guidelines",
 		label: "Guidelines",
 		icon: BookOpen,
 		exact: false,
@@ -49,7 +45,7 @@ const PAGE_LABELS: Record<string, string> = {
 	dashboard: "Dashboard",
 	events: "Events Management",
 	users: "Users Management",
-	courses: "Guidelines Management",
+	guidelines: "Guidelines Management",
 	surveys: "Surveys Management",
 };
 
@@ -66,17 +62,15 @@ function isActive(pathname: string, href: string, exact = false) {
 function AdminSidebarPanel() {
 	const pathname = usePathname();
 
-	const [open, setOpen] = useState(() => {
-		if (typeof window === "undefined") return true;
-		const saved = window.localStorage.getItem("admin-sidebar-expanded");
-		return saved === null ? true : JSON.parse(saved);
-	});
+	const [open, setOpen] = useState(true);
+
+	useLayoutEffect(() => {
+		const saved = localStorage.getItem("admin-sidebar-expanded");
+		if (saved !== null) setOpen(JSON.parse(saved));
+	}, []);
 
 	useEffect(() => {
-		window.localStorage.setItem(
-			"admin-sidebar-expanded",
-			JSON.stringify(open),
-		);
+		localStorage.setItem("admin-sidebar-expanded", JSON.stringify(open));
 	}, [open]);
 
 	useEffect(() => {
@@ -93,51 +87,53 @@ function AdminSidebarPanel() {
 	const BTN = 28;
 
 	return (
-		<motion.div
-            animate={{ width: open ? EXPANDED : COLLAPSED }}
-            transition={SPRING}
-            style={{ position: "relative", flexShrink: 0 }}
-            className="hidden md:block"
-        >
-            <aside
-                data-state={open ? "expanded" : "collapsed"}
-                className="group/sidebar flex h-full flex-col overflow-hidden pr-2"
-                style={{ background: "var(--primary-dark)" }}
-            >
-                {/* logo */}
-                <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
-                    <div
-                        className="flex shrink-0 items-center"
-                        style={{ width: COLLAPSED, height: "100%" }}
-                    >
-                        <Image
-                            src="/kasarian-upb-logo.svg"
-                            alt="Kasarian UP Baguio"
-                            width={55}
-                            height={55}
-                        />
-                    </div>
-                    <motion.div
-                        animate={{ opacity: open ? 1 : 0 }}
-                        transition={FADE}
-                        className="flex flex-col justify-center overflow-hidden pr-3"
-                    >
-                        <span className="body-dark whitespace-nowrap">
-                            UP BAGUIO
-                        </span>
-                        <span className="heading-md-dark uppercase whitespace-nowrap">
-                            Kasarian
-                        </span>
-                    </motion.div>
-                </div>
+		<div
+			style={{
+				position: "relative",
+				flexShrink: 0,
+				width: open ? EXPANDED : COLLAPSED,
+			}}
+			className="hidden md:block"
+		>
+			<aside
+				data-state={open ? "expanded" : "collapsed"}
+				className="group/sidebar flex h-full flex-col overflow-hidden pr-2"
+				style={{ background: "var(--primary-dark)" }}
+			>
+				{/* logo - ALIGNED TO BOTTOM (items-end) WITH EXACT PADDING */}
+				<div className="flex shrink-0 items-end pb-4 py-5 overflow-hidden">
+					<div className="flex w-full items-center gap-2">
+						<div
+							className="flex items-center justify-center shrink-0"
+							style={{ width: open ? 55 : "100%" }}
+						>
+							<Image
+								src="/kasarian-upb-logo.svg"
+								alt="Kasarian UP Baguio"
+								width={55}
+								height={55}
+							/>
+						</div>
+						{open && (
+							<div className="flex flex-col justify-center overflow-hidden gap-1">
+								<span className="body-dark whitespace-nowrap leading-none">
+									UP BAGUIO
+								</span>
+								<span className="heading-md-dark uppercase whitespace-nowrap leading-none">
+									Kasarian
+								</span>
+							</div>
+						)}
+					</div>
+				</div>
 
 				{/* nav */}
-				<nav className="flex flex-col flex-1 gap-3 py-3 overflow-y-auto overflow-x-hidden">
+				<nav className="flex flex-col flex-1 gap-4 overflow-y-auto overflow-x-hidden">
 					<TooltipProvider delayDuration={70}>
 						{NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
 							const active = isActive(pathname, href, exact);
 							const linkClass = [
-								"flex items-center w-full h-[40px] rounded-[10px] px-1",
+								"flex items-center w-full h-[45px] rounded-[10px] px-1",
 								"text-[15px] font-medium transition-colors duration-150",
 								active
 									? "bg-white/[0.18] text-white"
@@ -146,23 +142,17 @@ function AdminSidebarPanel() {
 
 							const linkContent = (
 								<>
-									<motion.div
-										animate={{ width: open ? 24 : "100%" }}
-										transition={SPRING}
+									<div
+										style={{ width: open ? 24 : "100%" }}
 										className="flex justify-center shrink-0"
 									>
 										<Icon size={18} />
-									</motion.div>
-									<motion.span
-										animate={{
-											opacity: open ? 1 : 0,
-											width: open ? 140 : 0,
-										}}
-										transition={FADE}
-										className="overflow-hidden block truncate pl-[10px] whitespace-nowrap text-left"
-									>
-										{label}
-									</motion.span>
+									</div>
+									{open && (
+										<span className="overflow-hidden block truncate pl-[10px] whitespace-nowrap text-left">
+											{label}
+										</span>
+									)}
 								</>
 							);
 
@@ -195,14 +185,12 @@ function AdminSidebarPanel() {
 			</aside>
 
 			{/* toggle button */}
-			<motion.button
+			<button
 				onClick={() => setOpen((o: boolean) => !o)}
 				aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
-				animate={{ x: (open ? EXPANDED : COLLAPSED) - BTN / 2 }}
-				transition={SPRING}
 				style={{
 					position: "absolute",
-					left: 0,
+					left: (open ? EXPANDED : COLLAPSED) - BTN / 2,
 					top: "50%",
 					marginTop: -(BTN / 2),
 					width: BTN,
@@ -219,8 +207,8 @@ function AdminSidebarPanel() {
 				}}
 			>
 				{open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-			</motion.button>
-		</motion.div>
+			</button>
+		</div>
 	);
 }
 
@@ -247,7 +235,10 @@ function AdminPageHeader() {
 		activeId.charAt(0).toUpperCase() + activeId.slice(1);
 
 	return (
-		<header ref={headerRef} className="relative shrink-0">
+		<header
+			ref={headerRef}
+			className="relative shrink-0 flex items-center py-6"
+		>
 			<div
 				aria-hidden
 				className="absolute inset-0 pointer-events-none"
@@ -263,8 +254,8 @@ function AdminPageHeader() {
 						"background-color 0.2s ease, backdrop-filter 0.2s ease, border-color 0.2s ease",
 				}}
 			/>
-			<div className="relative z-10 flex items-center justify-between gap-3 px-3 md:px-5 mt-4 mb-3">
-				<div className="flex items-center gap-2 min-w-0">
+			<div className="relative z-10 flex w-full items-center justify-between gap-3 px-3 md:px-5">
+				<div className="flex items-center gap-2 min-w-0 min-h-[40px]">
 					{!isDashboard && (
 						<Button
 							size="sm"
@@ -275,7 +266,9 @@ function AdminPageHeader() {
 							<ArrowLeft size={15} />
 						</Button>
 					)}
-					<h1 className="heading-lg truncate">{pageLabel}</h1>
+					<h1 className="heading-lg truncate leading-none">
+						{pageLabel}
+					</h1>
 				</div>
 				<div className="flex items-center gap-2 shrink-0">
 					<UserMenu />
@@ -323,7 +316,7 @@ export default function AdminShell({
 					<AdminPageHeader />
 
 					<main
-						className="flex flex-col flex-1 min-h-0 overflow-y-auto px-3 md:px-5 pb-0 md:py-2"
+						className="flex flex-col flex-1 min-h-0 overflow-y-auto px-3 md:px-5 pb-0"
 						style={{
 							scrollbarGutter: "stable",
 							position: "relative",

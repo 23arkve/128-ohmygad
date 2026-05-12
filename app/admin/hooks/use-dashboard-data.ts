@@ -12,14 +12,30 @@ import type { DateRange } from "@/components/ui/date-range-picker";
 import type { DashboardFilters, FilterOptions } from "@/components/ui/dashboard-filter";
 
 export interface TimelineEvent {
+  id: string;
   time: string;
   title: string;
   location: string;
   category: string;
 }
 
+export interface RawEvent {
+  id: string;
+  start_date: string;
+  end_date: string;
+  title: string;
+  location: string;
+  category: string;
+  description: string | null;
+  capacity: number | null;
+  banner_url: string | null;
+  registration_open: string | null;
+  registration_close: string | null;
+}
+
 export interface DashboardData {
 	eventDates: string[];
+	allEvents: RawEvent[];
 	eventAttendanceData: { month: string; attendees: number }[];
 	sexAtBirthData: { name: string; value: number }[];
 	genderIdentityData: { name: string; value: number }[];
@@ -32,7 +48,6 @@ export interface DashboardData {
 	loading: boolean; // static data (KPIs, charts, timeline)
 	attendanceLoading: boolean; // attendance chart only
 	error: string | null;
-	eventDates: string[];
 }
 
 const MONTH_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -166,7 +181,8 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
   const [loading,             setLoading]             = useState(true);
   const [attendanceLoading,   setAttendanceLoading]   = useState(true);
   const [error,               setError]               = useState<string | null>(null);
-    const [eventDates, setEventDates] = useState<string[]>([]);
+  const [eventDates,          setEventDates]          = useState<string[]>([]);
+  const [allEvents,           setAllEvents]           = useState<RawEvent[]>([]);
 
   // global data: GAD events, surveys, today's timeline not filter-dependent
   // runs once on mount
@@ -189,9 +205,12 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 					"Training",
 					"Workshop",
 				]);
+			const now = new Date().toISOString();
 			const { count: surveyCount, error: e2 } = await supabase
 				.from("survey")
-				.select("id", { count: "exact", head: true });
+				.select("id", { count: "exact", head: true })
+				.lte("open_at", now)
+				.or(`close_at.is.null,close_at.gt.${now}`);
 			if (e1) throw e1;
 			if (e2) throw e2;
 
@@ -208,7 +227,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 				.order("start_date", { ascending: true });
 			const { data: eventRows, error: e4 } = await supabase
 				.from("event")
-				.select("start_date");
+				.select("id, start_date, end_date, title, location, category, description, capacity, banner_url, registration_open, registration_close");
 			if (e4) throw e4;
 
 			if (!cancelled) {
@@ -217,6 +236,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 				setTodayEvents(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(todayRows ?? []).map((r: any) => ({
+						id: r.id as string,
 						time: new Date(r.start_date).toLocaleTimeString(
 							"en-US",
 							{
@@ -231,9 +251,24 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 					})),
 				);
                 setEventDates(
-					(eventRows ?? []).map(
-						(r: { start_date: string }) => r.start_date,
-					),
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(eventRows ?? []).map((r: any) => r.start_date as string),
+				);
+				setAllEvents(
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(eventRows ?? []).map((r: any) => ({
+						id: r.id as string,
+						start_date: r.start_date as string,
+						end_date: r.end_date as string,
+						title: r.title ?? "",
+						location: r.location ?? "",
+						category: r.category ?? "",
+						description: r.description ?? null,
+						capacity: r.capacity ?? null,
+						banner_url: r.banner_url ?? null,
+						registration_open: r.registration_open ?? null,
+						registration_close: r.registration_close ?? null,
+					})),
 				);
 			}
 		} catch (err: unknown) {
@@ -329,17 +364,47 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
         }
 
         const frame = buildBuckets(range);
-        const results = await Promise.all(
-          frame.map(async ({ label, gte, lt }) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let q: any = supabase.from("event_registration").select("id", { count: "exact", head: true })
-              .eq("attended", true).gte("registration_date", gte).lt("registration_date", lt);
-            if (filteredIds !== null) q = q.in("user_id", filteredIds);
-            const { count, error: me } = await q;
-            if (me) throw me;
-            return { month: label, attendees: count ?? 0 };
-          })
-        );
+
+        // fetch all events that start before the range ends
+        //    no end_date filter here
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: events, error: evErr } = await supabase
+          .from("event")
+          .select("id, start_date, end_date")
+          .lt("start_date", frame[frame.length - 1].lt);
+        if (evErr) throw evErr;
+
+        const eventIds = (events ?? []).map((e: { id: string }) => e.id);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const eventMap = new Map((events ?? []).map((e: any) => [e.id, e]));
+
+        // fetch attended registrations for those events + apply user filters if any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let regQuery: any = supabase
+          .from("event_registration")
+          .select("event_id, user_id")
+          .eq("attended", true);
+        if (eventIds.length > 0) regQuery = regQuery.in("event_id", eventIds);
+        else regQuery = regQuery.eq("event_id", "");
+        if (filteredIds !== null) regQuery = regQuery.in("user_id", filteredIds);
+        const { data: regs, error: regErr } = await regQuery;
+        if (regErr) throw regErr;
+
+        // client-side bucketing. a registration counts in every bucket its event spans.
+        //    end_date falls back to start_date for single-day / null-end events.
+        const results = frame.map(({ label, gte, lt }) => {
+          const bucketStart = new Date(gte);
+          const bucketEnd   = new Date(lt);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const count = (regs ?? []).filter((reg: any) => {
+            const ev = eventMap.get(reg.event_id);
+            if (!ev?.start_date) return false;
+            const eventStart = new Date(ev.start_date);
+            const eventEnd   = ev.end_date ? new Date(ev.end_date) : eventStart;
+            return eventStart < bucketEnd && eventEnd >= bucketStart;
+          }).length;
+          return { month: label, attendees: count };
+        });
         if (!cancelled) setEventAttendanceData(results);
       } catch (err: unknown) {
         if (!cancelled) setError((err as Error)?.message ?? "Failed to load attendance data");
@@ -354,7 +419,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 
   return {
     eventAttendanceData, sexAtBirthData, genderIdentityData, breakdownData, eventDates,
-    userStats, gadEventsCount, surveysCount, todayEvents, filterOptions: STATIC_OPTIONS,
+    allEvents, userStats, gadEventsCount, surveysCount, todayEvents, filterOptions: STATIC_OPTIONS,
     loading, attendanceLoading, error,
   };
 }

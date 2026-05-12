@@ -10,6 +10,7 @@ import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { validateFullName, validatePassword } from "@/lib/validation";
 import { Input } from "./ui";
+import { ERR } from "@/lib/user-error";
 
 export function SignUpForm({
   className,
@@ -75,7 +76,7 @@ export function SignUpForm({
 			router.push("/auth/sign-up-success");
 		} catch (error: unknown) {
 			setError(
-				error instanceof Error ? error.message : "An error occurred",
+				ERR.auth,
 			);
 		} finally {
 			setIsLoading(false);

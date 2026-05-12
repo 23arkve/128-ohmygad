@@ -56,7 +56,7 @@ export const GENDER_OPTIONS = [
 
 export const COLLEGE_OPTIONS = [
   { value: "CS", label: "College of Science (CS)" },
-  { value: "CAC", label: "College of Arts and Communications (CAC)" },
+  { value: "CAC", label: "College of Arts and Communication (CAC)" },
   { value: "CSS", label: "College of Social Sciences (CSS)" },
 ];
 
@@ -92,6 +92,7 @@ export const EVENT_STATUS_OPTIONS = [
 ];
 
 export const SURVEY_STATUS_OPTIONS = [
+  { value: "upcoming", label: "Upcoming"},
   { value: "open",   label: "Open"   },
   { value: "closed", label: "Closed" },
 ];

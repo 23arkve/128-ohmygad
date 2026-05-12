@@ -1,6 +1,19 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { validateFullName, validateEmail, validatePassword, validateContactNum, validateStudentNum, validateAddress, validateGsoSessions, validateAshoSessions } from "@/lib/validation";
+import { 
+    validateFullName, 
+    validateEmail, 
+    validatePassword, 
+    validateContactNum, 
+    validateStudentNum, 
+    validateAddress, 
+    validateGsoSessions, 
+    validateAshoSessions,
+    validateForumSessions,
+    validateResearchSessions,
+    validateTrainingSessions,
+    validateWorkshopSessions
+} from "@/lib/validation";
 
 export async function POST(req: Request) {
     try {
@@ -73,6 +86,26 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: ashoErr }, { status: 400 });
         }
 
+        const forumErr = validateForumSessions(forum_attended);
+        if (forumErr) {
+            return NextResponse.json({ error: forumErr }, { status: 400 });
+        }
+
+        const researchErr = validateResearchSessions(research_attended);
+        if (researchErr) {
+            return NextResponse.json({ error: researchErr }, { status: 400 });
+        }
+
+        const trainingErr = validateTrainingSessions(training_attended);
+        if (trainingErr) {
+            return NextResponse.json({ error: trainingErr }, { status: 400 });
+        }
+
+        const workshopErr = validateWorkshopSessions(workshop_attended);
+        if (workshopErr) {
+            return NextResponse.json({ error: workshopErr }, { status: 400 });
+        }
+
         // 1. Create the auth user with email auto-confirmed
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
@@ -87,33 +120,37 @@ export async function POST(req: Request) {
 
         const userId = authData.user.id;
 
-        // 2. Update the profile row with all provided fields
+        // 2. Insert or update the profile row with all provided fields
         const { error: profileError } = await supabaseAdmin
             .from("profile")
-            .update({
-                full_name,
-                display_name: display_name || null,
-                role,
-                contact_num: contact_num || null,
-                address: address || null,
-                pronouns: pronouns || null,
-                college: college || null,
-                program: program || null,
-                student_num: student_num ? Number(student_num) : null,
-                year_level: year_level || null,
-                sex_at_birth: sex_at_birth || null,
-                gender_identity: gender_identity || null,
-                gso_attended: gso_attended ? Number(gso_attended) : 0,
-                asho_attended: asho_attended ? Number(asho_attended) : 0,
-                forum_attended: forum_attended ? Number(forum_attended) : 0,
-                research_attended: research_attended ? Number(research_attended) : 0,
-                training_attended: training_attended ? Number(training_attended) : 0,
-                workshop_attended: workshop_attended ? Number(workshop_attended) : 0,
-                is_onboarded: is_onboarded ?? true,
-                office: office || null,
-                department: department || null,
-            })
-            .eq("id", userId);
+            .upsert(
+                {
+                    id: userId,
+                    email,
+                    full_name,
+                    display_name: display_name || null,
+                    role,
+                    contact_num: contact_num || null,
+                    address: address || null,
+                    pronouns: pronouns || null,
+                    college: college || null,
+                    program: program || null,
+                    student_num: student_num ? Number(student_num) : null,
+                    year_level: year_level || null,
+                    sex_at_birth: sex_at_birth || null,
+                    gender_identity: gender_identity || null,
+                    gso_attended: gso_attended ? Number(gso_attended) : 0,
+                    asho_attended: asho_attended ? Number(asho_attended) : 0,
+                    forum_attended: forum_attended ? Number(forum_attended) : 0,
+                    research_attended: research_attended ? Number(research_attended) : 0,
+                    training_attended: training_attended ? Number(training_attended) : 0,
+                    workshop_attended: workshop_attended ? Number(workshop_attended) : 0,
+                    is_onboarded: is_onboarded ?? true,
+                    office: office || null,
+                    department: department || null,
+                },
+                { onConflict: "id" },
+            );
 
         if (profileError) {
             return NextResponse.json({ error: profileError.message }, { status: 500 });

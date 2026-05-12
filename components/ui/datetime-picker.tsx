@@ -1,83 +1,8 @@
-/* How to use this component?
-PROPS
-  label        string       - field label rendered above the trigger
-  mode         "date" | "time" | "datetime"                                         default "datetime"
-               Controls which panels are shown and what value is emitted.
-  placeholder  string       - trigger text when no value is set
-               Defaults: "Select date" / "Select time" / "Select date & time"
-  value        string       - controlled value
-               "date"     mode → ISO date string  e.g. "2025-03-15"
-               "time"     mode → "HH:MM"          e.g. "09:00"
-               "datetime" mode → ISO datetime     e.g. "2025-03-15T09:00:00.000Z"
-  onChange     (value: string) => void
-               emits the same format as described in value above.
-               emits "" when the field is cleared.
-  minDate      Date         - earliest selectable day (inclusive)
-  maxDate      Date         - latest selectable day (inclusive)
-  required     boolean      - shows a pink  after the label                         default false
-  error        string       - error message shown below the trigger
-
-
-MODE BEHAVIOR
-  "date"      Calendar panel only               - closes on day pick
-  "time"      Time panel only                   - confirms with button
-  "datetime"  Calendar first, then time panel   - confirms with button;
-            trigger shows two chips (date + time) when filled
-
-SAMPLE USAGE
-  import { DateTimePicker } from "@/components/ui";
- 
-  // date only
-  const [date, setDate] = useState("");
-  <DateTimePicker
-    label="Event Date"
-    mode="date"
-    value={date}
-    onChange={setDate}
-    required
-  />
- 
-  // time only
-  const [time, setTime] = useState("");
-  <DateTimePicker
-    label="Start Time"
-    mode="time"
-    value={time}
-    onChange={setTime}
-  />
- 
-  // date & time (default mode)
-  const [dt, setDt] = useState("");
-  <DateTimePicker
-    label="Event Starts"
-    value={dt}
-    onChange={setDt}
-    error={errors.startDate}
-  />
- 
-  // restrict selectable days to the next 30 days
-  <DateTimePicker
-    label="Available Date"
-    mode="date"
-    minDate={new Date()}
-    maxDate={new Date(Date.now() + 30  24  60  60  1000)}
-  />
- 
-  // read the ISO value
-  <DateTimePicker
-    mode="datetime"
-    onChange={(iso) => {
-      const d = new Date(iso);
-      console.log(d.toLocaleString("en-PH")); // → "3/15/2025, 9:00:00 AM"
-    }}
-  />
-*/
-
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Calendar, Clock, ChevronLeft, ChevronRight, X, Check } from "lucide-react";
+import { Calendar, Clock, ChevronLeft, ChevronRight, X, Check, AlignHorizontalJustifyEnd } from "lucide-react";
+import { Button } from "@/components/ui";
 
 // 
 // HELPERS
@@ -136,7 +61,7 @@ function Spinner({ value, onUp, onDn, format }: {
 // 
 export function DateTimePicker({
   label, mode = "datetime", placeholder,
-  value, onChange, minDate, maxDate, required, error,
+  value, onChange, minDate = new Date(), maxDate, required, error,
 }: DateTimePickerProps) {
 
   // parse incoming value 
@@ -253,6 +178,30 @@ export function DateTimePicker({
     if (maxDate) { const mx = new Date(maxDate); mx.setHours(23, 59, 59, 999); if (d > mx) return true; }
     return false;
   }
+
+  // helper to check if a specific time is before the minDate
+  const isTimeDis = (h: number, m: number, ap: "AM" | "PM") => {
+    if (!minDate || !selDate || mode !== "datetime") return false;
+
+    const isSameDay = 
+      selDate.getFullYear() === minDate.getFullYear() &&
+      selDate.getMonth() === minDate.getMonth() &&
+      selDate.getDate() === minDate.getDate();
+
+    if (!isSameDay) return false;
+
+    let h24 = h % 12;
+    if (ap === "PM") h24 += 12;
+
+    const minH = minDate.getHours();
+    const minM = minDate.getMinutes();
+
+    if (h24 < minH) return true;
+    if (h24 === minH && m < minM) return true;
+    
+    return false;
+  };
+
   function isSel(day: number) {
     return !!selDate && selDate.getFullYear() === calYear
       && selDate.getMonth() === calMonth && selDate.getDate() === day;
@@ -347,7 +296,7 @@ export function DateTimePicker({
                       !day ? "empty" : "",
                       day && isSel(day) ? "selected" : "",
                       day && isToday(day) && !isSel(day) ? "today" : "",
-                      day && isDis(day) ? "disabled" : "",
+                      day && isDis(day) && !isSel(day) ? "disabled" : "",
                     ].filter(Boolean).join(" ")}
                   >
                     {day ?? ""}
@@ -409,21 +358,32 @@ export function DateTimePicker({
                   { label: "4:30 PM", h: 4, m: 30, ap: "PM" as const },
                   { label: "6:00 PM", h: 6, m: 0, ap: "PM" as const },
                   { label: "7:30 PM", h: 7, m: 30, ap: "PM" as const },
-                ].map(p => (
-                  <button
-                    type="button"
-                    key={p.label}
-                    className={`dtp-preset${hours === p.h && minutes === p.m && ampm === p.ap ? " active" : ""}`}
-                    onClick={() => { setHours(p.h); setMinutes(p.m); setAmpm(p.ap); emit(selDate, p.h, p.m, p.ap); }}
-                  >
-                    {p.label}
-                  </button>
-                ))}
+                ].map(p => {
+                  const disabled = isTimeDis(p.h, p.m, p.ap);
+                  return (
+                    <button
+                      type="button"
+                      key={p.label}
+                      disabled={disabled}
+                      className={`dtp-preset${hours === p.h && minutes === p.m && ampm === p.ap ? " active" : ""}${disabled ? " disabled" : ""}`}
+                      onClick={() => { if(!disabled) { setHours(p.h); setMinutes(p.m); setAmpm(p.ap); emit(selDate, p.h, p.m, p.ap); } }}
+                    >
+                      {p.label}
+                    </button>
+                  );
+                })}
               </div>
 
-              <button type="button" className="dtp-confirm-btn" onClick={confirmTime}>
-                <Check size={14} /> Confirm
-              </button>
+                <Button 
+                  type="button" 
+                  variant={isTimeDis(hours, minutes, ampm) ? "ghost" : "primary"} 
+                  className="dtp-confirm-btn w-full" 
+                  disabled={isTimeDis(hours, minutes, ampm)} 
+                  onClick={confirmTime}
+                >
+                  <Check size={14} /> Confirm
+                </Button>
+                
             </div>
           )}
 
@@ -432,4 +392,3 @@ export function DateTimePicker({
     </div>
   );
 }
-

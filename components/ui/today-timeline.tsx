@@ -1,8 +1,9 @@
 "use client";
 
-import { MapPin } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 
 export interface TimelineEvent {
+  id: string;
   time: string;
   title: string;
   location?: string;
@@ -24,9 +25,10 @@ function categoryColor(cat: string) {
 interface TodayTimelineProps {
   events: TimelineEvent[];
   loading?: boolean;
+  onEventClick?: (id: string) => void;
 }
 
-export function TodayTimeline({ events, loading }: TodayTimelineProps) {
+export function TodayTimeline({ events, loading, onEventClick }: TodayTimelineProps) {
   const todayLabel = new Date().toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -60,9 +62,12 @@ export function TodayTimeline({ events, loading }: TodayTimelineProps) {
 
       /* empty state */
       ) : events.length === 0 ? (
-        <p className="caption text-center py-4">
-          No events scheduled today
-        </p>
+        <div className="flex flex-col items-center justify-center text-center gap-3 py-6">
+          <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+            <Calendar size={26} className="text-[var(--periwinkle)]" />
+          </div>
+          <p className="label text-[var(--primary-dark)]">No events scheduled today</p>
+        </div>
 
       /* event list */
       ) : (
@@ -72,7 +77,10 @@ export function TodayTimeline({ events, loading }: TodayTimelineProps) {
               <span className="caption w-[34px] shrink-0 pt-1">
                 {item.time}
               </span>
-              <div className="flex-1 min-w-0 rounded-[8px] border border-black/[0.06] bg-white/60 px-2.5 py-2">
+              <button
+                onClick={() => onEventClick?.(item.id)}
+                className={`flex-1 min-w-0 rounded-[8px] border border-black/[0.06] bg-white/60 px-2.5 py-2 text-left transition-colors ${onEventClick ? "hover:bg-[var(--periwinkle-light)] cursor-pointer" : "cursor-default"}`}
+              >
                 <p title={item.title} className="caption-bold truncate">
                   {item.title}
                 </p>
@@ -82,11 +90,7 @@ export function TodayTimeline({ events, loading }: TodayTimelineProps) {
                     <span className="truncate">{item.location}</span>
                   </p>
                 )}
-              </div>
-              <span
-                className="w-[3px] self-stretch rounded-full shrink-0 mt-0.5"
-                style={{ background: categoryColor(item.category) }}
-              />
+              </button>
             </div>
           ))}
         </div>

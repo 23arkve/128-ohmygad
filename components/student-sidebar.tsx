@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
 	LayoutDashboard,
@@ -22,8 +22,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useMobileMenu } from "@/components/ui/mobile-menu-context";
 
-const SPRING = { type: "spring", stiffness: 400, damping: 38 } as const;
-const FADE = { duration: 0.15, ease: "easeInOut" } as const;
+const SPRING = { type: "spring", stiffness: 300, damping: 30 } as const;
 
 const NAV_ITEMS = [
 	{
@@ -34,7 +33,7 @@ const NAV_ITEMS = [
 	},
 	{ href: "/student/events", label: "Events", icon: Calendar, exact: false },
 	{
-		href: "/student/courses",
+		href: "/student/guidelines",
 		label: "I've GAD to Know",
 		icon: BookOpen,
 		exact: false,
@@ -169,21 +168,17 @@ export default function StudentSidebar() {
 	const [open, setOpen] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
 
-	// read local storage and check window width only after mount
-	useEffect(() => {
-		// hydrate from localStorage if available
-		const saved = window.localStorage.getItem("student-sidebar-expanded");
-		if (saved !== null) {
-			setOpen(JSON.parse(saved));
-		}
+	useLayoutEffect(() => {
+		const saved = localStorage.getItem("student-sidebar-expanded");
+		if (saved !== null) setOpen(JSON.parse(saved));
+	}, []);
 
-		// check if on mobile
+	useEffect(() => {
 		const checkMobile = () => {
 			const mobile = window.innerWidth < 768;
 			setIsMobile(mobile);
 			if (mobile) setOpen(false);
 		};
-
 		checkMobile();
 		window.addEventListener("resize", checkMobile);
 		return () => window.removeEventListener("resize", checkMobile);
@@ -204,10 +199,12 @@ export default function StudentSidebar() {
 	const BTN = 28;
 
 	return (
-		<motion.div
-			animate={{ width: open ? EXPANDED : COLLAPSED }}
-			transition={SPRING}
-			style={{ position: "relative", flexShrink: 0 }}
+		<div
+			style={{
+				position: "relative",
+				flexShrink: 0,
+				width: open ? EXPANDED : COLLAPSED,
+			}}
 			className="hidden md:block"
 		>
 			<aside
@@ -216,39 +213,37 @@ export default function StudentSidebar() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo */}
-                <div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
-                    <div
-                        className="flex shrink-0 items-center"
-                        style={{ width: COLLAPSED, height: "100%" }}
-                    >
-                        <Image
-                            src="/kasarian-upb-logo.svg"
-                            alt="Kasarian UP Baguio"
-                            width={55}
-                            height={55}
-                        />
-                    </div>
-                    <motion.div
-                        animate={{ opacity: open ? 1 : 0 }}
-                        transition={FADE}
-                        className="flex flex-col justify-center overflow-hidden pr-3"
-                    >
-                        <span className="body-dark whitespace-nowrap">
-                            UP BAGUIO
-                        </span>
-                        <span className="heading-md-dark uppercase whitespace-nowrap">
-                            Kasarian
-                        </span>
-                    </motion.div>
-                </div>
+				<div className="flex shrink-0 items-end pb-4 py-5 overflow-hidden">
+					<div
+						className="flex shrink-0 items-center"
+						style={{ width: COLLAPSED, height: "100%" }}
+					>
+						<Image
+							src="/kasarian-upb-logo.svg"
+							alt="Kasarian UP Baguio"
+							width={55}
+							height={55}
+						/>
+					</div>
+					{open && (
+						<div className="flex flex-col justify-center overflow-hidden gap-1">
+							<span className="body-dark whitespace-nowrap leading-none">
+								UP BAGUIO
+							</span>
+							<span className="heading-md-dark uppercase whitespace-nowrap leading-none">
+								Kasarian
+							</span>
+						</div>
+					)}
+				</div>
 
 				{/* nav */}
-				<nav className="flex flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden py-3">
+				<nav className="flex flex-1 flex-col gap-4 overflow-y-auto overflow-x-hidden">
 					<TooltipProvider delayDuration={70}>
 						{NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
 							const active = isActive(pathname, href, exact);
 							const linkClass = [
-								"flex items-center w-full h-[40px] rounded-[10px] px-1",
+								"flex items-center w-full h-[45px] rounded-[10px] px-1",
 								"text-[15px] font-medium transition-colors duration-150",
 								active
 									? "bg-white/[0.18] text-[var(--white)]"
@@ -257,23 +252,17 @@ export default function StudentSidebar() {
 
 							const linkContent = (
 								<>
-									<motion.div
-										animate={{ width: open ? 24 : "100%" }}
-										transition={SPRING}
-										className="flex shrink-0 justify-center"
+									<div
+										style={{ width: open ? 24 : "100%" }}
+										className="flex justify-center shrink-0"
 									>
 										<Icon size={18} />
-									</motion.div>
-									<motion.span
-										animate={{
-											opacity: open ? 1 : 0,
-											width: open ? 140 : 0,
-										}}
-										transition={FADE}
-										className="block overflow-hidden truncate whitespace-nowrap pl-[10px] text-left"
-									>
-										{label}
-									</motion.span>
+									</div>
+									{open && (
+										<span className="overflow-hidden block truncate pl-[10px] whitespace-nowrap text-left">
+											{label}
+										</span>
+									)}
 								</>
 							);
 
@@ -305,14 +294,12 @@ export default function StudentSidebar() {
 				</nav>
 			</aside>
 
-			<motion.button
+			<button
 				onClick={() => setOpen((o: boolean) => !o)}
 				aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
-				animate={{ x: (open ? EXPANDED : COLLAPSED) - BTN / 2 }}
-				transition={SPRING}
 				style={{
 					position: "absolute",
-					left: 0,
+					left: (open ? EXPANDED : COLLAPSED) - BTN / 2,
 					top: "50%",
 					marginTop: -(BTN / 2),
 					width: BTN,
@@ -329,7 +316,7 @@ export default function StudentSidebar() {
 				}}
 			>
 				{open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-			</motion.button>
-		</motion.div>
+			</button>
+		</div>
 	);
 }

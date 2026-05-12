@@ -67,9 +67,11 @@ export function Button({
                      : variant === "icon-sm"   ? "btn-icon-sm"
                      : `btn-${variant}`;
 
-  const sizeClass = size === "sm" ? "btn-sm"
+  const isIconVariant = variant === "icon" || variant === "icon-sm" || variant === "icon-dark";
+  const sizeClass = isIconVariant ? ""
+                  : size === "sm" ? "btn-sm"
                   : size === "lg" ? "btn-lg"
-                  : "";
+                  : "btn-md";
 
   const disabledClass = disabled ? "btn-disabled" : "";
 

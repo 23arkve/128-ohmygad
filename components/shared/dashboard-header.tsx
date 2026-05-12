@@ -47,7 +47,10 @@ export default function DashboardHeader({
 	}, []);
 
 	return (
-		<header ref={headerRef} className="relative shrink-0">
+		<header
+			ref={headerRef}
+			className="relative shrink-0 flex items-center py-6"
+		>
 			{/* backdrop */}
 			<div
 				aria-hidden
@@ -65,61 +68,61 @@ export default function DashboardHeader({
 				}}
 			/>
 
-			{/* content relative z-10 above the backdrop */}
-			<div className="relative z-10 flex md:flex-row md:items-center md:justify-between gap-3 px-3 py-3 md:px-5 md:py-0 md:mt-4 md:mb-3 flex-col">
-				{/* row 1: logo (mobile) + title (desktop) on left, UserMenu on right */}
-				<div className="flex items-center justify-between md:flex-1 min-w-0">
-					<div className="flex items-center gap-2 min-w-0">
-						<div className="flex md:hidden items-center gap-1.5 shrink-0">
-							{/* HAMBURGER BUTTON HERE */}
-							<button
-								onClick={() => setIsOpen(true)}
-								className="p-1.5 -ml-1.5 rounded-md hover:bg-black/5 active:bg-black/10 transition-colors"
-								aria-label="Open menu"
-							>
-								<Menu size={22} />
-							</button>
-							<Image
-								src="/kasarian-upb-logo.svg"
-								alt="UPB Kasarian"
-								width={38}
-								height={38}
-							/>
-							<div className="flex flex-col justify-center">
-								<span className="caption">UP BAGUIO</span>
-								<span className="heading-sm uppercase">
-									Kasarian
-								</span>
-							</div>
+			{/* content */}
+			<div className="relative z-10 flex w-full items-center justify-between gap-3 px-3 md:px-5">
+				{/* left: logo (mobile) + back button + title */}
+				<div className="flex items-center gap-2 min-w-0 min-h-[40px]">
+					<div className="flex md:hidden items-center gap-1.5 shrink-0">
+						{/* HAMBURGER BUTTON HERE */}
+						<button
+							onClick={() => setIsOpen(true)}
+							className="p-1.5 -ml-1.5 rounded-md hover:bg-black/5 active:bg-black/10 transition-colors"
+							aria-label="Open menu"
+						>
+							<Menu size={22} />
+						</button>
+						<Image
+							src="/kasarian-upb-logo.svg"
+							alt="UPB Kasarian"
+							width={38}
+							height={38}
+						/>
+						<div className="flex flex-col justify-center">
+							<span className="caption">UP BAGUIO</span>
+							<span className="heading-sm uppercase">
+								Kasarian
+							</span>
 						</div>
-						{!isDashboard && (
-							<div className="hidden md:flex">
-								<Button
-									size="sm"
-									variant="icon"
-									onClick={() => router.back()}
-									aria-label="Go back"
-								>
-									<ArrowLeft size={15} />
-								</Button>
-							</div>
-						)}
-						<h1 className="heading-lg truncate hidden md:block">
-							{pageLabel}
-						</h1>
 					</div>
-					<div className="flex items-center gap-2 shrink-0">
-						<UserMenu />
-					</div>
+					{!isDashboard && (
+						<div className="hidden md:flex">
+							<Button
+								size="sm"
+								variant="icon"
+								onClick={() => router.back()}
+								aria-label="Go back"
+							>
+								<ArrowLeft size={15} />
+							</Button>
+						</div>
+					)}
+					<h1 className="heading-lg truncate leading-none hidden md:block">
+						{pageLabel}
+					</h1>
 				</div>
 
-				{/* row 2 (mobile only): page title for non-dashboard pages */}
-				{!isDashboard && (
-					<div className="flex md:hidden items-center gap-1.5 mt-2">
-						<h1 className="heading-md">{pageLabel}</h1>
-					</div>
-				)}
+				{/* right: user menu */}
+				<div className="flex items-center gap-2 shrink-0">
+					<UserMenu />
+				</div>
 			</div>
+
+			{/* mobile page title (non-dashboard) */}
+			{!isDashboard && (
+				<div className="absolute bottom-0 left-0 right-0 flex md:hidden items-center gap-1.5 px-3 pb-2">
+					<h1 className="heading-md leading-none">{pageLabel}</h1>
+				</div>
+			)}
 		</header>
 	);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import {
 	Users,
 	Calendar,
@@ -9,6 +9,7 @@ import {
 	BookOpen,
 } from "lucide-react";
 import {
+	Badge,
 	Card,
 	StatCard,
 	Button,
@@ -16,9 +17,11 @@ import {
 	TodayTimeline,
 	DateRangePicker,
 	DashboardFilter,
+	DashboardFilterChips,
 	EmptyFilters,
 	Modal,
 	SearchBar,
+    PulsingLoader,
 } from "@/components/ui";
 import { Pagination } from "@/components/pagination";
 import type { DateRange, DashboardFilters } from "@/components/ui";
@@ -36,14 +39,16 @@ import {
 	Legend,
 	BarChart,
 	Bar,
-	LabelList,
+	Rectangle,
 } from "recharts";
-import { useDashboardData } from "./hooks/use-dashboard-data";
+import { createClient } from "@/lib/supabase/client";
+import { useDashboardData, type RawEvent } from "./hooks/use-dashboard-data";
 import { useSurveyCompletionRates } from "./hooks/use-survey-completion-rates";
 import GlobalSearch from "@/components/global-search";
-import EventForm from "@/components/admin/event-form";
+import EventForm, { type EventFormData } from "@/components/admin/event-form";
+import { EventDetailModal } from "@/components/admin/event-detail-modal";
 import UserForm from "@/components/admin/user-form";
-import CourseForm from "@/components/admin/course-form";
+import GuidelineForm from "@/components/admin/guideline-form";
 import SurveyForm from "@/components/admin/survey-form";
 
 // constants ------------------------------------------------
@@ -140,17 +145,31 @@ function CustomTooltip({
 					Attendees: {totalAttendees}
 				</p>
 			)}
-			{payload.map((e: TooltipEntry, i: number) => (
-				<div key={i} className="flex items-center gap-2">
-					<span
-						className="w-4 h-4 rounded-full shrink-0"
-						style={{ background: e.color ?? e.payload?.fill }}
-					/>
-					<span className="caption capitalize">
-						{e.name ?? e.dataKey}: {e.value}{(e.name === "Completed" || e.name === "Incomplete") ? "%" : ""}
-					</span>
-				</div>
-			))}
+			{payload.map((e: TooltipEntry, i: number) => {
+				const isCompletion = e.name === "Completed" || e.name === "Incomplete";
+				let displayValue = e.value?.toString();
+				
+				if (isCompletion && firstPayload) {
+					const count = e.name === "Completed" 
+						? firstPayload.completedCount 
+						: ((firstPayload.respondentCount ?? 0) - (firstPayload.completedCount ?? 0));
+					displayValue = `${count} (${e.value}%)`;
+				} else if (isCompletion) {
+					displayValue = `${e.value}%`;
+				}
+
+				return (
+					<div key={i} className="flex items-center gap-2">
+						<span
+							className="w-4 h-4 rounded-full shrink-0"
+							style={{ background: e.color ?? e.payload?.fill }}
+						/>
+						<span className="caption capitalize">
+							{e.name ?? e.dataKey}: {displayValue}
+						</span>
+					</div>
+				);
+			})}
 		</div>
 	);
 }
@@ -182,19 +201,85 @@ export default function DashboardPage() {
 	const [filters, setFilters] = useState<DashboardFilters>(EmptyFilters);
 	const [surveySearch, setSurveySearch] = useState("");
 	const [surveyPage, setSurveyPage] = useState(1);
+	const hoveredSurveyBarKey = useRef<string | null>(null);
+
+	const SurveyTooltip = useCallback(
+		({ active, payload, label }: any) => {
+			if (!active || !payload?.length || !hoveredSurveyBarKey.current) return null;
+			const filtered = payload.filter((p: any) => p.dataKey === hoveredSurveyBarKey.current);
+			if (!filtered.length) return null;
+			return <CustomTooltip active={active} payload={filtered} label={label} />;
+		},
+		[],
+	);
 
 	// quick action modals
 	const [activeModal, setActiveModal] = useState<
-		"event" | "user" | "course" | "survey" | null
+		"event" | "user" | "guideline" | "survey" | null
 	>(null);
 	const closeModal = () => setActiveModal(null);
+
+	function rawToFormData(e: RawEvent): EventFormData {
+		return {
+			id: e.id,
+			title: e.title,
+			description: e.description ?? "",
+			location: e.location,
+			start_date: e.start_date,
+			end_date: e.end_date,
+			capacity: e.capacity ?? 0,
+			registration_open: e.registration_open ?? "",
+			registration_close: e.registration_close ?? "",
+			category: e.category,
+			status: "",
+			banner_url: e.banner_url ?? undefined,
+		};
+	}
+
+	const handleEditSuccess = useCallback(async () => {
+		const prev = editFromDetailRef.current;
+		editFromDetailRef.current = null;
+		setEditTarget(null);
+		if (!prev) return;
+		const supabase = createClient();
+		const { data } = await supabase
+			.from("event")
+			.select("id, start_date, end_date, title, location, category, description, capacity, banner_url, registration_open, registration_close")
+			.eq("id", prev.id)
+			.single();
+		setSelectedEvent(data ? {
+			id: data.id,
+			start_date: data.start_date,
+			end_date: data.end_date,
+			title: data.title ?? "",
+			location: data.location ?? "",
+			category: data.category ?? "",
+			description: data.description ?? null,
+			capacity: data.capacity ?? null,
+			banner_url: data.banner_url ?? null,
+			registration_open: data.registration_open ?? null,
+			registration_close: data.registration_close ?? null,
+		} : prev);
+	}, []);
+
+	const handleEditCancel = useCallback(() => {
+		const prev = editFromDetailRef.current;
+		editFromDetailRef.current = null;
+		setEditTarget(null);
+		if (prev) setSelectedEvent(prev);
+	}, []);
+
+	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+	const [selectedEvent, setSelectedEvent] = useState<RawEvent | null>(null);
+	const [editTarget, setEditTarget] = useState<RawEvent | null>(null);
+	const editFromDetailRef = useRef<RawEvent | null>(null);
 
 	const {
 		eventAttendanceData,
 		sexAtBirthData,
 		genderIdentityData,
 		breakdownData,
-        eventDates,
+		allEvents,
 		userStats,
 		gadEventsCount,
 		surveysCount,
@@ -267,38 +352,108 @@ export default function DashboardPage() {
 	const activeEventDays = useMemo(() => {
 		const days = new Set<number>();
 		const now = new Date();
-		eventDates.forEach((iso) => {
-			const d = new Date(iso);
-			if (
-				d.getFullYear() === now.getFullYear() &&
-				d.getMonth() === now.getMonth()
-			) {
-				days.add(d.getDate());
+		const curYear = now.getFullYear();
+		const curMonth = now.getMonth();
+
+		allEvents.forEach((e) => {
+			// Parse as local date to avoid UTC-offset shifting
+			const part = e.start_date?.split("T")[0];
+			if (!part) return;
+			const [y, m, d] = part.split("-").map(Number);
+			if (y === curYear && m - 1 === curMonth) days.add(d);
+		});
+
+		return days;
+	}, [allEvents]);
+
+	const ongoingEventDays = useMemo(() => {
+		const days = new Set<number>();
+		const now = new Date();
+		const curYear = now.getFullYear();
+		const curMonth = now.getMonth();
+		const monthStart = new Date(curYear, curMonth, 1);
+		const monthEnd = new Date(curYear, curMonth + 1, 0);
+
+		function toLocal(iso: string): Date {
+			const part = iso?.split("T")[0];
+			if (!part) return new Date(NaN);
+			const [y, m, d] = part.split("-").map(Number);
+			return new Date(y, m - 1, d);
+		}
+
+		allEvents.forEach((e) => {
+			const start = toLocal(e.start_date);
+			const end = e.end_date ? toLocal(e.end_date) : start;
+			if (isNaN(start.getTime())) return;
+			// Only events that started before this month but are still ongoing
+			if (start >= monthStart) return;
+			if (end < monthStart) return;
+
+			const cur = new Date(monthStart);
+			const cap = new Date(Math.min(end.getTime(), monthEnd.getTime()));
+			while (cur <= cap) {
+				days.add(cur.getDate());
+				cur.setDate(cur.getDate() + 1);
 			}
 		});
+
 		return days;
-	}, [eventDates]);
+	}, [allEvents]);
+
+	const selectedDateEvents = useMemo(() => {
+		if (!selectedDate) return null;
+		const dayStart = new Date(selectedDate);
+		dayStart.setHours(0, 0, 0, 0);
+		const dayEnd = new Date(selectedDate);
+		dayEnd.setHours(23, 59, 59, 999);
+		return allEvents
+			.filter((e) => {
+				const start = new Date(e.start_date);
+				const end = new Date(e.end_date);
+				return start <= dayEnd && end >= dayStart;
+			})
+			.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
+			.map((e) => ({
+				id: e.id,
+				time: new Date(e.start_date).toLocaleTimeString("en-US", {
+					hour: "2-digit",
+					minute: "2-digit",
+					hour12: false,
+				}),
+				title: e.title,
+				location: e.location,
+				category: e.category,
+			}));
+	}, [selectedDate, allEvents]);
 
 	return (
 		<div className="flex flex-col gap-5 w-full animate-in fade-in duration-500">
-			{/* greeting ------------------------------------------------ */}
-			<div className="flex items-center justify-between w-full">
-				<h2 className="heading-md">Good day, Admin!</h2>
-				<DashboardFilter
-					value={filters}
-					onChange={setFilters}
-					options={filterOptions}
-				/>
-			</div>
+			{/* greeting ------------------------------------------------
+			<div className="flex flex-col w-full">
+				<div className="flex items-center justify-between w-full">
+					<h2 className="heading-md">Good day, Admin!</h2>
+				</div>
+			</div> */}
 
 			{/* ------------------------------------------------ MAIN CONTENT ------------------------------------------------*/}
 			<div className="flex flex-col xl:flex-row gap-5">
 				<div className="flex flex-col gap-5 flex-1 min-w-0 pb-2">
 					{/* KPI section ------------------------------------------------ */}
 					<div className="flex flex-col gap-5">
-						<GlobalSearch
-							role="admin"
-							placeholder="Search events, courses, surveys..."
+						<div className="flex flex-row gap-3">
+							<GlobalSearch
+								role="admin"
+								placeholder="Search events, guidelines, surveys..."
+							/>
+							<DashboardFilter
+								value={filters}
+								onChange={setFilters}
+								options={filterOptions}
+							/>
+						</div>
+						<DashboardFilterChips
+							value={filters}
+							onChange={setFilters}
 						/>
 						<div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
 							<StatCard
@@ -378,19 +533,25 @@ export default function DashboardPage() {
 							<div className="flex-1 w-full min-h-[200px] cursor-default select-none relative">
 								{attendanceLoading ? (
 									<div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-xl z-10">
-										<span className="caption animate-pulse">
-											{" "}
-											Loading…{" "}
-										</span>
+										<PulsingLoader variant="breath" />
 									</div>
 								) : eventAttendanceData?.length === 0 ? (
-									<div className="flex items-center justify-center h-full">
-										<span className="caption text-[var(--gray)]">
-											{" "}
-											No attendance data for the selected
-											period.{" "}
-										</span>
-									</div>
+									<Card
+										variant="no-shadow"
+										className="flex flex-col items-center justify-center text-center min-h-[200px] gap-3"
+									>
+										<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+											<Calendar
+												size={26}
+												className="text-[var(--periwinkle)]"
+											/>
+										</div>
+										<div>
+											<p className="label text-[var(--primary-dark)]">
+												No attendance data
+											</p>
+										</div>
+									</Card>
 								) : null}
 								{!(
 									!attendanceLoading &&
@@ -429,7 +590,7 @@ export default function DashboardPage() {
 												axisLine={false}
 												dy={10}
 												label={{
-													value: "Month",
+													value: "Dates",
 													position: "insideBottom",
 													offset: -25,
 													fill: "var(--primary-dark)",
@@ -512,7 +673,7 @@ export default function DashboardPage() {
 								<Button
 									variant="soft"
 									className="w-full justify-between"
-									onClick={() => setActiveModal("course")}
+									onClick={() => setActiveModal("guideline")}
 								>
 									<BookOpen size={16} /> New Guideline
 								</Button>
@@ -546,10 +707,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[170px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : filteredColleges.length === 0 ? (
 										<Card
@@ -618,7 +776,7 @@ export default function DashboardPage() {
 												<Bar
 													dataKey="value"
 													name="Users"
-													radius={[6, 6, 0, 0]}
+													radius={[6, 6, 6, 6]}
 													barSize={36}
 												>
 													{filteredColleges.map(
@@ -657,10 +815,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[190px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : !sexAtBirthData?.length ? (
 										<Card
@@ -695,6 +850,7 @@ export default function DashboardPage() {
 													paddingAngle={2}
 													dataKey="value"
 													nameKey="name"
+													stroke=""
 												>
 													{sexAtBirthData.map(
 														(
@@ -748,10 +904,7 @@ export default function DashboardPage() {
 								<div className="flex-1 w-full min-h-[190px] cursor-default select-none">
 									{loading ? (
 										<div className="flex items-center justify-center h-full">
-											<span className="caption animate-pulse">
-												{" "}
-												Loading…{" "}
-											</span>
+											<PulsingLoader variant="breath" />
 										</div>
 									) : !filteredGenders.length ? (
 										<Card
@@ -786,6 +939,7 @@ export default function DashboardPage() {
 													paddingAngle={2}
 													dataKey="value"
 													nameKey="name"
+													stroke=""
 												>
 													{filteredGenders.map(
 														(
@@ -862,27 +1016,43 @@ export default function DashboardPage() {
 							<div className="w-full min-h-[220px] cursor-default select-none mt-2">
 								{surveyCompletionLoading ? (
 									<div className="flex items-center justify-center h-full">
-										<span className="caption animate-pulse">
-											{" "}
-											Loading survey data…{" "}
-										</span>
+										<PulsingLoader variant="breath" />
 									</div>
 								) : (surveyCompletionData?.length ?? 0) ===
 								  0 ? (
-									<div className="flex items-center justify-center h-full">
-										<span className="caption text-[var(--gray)]">
-											{" "}
-											No survey completion data
-											available.{" "}
-										</span>
-									</div>
+									<Card
+										variant="no-shadow"
+										className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3"
+									>
+										<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+											<ClipboardList
+												size={26}
+												className="text-[var(--periwinkle)]"
+											/>
+										</div>
+										<div>
+											<p className="label text-[var(--primary-dark)]">
+												No survey data
+											</p>
+										</div>
+									</Card>
 								) : surveyCompletionChartData.length === 0 ? (
-									<div className="flex items-center justify-center h-full">
-										<span className="caption text-[var(--gray)]">
-											{" "}
-											No surveys match your search.{" "}
-										</span>
-									</div>
+									<Card
+										variant="no-shadow"
+										className="flex flex-col items-center justify-center text-center min-h-[220px] gap-3"
+									>
+										<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+											<ClipboardList
+												size={26}
+												className="text-[var(--periwinkle)]"
+											/>
+										</div>
+										<div>
+											<p className="label text-[var(--primary-dark)]">
+												No surveys match your search
+											</p>
+										</div>
+									</Card>
 								) : (
 									<>
 										<ResponsiveContainer
@@ -893,10 +1063,10 @@ export default function DashboardPage() {
 												layout="vertical"
 												data={surveyCompletionChartData}
 												margin={{
-													top: 24,
-													right: 100,
+													top: 5,
+													right: 10,
 													left: 20,
-													bottom: 5,
+													bottom: 30,
 												}}
 												barCategoryGap="30%"
 											>
@@ -934,19 +1104,19 @@ export default function DashboardPage() {
 													tickMargin={20}
 												/>
 												<Tooltip
-													content={<CustomTooltip />}
+													content={<SurveyTooltip />}
 													cursor={{
 														fill: "transparent",
 														stroke: "transparent",
 													}}
 												/>
 												<Legend
-													verticalAlign="top"
-													align="right"
-													wrapperStyle={{
-														paddingBottom: 20,
-													}}
+													verticalAlign="bottom"
+													align="center"
 													iconType="circle"
+													wrapperStyle={{
+														paddingTop: 14,
+													}}
 													formatter={(v) => (
 														<span className="caption tracking-wider">
 															{v}
@@ -960,8 +1130,35 @@ export default function DashboardPage() {
 													fill={
 														SURVEY_COMPLETED_COLOR
 													}
-													radius={[6, 0, 0, 6]}
 													barSize={24}
+													onMouseEnter={() => {
+														hoveredSurveyBarKey.current =
+															"completedPct";
+													}}
+													onMouseLeave={() => {
+														hoveredSurveyBarKey.current =
+															null;
+													}}
+													shape={(props: any) => {
+														const {
+															width,
+															payload,
+														} = props;
+														if (width <= 0)
+															return <></>;
+														// Round right side only if incomplete is 0
+														const r =
+															payload.incompletePct ===
+															0
+																? 6
+																: [6, 0, 0, 6];
+														return (
+															<Rectangle
+																{...props}
+																radius={r}
+															/>
+														);
+													}}
 												>
 													{/*--<LabelList
 														dataKey="completedPct"
@@ -979,8 +1176,38 @@ export default function DashboardPage() {
 													fill={
 														SURVEY_INCOMPLETE_COLOR
 													}
-													radius={[0, 6, 6, 0]}
 													barSize={24}
+													onMouseEnter={() => {
+														hoveredSurveyBarKey.current =
+															"incompletePct";
+													}}
+													onMouseLeave={() => {
+														hoveredSurveyBarKey.current =
+															null;
+													}}
+													shape={(props: any) => {
+														const {
+															x,
+															y,
+															width,
+															height,
+															payload,
+														} = props;
+														if (width <= 0)
+															return <></>;
+														// Round left side only if completed is 0
+														const r =
+															payload.completedPct ===
+															0
+																? 6
+																: [0, 6, 6, 0];
+														return (
+															<Rectangle
+																{...props}
+																radius={r}
+															/>
+														);
+													}}
 												>
 													{/*--<LabelList
 														dataKey="incompletePct"
@@ -997,7 +1224,8 @@ export default function DashboardPage() {
 												</Bar>
 											</BarChart>
 										</ResponsiveContainer>
-										{surveyPageCount > 1 && (
+										{(surveyPageCount > 1 ||
+											surveySearch.trim()) && (
 											<div className="mt-4 flex items-center justify-end">
 												<Pagination
 													page={surveyPage}
@@ -1017,17 +1245,23 @@ export default function DashboardPage() {
 				<aside className="flex flex-col gap-5 xl:w-[268px] shrink-0 pb-8">
 					{/* calendar */}
 					<Card variant="no-hover" className="p-4">
-						<div className="[&_button]:cursor-default [&_*]:cursor-default">
-							<MiniCalendar
-								eventDays={activeEventDays}
-								onDayClick={(date) => console.log(date)}
-							/>
-						</div>
+						<MiniCalendar
+							eventDays={activeEventDays}
+							ongoingDays={ongoingEventDays}
+							onDayClick={(date) => setSelectedDate(date)}
+						/>
 					</Card>
 
 					{/* timeline */}
 					<Card variant="no-hover" className="p-4">
-						<TodayTimeline events={todayEvents} loading={loading} />
+						<TodayTimeline
+							events={todayEvents}
+							loading={loading}
+							onEventClick={(id) => {
+								const full = allEvents.find((e) => e.id === id);
+								if (full) setSelectedEvent(full);
+							}}
+						/>
 					</Card>
 				</aside>
 			</div>
@@ -1059,12 +1293,12 @@ export default function DashboardPage() {
 
 			{/* -------------------------------------- guideline modal -------------------------------------- */}
 			<Modal
-				open={activeModal === "course"}
+				open={activeModal === "guideline"}
 				onClose={closeModal}
 				title="Add Guideline"
 				modalStyle={{ maxWidth: 860 }}
 			>
-				<CourseForm
+				<GuidelineForm
 					mode="create"
 					onSuccess={closeModal}
 					onCancel={closeModal}
@@ -1083,6 +1317,105 @@ export default function DashboardPage() {
 					onSuccess={closeModal}
 					onCancel={closeModal}
 				/>
+			</Modal>
+
+			{/* -------------------------------------- today events modal -------------------------------------- */}
+			<Modal
+				open={selectedDate !== null}
+				onClose={() => setSelectedDate(null)}
+				title={`Events on ${
+					selectedDate?.toLocaleDateString("en-US", {
+						weekday: "long",
+						month: "long",
+						day: "numeric",
+					}) ?? ""
+				}`}
+				modalStyle={{ maxWidth: 480 }}
+			>
+				{selectedDateEvents && selectedDateEvents.length === 0 ? (
+					<div className="flex flex-col items-center justify-center text-center gap-3 py-12">
+						<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+							<Calendar
+								size={26}
+								className="text-[var(--periwinkle)]"
+							/>
+						</div>
+						<div>
+							<p className="label text-[var(--primary-dark)]">
+								No events scheduled for this day
+							</p>
+						</div>
+					</div>
+				) : (
+					<div className="flex flex-col gap-2 py-1">
+						{selectedDateEvents?.map((event, i) => (
+							<button
+								key={i}
+								onClick={() => {
+									const full = allEvents.find(
+										(e) => e.id === event.id,
+									);
+									setSelectedDate(null);
+									if (full) setSelectedEvent(full);
+								}}
+								className="flex items-start gap-3 w-full text-left rounded-[8px] border border-black/[0.06] bg-white/60 px-3 py-2.5 hover:bg-[var(--periwinkle-light)] transition-colors cursor-pointer"
+							>
+								<span className="caption w-[34px] shrink-0 pt-0.5 text-[var(--gray)]">
+									{event.time}
+								</span>
+								<div className="flex-1 min-w-0">
+									<p
+										title={event.title}
+										className="caption-bold truncate"
+									>
+										{event.title}
+									</p>
+									{event.location && (
+										<p
+											title={event.location}
+											className="caption text-[var(--gray)] mt-0.5 truncate"
+										>
+											{event.location}
+										</p>
+									)}
+								</div>
+								<Badge variant="ghost" className="shrink-0">
+									{event.category}
+								</Badge>
+							</button>
+						))}
+					</div>
+				)}
+			</Modal>
+
+			{/* -------------------------------------- event detail modal -------------------------------------- */}
+			<EventDetailModal
+				event={selectedEvent}
+				onClose={() => setSelectedEvent(null)}
+				onEdit={() => {
+					editFromDetailRef.current = selectedEvent;
+					setSelectedEvent(null);
+					setEditTarget(selectedEvent);
+				}}
+			/>
+
+			{/* -------------------------------------- edit event modal (from dashboard) -------------------------------------- */}
+			<Modal
+				open={editTarget !== null}
+				onClose={handleEditCancel}
+				title="Edit Event"
+				subtitle={editTarget?.title}
+				modalStyle={{ maxWidth: 900 }}
+			>
+				{editTarget && (
+					<EventForm
+						key={editTarget.id}
+						mode="edit"
+						initialData={rawToFormData(editTarget)}
+						onSuccess={handleEditSuccess}
+						onCancel={handleEditCancel}
+					/>
+				)}
 			</Modal>
 		</div>
 	);

@@ -42,7 +42,7 @@ export function useSurveyCompletionRates() {
         }
       } catch (err: any) {
         if (!cancelled) {
-          setError(err.message || "Failed to load survey completion data");
+          setError("Failed to load survey completion data. Please refresh.");
         }
       } finally {
         if (!cancelled) {

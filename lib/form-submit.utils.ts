@@ -2,7 +2,7 @@
 Supabase form-submit utility for create / update operations.
 
 Currently used by:
-components/admin/course-form.tsx  (handleSubmit)
+components/admin/guideline-form.tsx  (handleSubmit)
 components/admin/event-form.tsx   (handleSubmit)
 */
 
@@ -12,14 +12,14 @@ import { createClient } from "@/lib/supabase/client";
 Insert or update a row in a Supabase table.
 
 Key for later use:
-"@"param table   – Supabase table name (e.g. "course", "event")
+"@"param table   – Supabase table name (e.g. "guideline", "event")
 "@"param payload – data object to insert or update
 "@"param mode    – "create" to insert, "edit" to update
 "@"param id      – row id (required when mode is "edit")
 "@"returns an object with `success` and an optional `error` message
 
 Used in:
-components/admin/course-form.tsx  (creating / editing courses)
+components/admin/guideline-form.tsx  (creating / editing guidelines)
 components/admin/event-form.tsx   (creating / editing events)
 */
 export async function submitFormData(

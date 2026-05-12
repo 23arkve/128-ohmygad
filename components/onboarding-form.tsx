@@ -8,11 +8,8 @@ import Image from "next/image";
 import { User, Hash, Phone, MapPin, Building2 } from "lucide-react";
 import { Input, Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-	validateFullName,
-	validateContactNum,
-	validateStudentNum,
-} from "@/lib/validation";
+import { validateFullName, validateContactNum, validateStudentNum } from "@/lib/validation";
+import { PulsingLoader } from "@/components/ui";
 
 import {
 	YEAR_OPTIONS,
@@ -169,55 +166,46 @@ export function OnboardingForm({
 
 			if (profileError) throw profileError;
 
-			switch (role) {
-				case "admin":
-					router.push("/admin");
-					break;
-				case "staff":
-					router.push("/staff");
-				case "faculty":
-					router.push("/faculty");
-					break;
-				case "student":
-				default:
-					router.push("/student");
-					break;
-			}
-		} catch (error: any) {
-			console.error("Onboarding Save Error:", error);
+      switch (role) {
+        case "admin":
+          router.push("/admin");
+          break;
+        case "staff":
+          router.push("/staff");
+        case "faculty":
+          router.push("/faculty");
+          break;
+        case "student":
+        default:
+          router.push("/student");
+          break;
+      }
+    } // catching errors: 
+    catch (error: any) {
+      // unique violation error, if it already exists, show this error
+      if (error?.code === '23505' || error?.message?.includes('duplicate key')) {
+        setError("This student number or contact number is already registered to another account.");
+      } else {
+        setError(error?.message || "An error occurred while saving. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-			if (
-				error?.code === "23505" ||
-				error?.message?.includes("duplicate key")
-			) {
-				setError(
-					"This student number or contact number is already registered to another account.",
-				);
-			} else {
-				setError(
-					error?.message ||
-						"An error occurred while saving. Please try again.",
-				);
-			}
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	if (isLoadingRole) {
-		return (
-			<div
-				className={cn(
-					"card max-w-md w-full mx-auto h-fit flex flex-col items-center justify-center p-12",
-					className,
-				)}
-				{...props}
-			>
-				<div className="w-8 h-8 border-4 border-[var(--periwinkle-light)] border-t-[var(--periwinkle)] rounded-full animate-spin mb-4"></div>
-				<p className="body text-[var(--gray)]">Ready to onboard...</p>
-			</div>
-		);
-	}
+  if (isLoadingRole) {
+    return (
+		<div
+			className={cn(
+				"card max-w-md w-full mx-auto h-fit flex flex-col items-center justify-center p-12",
+				className,
+			)}
+			{...props}
+		>
+			<PulsingLoader variant="breath" />
+		</div>
+	);
+  }
 
 	return (
 		<div

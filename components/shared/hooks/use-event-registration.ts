@@ -96,7 +96,7 @@ export function useEventRegistration({
 				showToast({
 					variant: "error",
 					title: "Registration failed",
-					message: error.message,
+					message: "Registration failed. Please try again.",
 				});
 			} else {
 				setRegisteredIds((prev) => new Set([...prev, eventId]));
@@ -106,8 +106,7 @@ export function useEventRegistration({
 				}));
 				showToast({
 					variant: "success",
-					title: "Registered!",
-					message: `You've registered for ${event?.title}.`,
+					title: `Registered to "${event?.title}" successfully.`,
 				});
 			}
 
@@ -128,6 +127,7 @@ export function useEventRegistration({
 			e?.stopPropagation();
 			if (!currentUserId) return;
 
+			const event = events.find((ev) => ev.id === eventId);
 			setRegisteringId(eventId);
 			const supabase = createClient();
 
@@ -141,7 +141,7 @@ export function useEventRegistration({
 				showToast({
 					variant: "error",
 					title: "Cancellation failed",
-					message: error.message,
+					message: "Cancellation failed. Please try again.",
 				});
 			} else {
 				setRegisteredIds((prev) => {
@@ -155,14 +155,13 @@ export function useEventRegistration({
 				}));
 				showToast({
 					variant: "info",
-					title: "Registration cancelled",
-					message: "You've cancelled your registration.",
+					title: `Cancelled registration for "${event?.title}".`,
 				});
 			}
 
 			setRegisteringId(null);
 		},
-		[currentUserId, setRegisteredIds, setRegCounts, showToast],
+		[currentUserId, events, setRegisteredIds, setRegCounts, showToast],
 	);
 
 	return {

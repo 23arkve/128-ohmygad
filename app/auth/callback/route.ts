@@ -25,7 +25,7 @@ export async function GET(request: Request) {
         if (next === 'onboarding') {
           return NextResponse.redirect(`${baseUrl}/auth/onboarding`)
         }
-        return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`)
+        return NextResponse.redirect(`${baseUrl}/auth/error`)
       }
 
       if (!profile.is_onboarded) {
@@ -44,5 +44,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  return NextResponse.redirect(`${origin}/auth/auth-error`)
 }

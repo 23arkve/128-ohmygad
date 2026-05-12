@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, Clock, X, ArrowUpDown, ClipboardList } from "lucide-react";
 import ScrollToTop from "@/components/ui/scroll-to-top";
-import { Toast } from "@/components/ui";
 import type { SurveyFormData } from "@/components/admin/survey-form";
 
 import {
@@ -12,10 +11,11 @@ import {
   Badge,
   Button,
   Card,
-  Modal,
+  Toast,
   Dropdown,
   DropdownItem,
   DropdownDivider,
+  PulsingLoader,
 } from "@/components/ui";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -115,7 +115,7 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
         .in("event_id", attendedEventIds)
         .order("open_at", { ascending: false });
 
-      if (error) setError(error.message);
+      if (error) setError("Failed to load surveys. Please refresh the page.");
       else if (data) setSurveys(data);
       setIsLoading(false);
     }
@@ -226,15 +226,14 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 			{isLoading ? (
 				<Card>
 					<div className="flex items-center justify-center gap-3 py-10 text-[var(--gray)]">
-						<Loader2 size={20} className="animate-spin" />
-						<span className="caption">Loading surveys…</span>
+						<PulsingLoader variant="breath" />
 					</div>
 				</Card>
 			) : error ? (
 				<Card>
 					<div className="flex flex-col items-center justify-center gap-3 py-10">
 						<p className="caption text-[var(--error)]">
-							Error: {error}
+							Unable to load surveys. Please refresh the page.
 						</p>
 						<Button
 							variant="ghost"
@@ -266,8 +265,12 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 
 					{/* Action Button */}
 					{search && (
-						<Button variant="ghost" onClick={() => setSearch("")}>
-							Clear search
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => setSearch("")}
+						>
+							Clear search &amp; filters
 						</Button>
 					)}
 				</Card>

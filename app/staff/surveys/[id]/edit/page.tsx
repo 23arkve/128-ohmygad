@@ -4,8 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Typography } from "@/components/typography";
-import { ChevronLeft } from "lucide-react";
 import SurveyForm, { type SurveyFormData, type SurveyQuestion } from "@/components/admin/survey-form";
+import { PulsingLoader } from "@/components/ui";
 
 export default function EditSurveyPage() {
   const { id } = useParams<{ id: string }>();
@@ -59,12 +59,10 @@ export default function EditSurveyPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-12">
-        <Typography variant="body-1" className="text-fractal-text-placeholder">
-          Loading survey...
-        </Typography>
-      </div>
-    );
+		<div className="flex items-center justify-center p-12">
+			<PulsingLoader variant="breath" />
+		</div>
+	);
   }
 
   if (error || !survey) {
@@ -75,7 +73,7 @@ export default function EditSurveyPage() {
         </Typography>
         <button
           onClick={() => router.push("/staff/surveys")}
-          className="underline text-sm text-fractal-text-placeholder hover:text-fractal-text-default transition-colors"
+          className="underline text-sm text-[var(--gray)] hover:text-[var(--primary-dark)] transition-colors"
         >
           Back to Surveys
         </button>

@@ -1,7 +1,10 @@
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUserWithRole } from "@/lib/auth/get-current-user";
 import  StaffShell from "@/components/ui/staff-shell";
+import { PulsingLoader } from "@/components/ui";
 
 // auth guard - if unauthenticated or not admin/staff user tries to enter admin/staff dashboard
 async function StaffAuthGuard({ children }: { children: React.ReactNode }) {
@@ -15,24 +18,24 @@ async function StaffAuthGuard({ children }: { children: React.ReactNode }) {
 // layout server component wrapped in suspense
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense
-        fallback={
-            <div className="flex flex-1 items-center justify-center text-sm text-[var(--gray)]">
-                Loading...
-            </div>
-        }
-    >
-        <StaffShell>
-            <Suspense
-                fallback={
-                <div className="flex flex-1 items-center justify-center text-sm text-[var(--gray)]">
-                    Loading...
-                </div>
-                }
-            >
-                <StaffAuthGuard>{children}</StaffAuthGuard>
-            </Suspense>
-        </StaffShell>
-    </Suspense>
+		<Suspense
+			fallback={
+				<div className="flex flex-1 items-center justify-center text-sm text-[var(--gray)]">
+					<PulsingLoader variant="breath" />
+				</div>
+			}
+		>
+			<StaffShell>
+				<Suspense
+					fallback={
+						<div className="flex flex-1 items-center justify-center text-sm text-[var(--gray)]">
+							<PulsingLoader variant="breath" />
+						</div>
+					}
+				>
+					<StaffAuthGuard>{children}</StaffAuthGuard>
+				</Suspense>
+			</StaffShell>
+		</Suspense>
   );
 }

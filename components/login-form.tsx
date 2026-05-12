@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "./ui";
+import { ERR } from "@/lib/user-error";
 
 export function LoginForm({
   className,
@@ -39,21 +40,13 @@ export function LoginForm({
 			const { data: authData, error: authError } =
 				await supabase.auth.signInWithPassword({ email, password });
 
-			console.log("Auth data:", authData);
-			console.log("Auth error:", authError);
-
 			if (authError) throw authError;
-
-			console.log("User ID:", authData.user.id);
 
 			const { data: profile, error: profileError } = await supabase
 				.from("profile")
 				.select("role, is_onboarded")
 				.eq("id", authData.user.id)
 				.single();
-
-			console.log("Profile data:", profile);
-			console.log("Profile error:", profileError);
 
 			if (profileError || !profile) {
 				await supabase.auth.signOut();
@@ -88,7 +81,7 @@ export function LoginForm({
 			}
 		} catch (error: unknown) {
 			setError(
-				error instanceof Error ? error.message : "An error occurred",
+				ERR.auth,
 			);
 		} finally {
 			setIsLoading(false);

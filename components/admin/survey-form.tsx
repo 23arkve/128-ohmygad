@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { AlignLeft, Type, Link2, Plus, Trash2, GripVertical, X } from "lucide-react";
-import { Card, Input, Select, Button, DateTimePicker } from "@/components/ui";
+import { Card, Input, Select, Button, DateTimePicker, Toast } from "@/components/ui";
 
 export type SurveyFormData = {
   id?: string;
@@ -44,7 +44,7 @@ type SurveyFormProps = {
   mode: "create" | "edit";
   initialData?: SurveyFormData;
   initialQuestions?: SurveyQuestion[];
-  onSuccess?: () => void;
+  onSuccess?: (title: string) => void;
   onCancel?: () => void;
 };
 
@@ -73,6 +73,18 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
   const [open_at,     setOpenAt]      = useState(initialData?.open_at?.slice(0, 16) ?? "");
   const [close_at,    setCloseAt]     = useState(initialData?.close_at?.slice(0, 16) ?? "");
 
+  // ── Touched state — only show field errors after a field has been interacted with ──
+  const [touched, setTouched] = useState({
+    title: false,
+    description: false,
+    event_id: false,
+    open_at: false,
+    close_at: false,
+  });
+
+  const markTouched = (field: keyof typeof touched) =>
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
   // Derived — recomputed on every render from open_at / close_at
   const status = deriveStatus(open_at, close_at);
 
@@ -81,7 +93,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
     if (!initialData) return;
     setTitle(initialData.title ?? "");
     setDescription(initialData.description ?? "");
-    setEventId(initialData.event_id ?? ""); 
+    setEventId(initialData.event_id ?? "");
     setOpenAt(initialData.open_at?.slice(0, 16) ?? "");
     setCloseAt(initialData.close_at?.slice(0, 16) ?? "");
   }, [initialData]);
@@ -91,19 +103,27 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
   }, [initialQuestions]);
 
   // ── Events list for dropdown ─
-  const [events, setEvents] = useState<{ id: string; title: string }[]>([]);
+  const [events, setEvents] = useState<{ id: string; title: string; end_date?: string }[]>([]);
+  const [selectedEventEndDate, setSelectedEventEndDate] = useState<Date | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
       const supabase = createClient();
       const { data } = await supabase
         .from("event")
-        .select("id, title")
+        .select("id, title, end_date")
         .order("start_date", { ascending: false });
       if (data) setEvents(data);
     };
     fetchEvents();
   }, []);
+
+  // When editing, sync the selected event's end_date once events list loads
+  useEffect(() => {
+    if (!event_id || events.length === 0) return;
+    const found = events.find((e) => e.id === event_id);
+    if (found?.end_date) setSelectedEventEndDate(new Date(found.end_date));
+  }, [event_id, events]);
 
   // ── Questions ──
   const [questions, setQuestions] = useState<SurveyQuestion[]>(
@@ -112,6 +132,8 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Track whether a submit was attempted — reveals all field errors at once
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const MAX_QUESTIONS = 50;
 
@@ -162,77 +184,72 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
       )
     );
 
+  // ── Validation errors ──
+  const titleError = !title ? "Title is required." : null;
+
+  const descriptionError = description && description.trim().length > 0 && description.trim().length < 5
+    ? "Description must be at least 5 characters."
+    : null;
+
+  const eventError = !event_id ? "Linked Event is required." : null;
+
+  const openAtError = !open_at ? "Open time is required." : null;
+
+  const closeAtError = !close_at ? "Close time is required." : null;
+
+  const futureError = (!isEdit && open_at && new Date(open_at) <= new Date())
+    ? "Open time must be in the future."
+    : null;
+
+  const sequenceError = (open_at && close_at && new Date(open_at).getTime() >= new Date(close_at).getTime())
+    ? "Survey close time must be after the open time."
+    : null;
+
+  const questionCountError = questions.length === 0
+    ? "At least one question is required."
+    : null;
+
+  const getFirstQuestionError = () => {
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (q.question_text.length > 0 && q.question_text.trim().length < 5)
+        return `Question ${i + 1} must be at least 5 characters.`;
+
+      if (q.question_type === "multiple_choice") {
+        const nonEmpty = q.options.filter(o => o.trim() !== "");
+        if (nonEmpty.length < 2) return `Question ${i + 1} needs at least 2 non-empty choices.`;
+
+        const unique = new Set(nonEmpty.map(o => o.trim().toLowerCase()));
+        if (unique.size !== nonEmpty.length) return `Question ${i + 1} has duplicate choices.`;
+      }
+    }
+    return null;
+  };
+
+  const validationQuestionError = getFirstQuestionError();
+
+  const hasFieldErrors = !!(
+    titleError || descriptionError || eventError || openAtError ||
+    closeAtError || futureError || sequenceError || questionCountError ||
+    validationQuestionError
+  );
+
+  // Show an error for a field if it's been touched OR a submit was attempted
+  const show = (field: keyof typeof touched) => touched[field] || submitAttempted;
+
   // ── Submit ──
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitAttempted(true);
+
+    if (hasFieldErrors) {
+      // Touch all fields so every inline error becomes visible
+      setTouched({ title: true, description: true, event_id: true, open_at: true, close_at: true });
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
-
-    if (title.trim().length < 5) {
-      setError("Title must be at least 5 characters.");
-      setIsLoading(false);
-      return;
-    }
-    if (description && description.trim().length > 0 && description.trim().length < 5) {
-      setError("Description must be at least 5 characters if provided.");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!event_id) { setError("Linked Event is required."); setIsLoading(false); return; }
-    if (!open_at) { setError("Open time is required."); setIsLoading(false); return; }
-    if (!close_at) { setError("Close time is required."); setIsLoading(false); return; }
-
-    if (!isEdit) {
-      const now = new Date();
-      const openTime = new Date(open_at);
-      if (openTime <= now) {
-        setError("Open time must be in the future.");
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    if (questions.length === 0) {
-      setError("At least one question is required.");
-      setIsLoading(false);
-      return;
-    }
-
-    for (let i = 0; i < questions.length; i++) {
-      const q = questions[i];
-      if (q.question_text.trim().length < 5) {
-        setError(`Question ${i + 1} must be at least 5 characters.`);
-        setIsLoading(false);
-        return;
-      }
-      if (["multiple_choice"].includes(q.question_type)) {
-        const nonEmptyChoices = q.options.filter((o) => o.trim() !== "");
-        if (nonEmptyChoices.length < 2) {
-          setError(`Question ${i + 1} needs at least 2 non-empty choices.`);
-          setIsLoading(false);
-          return;
-        }
-        
-        const trimmed = nonEmptyChoices.map((o) => o.trim().toLowerCase());
-        const unique = new Set(trimmed);
-        if (unique.size !== trimmed.length) {
-          setError(`Question ${i + 1} has duplicate choices.`);
-          setIsLoading(false);
-          return;
-        }
-      }
-    }
-
-    if (open_at && close_at) {
-      const openTime = new Date(open_at).getTime();
-      const closeTime = new Date(close_at).getTime();
-      if (openTime >= closeTime) {
-        setError("Survey close time must be after the open time.");
-        setIsLoading(false);
-        return;
-      }
-    }
 
     const supabase = createClient();
 
@@ -299,21 +316,20 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
       }
 
       if (onSuccess) {
-        onSuccess();
+        onSuccess(title.trim());
       } else {
         router.push("/admin/surveys");
         router.refresh();
       }
     } catch (err: unknown) {
-      console.error("Survey submit error:", err);
-      const message = err instanceof Error ? err.message : (err as any)?.message ?? JSON.stringify(err);
-      setError(message);
+      
+      setError("Failed to save survey. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const hasChanges = 
+  const hasChanges =
     title !== (initialData?.title ?? "") ||
     description !== (initialData?.description ?? "") ||
     event_id !== (initialData?.event_id ?? "") ||
@@ -329,83 +345,113 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
 
         <div className="w-full mx-auto flex-1 min-h-0 flex flex-col gap-3 md:gap-6">
           <div className="flex flex-col gap-2">
-              <div className="border-b border-[rgba(45,42,74,0.08)] pb-2">
-                <h3 className="heading-md">Survey Details</h3>
+            <div className="border-b border-[rgba(45,42,74,0.08)] pb-2">
+              <h3 className="heading-md">Survey Details</h3>
+            </div>
+
+            <Input
+              label="Title *"
+              placeholder="e.g. Post-Event Feedback Form"
+              required
+              prefixIcon={<Type size={15} />}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={() => markTouched("title")}
+              maxLength={500}
+            />
+            {(touched.title || submitAttempted) && titleError && (
+              <Toast variant="error" title="Invalid Title" message={titleError} />
+            )}
+
+            <div className="input-wrap">
+              <label htmlFor="description" className="label">Description</label>
+              <div className="input-icon-wrap">
+                <AlignLeft className="input-prefix-icon w-4 h-4 top-5 translate-y-0" />
+                <textarea
+                  id="description"
+                  placeholder="Briefly describe the purpose of this survey..."
+                  rows={4}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  onBlur={() => markTouched("description")}
+                  className="input pl-[42px] py-3 resize-y"
+                  maxLength={3000}
+                />
               </div>
+            </div>
+            {(touched.description || submitAttempted) && descriptionError && (
+              <Toast variant="error" title="Invalid Description" message={descriptionError} />
+            )}
 
-              <Input
-                label="Title *"
-                placeholder="e.g. Post-Event Feedback Form"
-                required
-                prefixIcon={<Type size={15} />}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxLength={100}
-              />
+            <Select 
+              className="w-full max-w-full overflow-hidden truncate"
+              label="Linked Event *"
+              required
+              options={[
+                { value: "", label: "Select linked event" },
+                ...events.map((e) => ({ 
+                  value: e.id, 
+                  // Truncate title if it's longer than 50 characters
+                  label: e.title.length > 50 
+                    ? `${e.title.substring(0, 47)}...` 
+                    : e.title 
+                })),
+              ]}
+              value={event_id}
+              onChange={(e) => {
+                setEventId(e.target.value);
+                markTouched("event_id");
+                const found = events.find((ev) => ev.id === e.target.value);
+                setSelectedEventEndDate(found?.end_date ? new Date(found.end_date) : null);
+              }}
+            />
+            {show("event_id") && eventError && (
+              <Toast variant="error" title="Required Field" message={eventError} />
+            )}
 
-              <div className="input-wrap">
-                <label htmlFor="description" className="label">Description</label>
-                <div className="input-icon-wrap">
-                  <AlignLeft className="input-prefix-icon w-4 h-4 top-5 translate-y-0" />
-                  <textarea
-                    id="description"
-                    placeholder="Briefly describe the purpose of this survey..."
-                    rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="input pl-[42px] py-3 resize-y"
-                    maxLength={250}
-                  />
-                </div>
+            <div className="input-wrap">
+              <label className="label">Status</label>
+              <div className="input flex items-center gap-2 bg-[rgba(45,42,74,0.04)] cursor-default select-none">
+                {status ? (
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full
+                    ${status === "open"     ? "" :
+                      status === "upcoming" ? "" :
+                                              "bg-gray-100 text-gray-500"}`}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </span>
+                ) : (
+                  <span className="caption text-[var(--gray)]">Set open/close times to determine status</span>
+                )}
               </div>
-
-              <Select
-                label="Linked Event *"
-                required
-                options={[
-                  { value: "",     label: "Select linked event" },
-                  ...events.map((e) => ({ value: e.id, label: e.title })),
-                ]}
-                value={event_id}
-                onChange={(e) => setEventId(e.target.value)}
-              />
-
-              <div className="input-wrap">
-                <label className="label">Status</label>
-                <div className="input flex items-center gap-2 bg-[rgba(45,42,74,0.04)] cursor-default select-none">
-                  {status ? (
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full
-                      ${status === "open"     ? "" :
-                        status === "upcoming" ? "" :
-                                                "bg-gray-100 text-gray-500"}`}>
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </span>
-                  ) : (
-                    <span className="caption text-[var(--gray)]">Set open/close times to determine status</span>
-                  )}
-                </div>
-              </div>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
-              <div className="border-b border-[rgba(45,42,74,0.08)] pb-2">
-                <h3 className="heading-md">Availability</h3>
-              </div>
+            <div className="border-b border-[rgba(45,42,74,0.08)] pb-2">
+              <h3 className="heading-md">Availability</h3>
+            </div>
 
-              <DateTimePicker
-                label="Opens At"
-                mode="datetime"
-                value={open_at}
-                onChange={setOpenAt}
-              />
+            <DateTimePicker
+              label="Opens At *"
+              mode="datetime"
+              value={open_at}
+              onChange={(val) => { setOpenAt(val); markTouched("open_at"); }}
+              minDate={selectedEventEndDate ?? undefined}
+            />
+            {show("open_at") && (openAtError || futureError) && (
+              <Toast variant="error" title="Timing Error" message={(openAtError || futureError) || undefined} />
+            )}
 
-              <DateTimePicker
-                label="Closes At"
-                mode="datetime"
-                value={close_at}
-                onChange={setCloseAt}
-              />
-            
+            <DateTimePicker
+              label="Closes At *"
+              mode="datetime"
+              value={close_at}
+              onChange={(val) => { setCloseAt(val); markTouched("close_at"); }}
+              minDate={open_at ? new Date(open_at) : new Date()}
+            />
+            {show("close_at") && (closeAtError || sequenceError) && (
+              <Toast variant="error" title="Timing Error" message={(closeAtError || sequenceError) || undefined} />
+            )}
           </div>
 
           <Card variant="no-shadow" className="flex flex-col gap-4 p-2">
@@ -447,7 +493,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                   placeholder="e.g. How would you rate this event?"
                   value={question.question_text}
                   onChange={(e) => updateQuestion(qIndex, { question_text: e.target.value })}
-                  maxLength={250}
+                  maxLength={500}
                 />
 
                 <Select
@@ -478,7 +524,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
                           style={{ color: "var(--error)" }}
                           onClick={() => removeOption(qIndex, oIndex)}
                         >
-                          <X size={14} />
+                          <X size={15} />
                         </button>
                       </div>
                     ))}
@@ -507,6 +553,24 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
               </div>
             ))}
 
+            {/* Question count error — shown after submit attempt */}
+            {submitAttempted && questionCountError && (
+              <Toast variant="error" title="Questions Required" message={questionCountError} />
+            )}
+
+            {(submitAttempted || questions.some(q => q.question_text.length > 0)) && !questionCountError && validationQuestionError && (
+              <Toast 
+                variant="error" 
+                title="Question Error" 
+                message={validationQuestionError ?? undefined} 
+              />
+            )}
+
+            {/* Per-question validation error — shown after submit attempt */}
+            {submitAttempted && !questionCountError && validationQuestionError && (
+              <Toast variant="error" title="Question Error" message={validationQuestionError} />
+            )}
+
             <button
               type="button"
               onClick={addQuestion}
@@ -517,11 +581,9 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
             </button>
           </Card>
 
-          {/* error toast */}
+          {/* Server/network error — shown after a failed Supabase call */}
           {error && (
-            <div className="toast toast-error">
-              <span className="font-semibold text-[var(--error)]">{error}</span>
-            </div>
+            <Toast variant="error" title="Submission Failed" message={error} />
           )}
 
           {/* footer actions */}
@@ -536,7 +598,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
             <Button
               type="submit"
               variant="primary"
-              disabled={isLoading || (isEdit && !hasChanges)}
+              disabled={isLoading || (isEdit && !hasChanges) || hasFieldErrors}
               className="px-8"
             >
               {isLoading
