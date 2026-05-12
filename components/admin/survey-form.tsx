@@ -212,8 +212,6 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
   const getFirstQuestionError = () => {
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
-      if (q.question_text.length > 0 && q.question_text.trim().length < 5)
-        return `Question ${i + 1} must be at least 5 characters.`;
 
       if (q.question_type === "multiple_choice") {
         const nonEmpty = q.options.filter(o => o.trim() !== "");
