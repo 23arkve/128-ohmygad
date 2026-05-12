@@ -455,6 +455,7 @@ export default function EventsPage() {
 				open={!!detailEvent}
 				onClose={handleModalClose}
 				modalStyle={{ maxWidth: 600, padding: 0 }}
+				contentStyle={{ display: "flex", flexDirection: "column" }}
 				footer={
 					detailEvent &&
 					(() => {
@@ -510,7 +511,7 @@ export default function EventsPage() {
 				{detailEvent && (
 					<div className="flex flex-col min-h-0">
 						<div
-							className="h-[200px] sm:h-[180px] relative shrink-0 rounded-t-[var(--radius-xl)]"
+							className="h-[200px] sm:h-[180px] shrink-0 rounded-t-[var(--radius-xl)]"
 							style={{
 								background: detailEvent.banner_url
 									? `url(${detailEvent.banner_url}) center/cover no-repeat`
