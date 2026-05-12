@@ -68,6 +68,14 @@ export function useEventFilters({
 	if (urlSearch !== prevUrlSearch) {
 		setPrevUrlSearch(urlSearch);
 		setSearch(urlSearch);
+		// clear filters when searching from global search to ensure result is visible
+		if (urlSearch) {
+			setFilters({ status: new Set(), category: new Set() });
+			setActiveChip("All");
+			// Don't reset tabFilter if it's already set to something that might match,
+			// but actually it's safer to let the search override everything.
+			// The search filter on line 119 already ignores tabFilter if search is present.
+		}
 	}
 
 	const statuses = useMemo(
@@ -147,7 +155,9 @@ export function useEventFilters({
 					e.start_date ?? "",
 					e.end_date ?? "",
 				);
-				if (computedStatus === "past") return attendedIds.has(e.id!);
+				if (computedStatus === "past" && search.trim() === "") {
+					return attendedIds.has(e.id!);
+				}
 				return true;
 			});
 

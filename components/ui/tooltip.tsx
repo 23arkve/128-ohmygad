@@ -18,11 +18,11 @@ export function TooltipContent({
       <TooltipPrimitive.Content
         side={side}
         sideOffset={sideOffset}
-        className={`z-50 rounded-md bg-[var(--primary-dark)] px-3 py-1.5 text-xs text-white shadow-md ${className}`}
+        className={`z-50 rounded-xl bg-[var(--primary-dark)] px-3 py-1.5 text-xs text-white shadow-md ${className}`}
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="fill-[var(--primary-dark)]" />
+        <TooltipPrimitive.Arrow className="fill-[var(--primary-dark)] rounded-lg" />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   );

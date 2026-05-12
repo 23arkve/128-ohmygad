@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ChevronLeft, ChevronRight, CheckCircle2, Loader2 } from "lucide-react";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, PulsingLoader } from "@/components/ui";
 import type { SurveyFormData, SurveyQuestion, QuestionType } from "@/components/admin/survey-form";
 
 type Answer = string | string[] | number | null;
@@ -192,7 +192,7 @@ export default function SurveyTakePage() {
           .limit(1);
 
         if (existingResponse && existingResponse.length > 0) {
-          console.log("DB check found existing response:", existingResponse, "for userId:", userId, "surveyId:", id);
+          
           // Already submitted, persist to localStorage so future loads are instant
           if (localKey && typeof window !== "undefined") {
             localStorage.setItem(localKey, "true");
@@ -332,7 +332,7 @@ export default function SurveyTakePage() {
       .insert(responseRows);
 
     if (insertError) {
-      setError("Failed to submit: " + insertError.message);
+      setError("Failed to submit your response. Please try again.");
       setIsSubmitting(false);
       return;
     }
@@ -350,13 +350,12 @@ export default function SurveyTakePage() {
   // ── Loading ──
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 size={24} className="animate-spin text-[var(--gray)]" />
-          <p className="body">Loading survey…</p>
-        </div>
-      </div>
-    );
+		<div className="flex items-center justify-center min-h-[60vh]">
+			<div className="flex flex-col items-center gap-3">
+				<PulsingLoader variant="breath" />
+			</div>
+		</div>
+	);
   }
 
   // ── Error ──

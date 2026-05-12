@@ -21,6 +21,10 @@ import {
 	validatePassword,
 	validateGsoSessions,
 	validateAshoSessions,
+	validateForumSessions,
+	validateResearchSessions,
+	validateTrainingSessions,
+	validateWorkshopSessions,
 	validateAddress,
 	validateOffice,
 	validateDepartment,
@@ -44,6 +48,10 @@ interface CreateUserData {
 	year_level?: string;
 	gso_attended?: number;
 	asho_attended?: number;
+	forum_attended?: number;
+	research_attended?: number;
+	training_attended?: number;
+	workshop_attended?: number;
 	is_onboarded?: boolean;
 	office?: string;
 	department?: string;
@@ -55,7 +63,7 @@ interface EditUserData extends Partial<CreateUserData> {
 
 interface UserFormProps {
 	initialData?: EditUserData;
-	onSuccess?: () => void;
+	onSuccess?: (name: string) => void;
 	onCancel?: () => void;
 	layout?: "modal" | "page";
 	onRoleChangeRequest?: (role: string) => void;
@@ -161,6 +169,18 @@ export default function UserForm({
 	const [asho_attended, setAshoAttended] = useState<string | number>(
 		initialData?.asho_attended ?? "",
 	);
+	const [forum_attended, setForumAttended] = useState<string | number>(
+		initialData?.forum_attended ?? "",
+	);
+	const [research_attended, setResearchAttended] = useState<string | number>(
+		initialData?.research_attended ?? "",
+	);
+	const [training_attended, setTrainingAttended] = useState<string | number>(
+		initialData?.training_attended ?? "",
+	);
+	const [workshop_attended, setWorkshopAttended] = useState<string | number>(
+		initialData?.workshop_attended ?? "",
+	);
 	const [is_onboarded, setIsOnboarded] = useState(
 		initialData?.is_onboarded ?? true,
 	);
@@ -248,6 +268,32 @@ export default function UserForm({
 	const yearMismatchError = yearMismatch
 		? `Expected ${derivedYearString} based on student number.`
 		: null;
+
+	// live pre-submission field errors 
+	const [nameTouched, setNameTouched] = useState(false);
+
+	// Update the error logic to only show if touched
+	const fullNameError = nameTouched && !full_name 
+		? "Full name is required." 
+		: (full_name ? validateFullName(full_name) : null);
+
+	const emailError = (() => {
+		if (!email) return null;
+		const domain = email.trim().split("@")[1]?.toLowerCase();
+		if (!domain || !["gmail.com", "up.edu.ph"].includes(domain))
+			return "Email must end with @gmail.com or @up.edu.ph.";
+		return null;
+	})();
+
+	const passwordError = password ? validatePassword(password) : null;
+
+	const hasFieldErrors = !!(
+		fullNameError ||
+		emailError ||
+		passwordError ||
+		studentNumError ||
+		yearMismatchError
+	);
 
 	// listen for role confirmation and cancel events from parent modal
 	useEffect(() => {
@@ -342,6 +388,18 @@ export default function UserForm({
 
 				const ashoErr = validateAshoSessions(asho_attended);
 				if (ashoErr) throw new Error(ashoErr);
+
+				const forumErr = validateForumSessions(forum_attended);
+				if (forumErr) throw new Error(forumErr);
+
+				const researchErr = validateResearchSessions(research_attended);
+				if (researchErr) throw new Error(researchErr);
+
+				const trainingErr = validateTrainingSessions(training_attended);
+				if (trainingErr) throw new Error(trainingErr);
+
+				const workshopErr = validateWorkshopSessions(workshop_attended);
+				if (workshopErr) throw new Error(workshopErr);
 			}
 
 			const addressErr = validateAddress(address || "");
@@ -358,8 +416,11 @@ export default function UserForm({
 			}
 
 			const gsoNum = gso_attended === "" ? 0 : Number(gso_attended);
-
 			const ashoNum = asho_attended === "" ? 0 : Number(asho_attended);
+			const forumNum = forum_attended === "" ? 0 : Number(forum_attended);
+			const researchNum = research_attended === "" ? 0 : Number(research_attended);
+			const trainingNum = training_attended === "" ? 0 : Number(training_attended);
+			const workshopNum = workshop_attended === "" ? 0 : Number(workshop_attended);
 
 			const cleanStudentNum = student_num
 				? student_num.replace(/\D/g, "")
@@ -386,6 +447,10 @@ export default function UserForm({
 							year_level,
 							gso_attended: gsoNum,
 							asho_attended: ashoNum,
+							forum_attended: forumNum,
+							research_attended: researchNum,
+							training_attended: trainingNum,
+							workshop_attended: workshopNum,
 						}
 					: {}),
 				...(role === "admin" ? { office: office } : {}),
@@ -396,6 +461,10 @@ export default function UserForm({
 							department,
 							gso_attended: gsoNum,
 							asho_attended: ashoNum,
+							forum_attended: forumNum,
+							research_attended: researchNum,
+							training_attended: trainingNum,
+							workshop_attended: workshopNum,
 						}
 					: {}),
 			};
@@ -416,13 +485,13 @@ export default function UserForm({
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.error || "Failed to save user");
 
-			if (onSuccess) onSuccess();
+			if (onSuccess) onSuccess(full_name);
 			else {
 				router.push("/admin/users");
 				router.refresh();
 			}
 		} catch (err: unknown) {
-			setError(err instanceof Error ? err.message : "An error occurred");
+			setError("Failed to save user. Please try again.");
 		} finally {
 			setIsLoading(false);
 		}
@@ -448,6 +517,10 @@ export default function UserForm({
 		year_level !== (initialData?.year_level ?? "") ||
 		String(gso_attended) !== String(initialData?.gso_attended ?? "") ||
 		String(asho_attended) !== String(initialData?.asho_attended ?? "") ||
+		String(forum_attended) !== String(initialData?.forum_attended ?? "") ||
+		String(research_attended) !== String(initialData?.research_attended ?? "") ||
+		String(training_attended) !== String(initialData?.training_attended ?? "") ||
+		String(workshop_attended) !== String(initialData?.workshop_attended ?? "") ||
 		office !== (initialData?.office ?? "") ||
 		department !== (initialData?.department ?? "") ||
 		is_onboarded !== (initialData?.is_onboarded ?? true);
@@ -470,81 +543,116 @@ export default function UserForm({
 						</h2>
 
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
-							<Input
-								label="Full Name"
-								required
-								prefixIcon={<User size={15} />}
-								maxLength={64}
-								placeholder="e.g. Maria Santos"
-								value={full_name}
-								onChange={(e) => setFullName(e.target.value)}
-							/>
-							<Input
-								label="Email"
-								type="email"
-								required
-								prefixIcon={<Mail size={15} />}
-								placeholder="m@up.edu.ph"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-							/>
-							<Input
-								label={
-									isEdit
-										? "Password (leave blank to keep)"
-										: "Password"
-								}
-								type="password"
-								required={!isEdit}
-								maxLength={128}
-								prefixIcon={<Lock size={15} />}
-								placeholder={
-									isEdit
-										? "Leave blank to keep current"
-										: "Min. 8 characters"
-								}
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-							/>
-							<Select
-								label="Role"
-								required
-								value={pendingRole ?? role}
-								onChange={(e) => {
-									handleRoleSelect(e.target.value);
-								}}
-								options={[
-									{ value: "", label: "Select role…" },
-									...ROLE_OPTIONS,
-								]}
-							/>
+							<div className="flex flex-col gap-1">
+								<Input
+									label="Full Name *"
+									required
+									prefixIcon={<User size={15} />}
+									maxLength={100}
+									placeholder="e.g. Maria Santos"
+									value={full_name}
+									onBlur={() => setNameTouched(true)}
+									onChange={(e) => setFullName(e.target.value)}
+								/>
+								{fullNameError && (
+									<Toast
+										variant="error"
+										title="Invalid full name"
+										message={fullNameError}
+									/>
+								)}
+							</div>
+							<div className="flex flex-col gap-1">
+								<Input
+									label="Email *"
+									type="email"
+									required
+									prefixIcon={<Mail size={15} />}
+									maxLength={50}
+									placeholder="m@up.edu.ph"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+								/>
+								{emailError && (
+									<Toast
+										variant="error"
+										title="Invalid email"
+										message={emailError}
+									/>
+								)}
+							</div>
+							<div className="flex flex-col gap-1">
+								<Input
+									label={
+										isEdit
+											? "Password (leave blank to keep)"
+											: "Password"
+									}
+									type="password"
+									required={!isEdit}
+									maxLength={100}
+									prefixIcon={<Lock size={15} />}
+									placeholder={
+										isEdit
+											? "Leave blank to keep current"
+											: "Min. 8 characters"
+									}
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+								{passwordError && (
+									<Toast
+										variant="error"
+										title="Invalid password"
+										message={passwordError}
+									/>
+								)}
+							</div>
+							<div className="flex flex-col gap-1">
+								<Select
+									label="Role *"
+									required
+									value={pendingRole ?? role}
+									onChange={(e) => {
+										handleRoleSelect(e.target.value);
+									}}
+									options={[
+										{ value: "", label: "Select role…" },
+										...ROLE_OPTIONS,
+									]}
+								/>
+							</div>
 						</div>
 
 						<hr className="border-gray-100 my-2" />
 
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
-							<Input
-								label="Display Name"
-								placeholder="Nickname or preferred name"
-								value={display_name}
-								onChange={(e) => setDisplayName(e.target.value)}
-								maxLength={32}
-							/>
-							<Input
-								label="Contact Number (optional)"
-								prefixIcon={<Phone size={15} />}
-								maxLength={11}
-								placeholder="e.g. 09123456789"
-								value={contact_num}
-								onChange={handleContactNumChange}
-							/>
+							<div className="flex flex-col gap-1">
+								<Input
+									label="Display Name"
+									placeholder="Nickname or preferred name"
+									value={display_name}
+									onChange={(e) => setDisplayName(e.target.value)}
+									maxLength={30}
+								/>
+							</div>
+							<div className="flex flex-col gap-1">
+								<Input
+									label="Contact Number (optional)"
+									prefixIcon={<Phone size={15} />}
+									maxLength={11}
+									placeholder="e.g. 09123456789"
+									value={contact_num}
+									onChange={handleContactNumChange}
+								/>
+							</div>
 							{(role === "student" || !role) && (
 								<div className="flex flex-col gap-1">
 									<Input
 										label="Student Number *"
 										required
 										prefixIcon={<Hash size={15} />}
-										placeholder="e.g. 2021-12345"
+										placeholder="e.g. 202112345"
 										value={student_num}
 										onChange={handleStudentNumChange}
 									/>
@@ -562,7 +670,7 @@ export default function UserForm({
 								<div className="flex flex-col gap-1">
 									<Select
 										required
-										label="Year Level"
+										label="Year Level *"
 										value={year_level}
 										onChange={(e) =>
 											setYearLevel(e.target.value)
@@ -627,45 +735,54 @@ export default function UserForm({
 								/>
 							)}
 							{role === "faculty" && (
-								<Input
-									label="Department"
-									prefixIcon={<Building2 size={15} />}
-									placeholder="e.g. Dept. of Math and Computer Science"
-									value={department}
-									onChange={(e) =>
-										setDepartment(e.target.value)
-									}
-									maxLength={64}
-								/>
+								<div className="flex flex-col gap-1">
+									<Input
+										label="Department"
+										prefixIcon={<Building2 size={15} />}
+										placeholder="e.g. Dept. of Math and Computer Science"
+										value={department}
+										onChange={(e) =>
+											setDepartment(e.target.value)
+										}
+										maxLength={64}
+									/>
+								</div>
 							)}
 							{role === "admin" && (
-								<Input
-									label="Office / Unit"
-									prefixIcon={<Building2 size={15} />}
-									placeholder="e.g. Office of the Chancellor"
-									value={office}
-									onChange={(e) => setOffice(e.target.value)}
-									maxLength={64}
-								/>
+								<div className="flex flex-col gap-1">
+									<Input
+										label="Office / Unit"
+										prefixIcon={<Building2 size={15} />}
+										placeholder="e.g. Office of the Chancellor"
+										value={office}
+										onChange={(e) => setOffice(e.target.value)}
+										maxLength={64}
+									/>
+								</div>
 							)}
 							{role === "staff" && (
-								<Input
-									label="Office / Unit"
-									prefixIcon={<Building2 size={15} />}
-									placeholder="e.g. Office of the Chancellor"
-									value={office}
-									onChange={(e) => setOffice(e.target.value)}
-									maxLength={64}
-								/>
+								<div className="flex flex-col gap-1">
+									<Input
+										label="Office / Unit"
+										prefixIcon={<Building2 size={15} />}
+										placeholder="e.g. Office of the Chancellor"
+										value={office}
+										onChange={(e) => setOffice(e.target.value)}
+										maxLength={64}
+									/>
+								</div>
 							)}
 							<div className="col-span-full">
-								<Input
-									label="Address (optional)"
-									prefixIcon={<MapPin size={15} />}
-									placeholder="City, Province"
-									value={address}
-									onChange={(e) => setAddress(e.target.value)}
-								/>
+								<div className="flex flex-col gap-1">
+									<Input
+										label="Address (optional)"
+										prefixIcon={<MapPin size={15} />}
+										placeholder="City, Province"
+										value={address}
+										onChange={(e) => setAddress(e.target.value)}
+										maxLength={64}
+									/>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -713,31 +830,82 @@ export default function UserForm({
 							{(role === "student" ||
 								role === "faculty" ||
 								!role) && (
-								<Input
-									label="GSO Sessions Attended"
-									type="text"
-									inputMode="numeric"
-									placeholder="0"
-									value={gso_attended.toString()}
-									onChange={(e) =>
-										handleSessionChange(e, setGsoAttended)
-									}
-								/>
+								<div className="grid grid-cols-2 gap-3">
+									<div className="flex flex-col gap-1">
+										<Input
+											label="GSO Sessions"
+											type="text"
+											inputMode="numeric"
+											placeholder="0"
+											value={gso_attended.toString()}
+											onChange={(e) =>
+												handleSessionChange(e, setGsoAttended)
+											}
+										/>
+									</div>
+									<div className="flex flex-col gap-1">
+										<Input
+											label="ASHO Sessions"
+											type="text"
+											inputMode="numeric"
+											placeholder="0"
+											value={asho_attended.toString()}
+											onChange={(e) =>
+												handleSessionChange(e, setAshoAttended)
+											}
+										/>
+									</div>
+									<div className="flex flex-col gap-1">
+										<Input
+											label="Forums"
+											type="text"
+											inputMode="numeric"
+											placeholder="0"
+											value={forum_attended.toString()}
+											onChange={(e) =>
+												handleSessionChange(e, setForumAttended)
+											}
+										/>
+									</div>
+									<div className="flex flex-col gap-1">
+										<Input
+											label="Research"
+											type="text"
+											inputMode="numeric"
+											placeholder="0"
+											value={research_attended.toString()}
+											onChange={(e) =>
+												handleSessionChange(e, setResearchAttended)
+											}
+										/>
+									</div>
+									<div className="flex flex-col gap-1">
+										<Input
+											label="Training"
+											type="text"
+											inputMode="numeric"
+											placeholder="0"
+											value={training_attended.toString()}
+											onChange={(e) =>
+												handleSessionChange(e, setTrainingAttended)
+											}
+										/>
+									</div>
+									<div className="flex flex-col gap-1">
+										<Input
+											label="Workshops"
+											type="text"
+											inputMode="numeric"
+											placeholder="0"
+											value={workshop_attended.toString()}
+											onChange={(e) =>
+												handleSessionChange(e, setWorkshopAttended)
+											}
+										/>
+									</div>
+								</div>
 							)}
-							{(role === "student" ||
-								role === "faculty" ||
-								!role) && (
-								<Input
-									label="ASHO Sessions Attended"
-									type="text"
-									inputMode="numeric"
-									placeholder="0"
-									value={asho_attended.toString()}
-									onChange={(e) =>
-										handleSessionChange(e, setAshoAttended)
-									}
-								/>
-							)}
+
 
 							<div
 								className="flex items-center justify-between p-4 mt-2 rounded-[var(--radius-md)] border w-full"
@@ -787,7 +955,7 @@ export default function UserForm({
 								type="submit"
 								variant="primary"
 								style={{ minWidth: 140 }}
-								disabled={isLoading}
+								disabled={isLoading || hasFieldErrors}
 							>
 								{isLoading ? (
 									<>
@@ -816,43 +984,71 @@ export default function UserForm({
 			{/* account information */}
 			<div className="grid grid-cols-1 gap-x-5 gap-y-2 items-start">
 				<SectionLabel>Account Information</SectionLabel>
-				<Input
-					label="Full Name"
-					required
-					prefixIcon={<User size={15} />}
-					maxLength={64}
-					placeholder="e.g. Maria Santos"
-					value={full_name}
-					onChange={(e) => setFullName(e.target.value)}
-				/>
-				<Input
-					label="Email"
-					type="email"
-					required
-					prefixIcon={<Mail size={15} />}
-					placeholder="m@up.edu.ph"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-				/>
-				<Input
-					label={
-						isEdit ? "Password (leave blank to keep)" : "Password"
-					}
-					type="password"
-					required={!isEdit}
-					maxLength={128}
-					prefixIcon={<Lock size={15} />}
-					placeholder={
-						isEdit
-							? "Leave blank to keep current"
-							: "Min. 8 characters"
-					}
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-				/>
+				<div className="flex flex-col gap-1">
+					<Input
+						label="Full Name *"
+						required
+						prefixIcon={<User size={15} />}
+						maxLength={64}
+						placeholder="e.g. Maria Santos"
+						value={full_name}
+						onBlur={() => setNameTouched(true)}
+						onChange={(e) => setFullName(e.target.value)}
+					/>
+					{fullNameError && (
+						<Toast
+							variant="error"
+							title="Invalid full name"
+							message={fullNameError}
+						/>
+					)}
+				</div>
+				<div className="flex flex-col gap-1">
+					<Input
+						label="Email *"
+						type="email"
+						required
+						prefixIcon={<Mail size={15} />}
+						placeholder="m@up.edu.ph"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+					/>
+					{emailError && (
+						<Toast
+							variant="error"
+							title="Invalid email"
+							message={emailError}
+						/>
+					)}
+				</div>
+				<div className="flex flex-col gap-1">
+					<Input
+						label={
+							isEdit ? "Password (leave blank to keep)" : "Password"
+						}
+						type="password"
+						required={!isEdit}
+						maxLength={128}
+						prefixIcon={<Lock size={15} />}
+						placeholder={
+							isEdit
+								? "Leave blank to keep current"
+								: "Min. 8 characters"
+						}
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+					{passwordError && (
+						<Toast
+							variant="error"
+							title="Invalid password"
+							message={passwordError}
+						/>
+					)}
+				</div>
 				<Select
-					label="Role"
-					required
+					label="Role *"
+					required 
 					value={pendingRole ?? role}
 					onChange={(e) => {
 						handleRoleSelect(e.target.value);
@@ -867,20 +1063,22 @@ export default function UserForm({
 			{/* profile details */}
 			<div className="grid grid-cols-1 gap-x-5 gap-y-2 items-start">
 				<SectionLabel>Profile Details</SectionLabel>
-				<Input
-					label="Display Name"
-					placeholder="Nickname or preferred name"
-					value={display_name}
-					onChange={(e) => setDisplayName(e.target.value)}
-					maxLength={32}
-				/>
+				<div className="flex flex-col gap-1">
+					<Input
+						label="Display Name"
+						placeholder="Nickname or preferred name"
+						value={display_name}
+						onChange={(e) => setDisplayName(e.target.value)}
+						maxLength={32}
+					/>
+				</div>
 				{(role === "student" || !role) && (
 					<div className="flex flex-col gap-1">
 						<Input
 							label="Student Number *"
 							required
 							prefixIcon={<Hash size={15} />}
-							placeholder="e.g. 2021-12345"
+							placeholder="e.g. 202112345"
 							value={student_num}
 							onChange={handleStudentNumChange}
 						/>
@@ -898,7 +1096,7 @@ export default function UserForm({
 					<div className="flex flex-col gap-1">
 						<Select
 							required
-							label="Year Level"
+							label="Year Level *"
 							value={year_level}
 							onChange={(e) => setYearLevel(e.target.value)}
 							options={[
@@ -920,7 +1118,7 @@ export default function UserForm({
 						label={
 							role === "student" || !role
 								? "College *"
-								: "College"
+								: "College *"
 						}
 						required={role === "student" || !role}
 						value={college}
@@ -953,50 +1151,61 @@ export default function UserForm({
 					/>
 				)}
 				{role === "faculty" && (
-					<Input
-						label="Department"
-						prefixIcon={<Building2 size={15} />}
-						placeholder="e.g. Dept. of Math and Computer Science"
-						value={department}
-						onChange={(e) => setDepartment(e.target.value)}
-						maxLength={64}
-					/>
+					<div className="flex flex-col gap-1">
+						<Input
+							label="Department"
+							prefixIcon={<Building2 size={15} />}
+							placeholder="e.g. Dept. of Math and Computer Science"
+							value={department}
+							onChange={(e) => setDepartment(e.target.value)}
+							maxLength={64}
+						/>
+					</div>
 				)}
 				{role === "admin" && (
-					<Input
-						label="Office / Unit"
-						prefixIcon={<Building2 size={15} />}
-						placeholder="e.g. Office of the Chancellor"
-						value={office}
-						onChange={(e) => setOffice(e.target.value)}
-						maxLength={64}
-					/>
+					<div className="flex flex-col gap-1">
+						<Input
+							label="Office / Unit"
+							prefixIcon={<Building2 size={15} />}
+							placeholder="e.g. Office of the Chancellor"
+							value={office}
+							onChange={(e) => setOffice(e.target.value)}
+							maxLength={64}
+						/>
+					</div>
 				)}
 				{role === "staff" && (
+					<div className="flex flex-col gap-1">
+						<Input
+							label="Office / Unit"
+							prefixIcon={<Building2 size={15} />}
+							placeholder="e.g. Office of the Chancellor"
+							value={office}
+							onChange={(e) => setOffice(e.target.value)}
+							maxLength={64}
+						/>
+					</div>
+				)}
+				<div className="flex flex-col gap-1">
 					<Input
-						label="Office / Unit"
-						prefixIcon={<Building2 size={15} />}
-						placeholder="e.g. Office of the Chancellor"
-						value={office}
-						onChange={(e) => setOffice(e.target.value)}
+						label="Contact Number (optional)"
+						prefixIcon={<Phone size={15} />}
+						maxLength={11}
+						placeholder="e.g. 09123456789"
+						value={contact_num}
+						onChange={handleContactNumChange}
+					/>
+				</div>
+				<div className="flex flex-col gap-1">
+					<Input
+						label="Address (optional)"
+						prefixIcon={<MapPin size={15} />}
+						placeholder="City, Province"
+						value={address}
+						onChange={(e) => setAddress(e.target.value)}
 						maxLength={64}
 					/>
-				)}
-				<Input
-					label="Contact Number (optional)"
-					prefixIcon={<Phone size={15} />}
-					maxLength={11}
-					placeholder="e.g. 09123456789"
-					value={contact_num}
-					onChange={handleContactNumChange}
-				/>
-				<Input
-					label="Address (optional)"
-					prefixIcon={<MapPin size={15} />}
-					placeholder="City, Province"
-					value={address}
-					onChange={(e) => setAddress(e.target.value)}
-				/>
+				</div>
 				<Select
 					label="Pronouns"
 					value={pronouns}
@@ -1024,28 +1233,80 @@ export default function UserForm({
 					]}
 				/>
 				{(role === "student" || role === "faculty" || !role) && (
-					<>
-						<Input
-							label="GSO Sessions Attended"
-							type="text"
-							inputMode="numeric"
-							placeholder="0"
-							value={gso_attended.toString()}
-							onChange={(e) =>
-								handleSessionChange(e, setGsoAttended)
-							}
-						/>
-						<Input
-							label="ASHO Sessions Attended"
-							type="text"
-							inputMode="numeric"
-							placeholder="0"
-							value={asho_attended.toString()}
-							onChange={(e) =>
-								handleSessionChange(e, setAshoAttended)
-							}
-						/>
-					</>
+					<div className="grid grid-cols-2 gap-x-5 gap-y-2 col-span-full mt-2">
+						<div className="flex flex-col gap-1">
+							<Input
+								label="GSO Sessions"
+								type="text"
+								inputMode="numeric"
+								placeholder="0"
+								value={gso_attended.toString()}
+								onChange={(e) =>
+									handleSessionChange(e, setGsoAttended)
+								}
+							/>
+						</div>
+						<div className="flex flex-col gap-1">
+							<Input
+								label="ASHO Sessions"
+								type="text"
+								inputMode="numeric"
+								placeholder="0"
+								value={asho_attended.toString()}
+								onChange={(e) =>
+									handleSessionChange(e, setAshoAttended)
+								}
+							/>
+						</div>
+						<div className="flex flex-col gap-1">
+							<Input
+								label="Forums"
+								type="text"
+								inputMode="numeric"
+								placeholder="0"
+								value={forum_attended.toString()}
+								onChange={(e) =>
+									handleSessionChange(e, setForumAttended)
+								}
+							/>
+						</div>
+						<div className="flex flex-col gap-1">
+							<Input
+								label="Research"
+								type="text"
+								inputMode="numeric"
+								placeholder="0"
+								value={research_attended.toString()}
+								onChange={(e) =>
+									handleSessionChange(e, setResearchAttended)
+								}
+							/>
+						</div>
+						<div className="flex flex-col gap-1">
+							<Input
+								label="Training"
+								type="text"
+								inputMode="numeric"
+								placeholder="0"
+								value={training_attended.toString()}
+								onChange={(e) =>
+									handleSessionChange(e, setTrainingAttended)
+								}
+							/>
+						</div>
+						<div className="flex flex-col gap-1">
+							<Input
+								label="Workshops"
+								type="text"
+								inputMode="numeric"
+								placeholder="0"
+								value={workshop_attended.toString()}
+								onChange={(e) =>
+									handleSessionChange(e, setWorkshopAttended)
+								}
+							/>
+						</div>
+					</div>
 				)}
 
 				{(role === "student" || role === "faculty" || !role) && (
@@ -1094,7 +1355,7 @@ export default function UserForm({
 					type="submit"
 					variant="primary"
 					style={{ flex: 1 }}
-					disabled={isLoading || (isEdit && !hasChanges)}
+					disabled={isLoading || (isEdit && !hasChanges) || hasFieldErrors}
 				>
 					{isLoading ? (
 						<>

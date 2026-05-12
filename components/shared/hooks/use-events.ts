@@ -52,7 +52,7 @@ export function useEvents() {
 				.order("start_date", { ascending: false });
 
 			if (error) {
-				setError(error.message);
+				setError("Failed to load events. Please refresh the page.");
 			} else if (data) {
 				setEvents(data);
 			}

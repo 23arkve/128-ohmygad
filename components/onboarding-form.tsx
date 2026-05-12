@@ -9,6 +9,7 @@ import { User, Hash, Phone, MapPin, Building2} from "lucide-react";
 import { Input, Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { validateFullName, validateContactNum, validateStudentNum } from "@/lib/validation";
+import { PulsingLoader } from "@/components/ui";
 
 import { 
   YEAR_OPTIONS, COLLEGE_OPTIONS, SEX_OPTIONS, 
@@ -169,8 +170,6 @@ export function OnboardingForm({
       }
     } // catching errors: 
     catch (error: any) {
-      console.error("Onboarding Save Error:", error);
-
       // unique violation error, if it already exists, show this error
       if (error?.code === '23505' || error?.message?.includes('duplicate key')) {
         setError("This student number or contact number is already registered to another account.");
@@ -184,11 +183,16 @@ export function OnboardingForm({
 
   if (isLoadingRole) {
     return (
-      <div className={cn("card max-w-md w-full mx-auto h-fit flex flex-col items-center justify-center p-12", className)} {...props}>
-        <div className="w-8 h-8 border-4 border-[var(--periwinkle-light)] border-t-[var(--periwinkle)] rounded-full animate-spin mb-4"></div>
-        <p className="body text-[var(--gray)]">Ready to onboard...</p>
-      </div>
-    );
+		<div
+			className={cn(
+				"card max-w-md w-full mx-auto h-fit flex flex-col items-center justify-center p-12",
+				className,
+			)}
+			{...props}
+		>
+			<PulsingLoader variant="breath" />
+		</div>
+	);
   }
 
   return (

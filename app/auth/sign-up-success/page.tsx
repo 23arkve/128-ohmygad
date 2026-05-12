@@ -9,12 +9,13 @@ export default function SignUpSuccessPage() {
         style={{ width: 500, height: 500, top: -120, right: -120, opacity: 0.3 }}/>
         <div className="blob blob-pink hidden md:block" 
           style={{ width: 400, height: 400, bottom: 100, left: -100, opacity: 0.3 }}/>
+          
   
         {/* --- Form Container --- */}
         <div className="card max-w-md w-full mx-auto h-fit">
           <div className="flex flex-col items-center text-center pt-2 pb-1">
             {/* Success Icon */}
-            <div className="w-16 h-16 rounded-full bg-[rgba(109,197,160,0.15)] text-[var(--success)] flex items-center justify-center mb-5">
+            <div className="w-16 h-16 rounded-full bg-[var(--periwinkle-light)] text-[var(--periwinkle)] flex items-center justify-center mb-5">
               <MailCheck className="w-8 h-8" strokeWidth={2.5} />
             </div>
             

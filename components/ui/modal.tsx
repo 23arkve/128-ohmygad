@@ -85,41 +85,62 @@ export function Modal({ open, onClose, title, subtitle, children, footer, modalS
   if (!open) return null;
  
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div
-        className={`modal${modalClassName ? ` ${modalClassName}` : ""}`}
-        style={modalStyle}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {!hideCloseButton && (
-          <button className="modal-close" onClick={onClose}>
-            <X size={15} />
-          </button>
-        )}
- 
-        {(title || subtitle) && (
-          <div
-            style={{
-              marginBottom: 24,
-              flexShrink: 0,
-              position: "sticky",
-              top: 0,
-              background: "var(--white)",
-              zIndex: 1,
-              paddingTop: 0,
-            }}
-          >
-            {title    && <p className="heading-md" style={{ marginBottom: 6 }}>{title}</p>}
-            {subtitle && <p className="caption">{subtitle}</p>}
-          </div>
-        )}
- 
-        {/* makes the body scroll */}
-        <div style={{ flex: 1, overflowY: "auto", marginTop: -3, marginLeft: -3, marginRight: -3, marginBottom: footer ? 21 : -3, padding: 3, minHeight: 0, ...contentStyle }}>{children}</div>
- 
-        {/* footer sticks to bottom */}
-        {footer && <div style={{ flexShrink: 0 }}>{footer}</div>}
-      </div>
-    </div>
+		<div className="modal-backdrop" onClick={onClose}>
+			<div
+				className={`modal${modalClassName ? ` ${modalClassName}` : ""}`}
+				style={modalStyle}
+				onClick={(e) => e.stopPropagation()}
+			>
+				{!hideCloseButton && (
+					<button className="modal-close" onClick={onClose}>
+						<X size={15} />
+					</button>
+				)}
+
+				{(title || subtitle) && (
+					<div
+						style={{
+							marginBottom: 10,
+							flexShrink: 0,
+							position: "sticky",
+							top: 0,
+							background: "var(--white)",
+							zIndex: 1,
+							paddingTop: 0,
+						}}
+					>
+						{title && (
+							<p
+								className="heading-md"
+								style={{ marginBottom: 6 }}
+							>
+								{title}
+							</p>
+						)}
+						{subtitle && <p className="caption">{subtitle}</p>}
+					</div>
+				)}
+
+				{/* makes the body scroll */}
+				<div
+					style={{
+						flex: 1,
+						overflowY: "auto",
+						marginTop: -3,
+						marginLeft: -3,
+						marginRight: -3,
+						marginBottom: footer ? 21 : -3,
+						padding: 3,
+						minHeight: 0,
+						...contentStyle,
+					}}
+				>
+					{children}
+				</div>
+
+				{/* footer sticks to bottom */}
+				{footer && <div style={{ flexShrink: 0 }}>{footer}</div>}
+			</div>
+		</div>
   );
 }

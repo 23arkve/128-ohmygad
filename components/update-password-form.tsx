@@ -59,7 +59,7 @@ export function UpdatePasswordForm({
       }
 
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError("Failed to update password. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -68,13 +68,21 @@ export function UpdatePasswordForm({
   return (
     <div className={cn("card max-w-md w-full mx-auto h-fit", className)} {...props}>
       <div className="flex flex-col items-center mb-6 text-center">
-        <Image
-          src="/kasarian_logo.jpg"
-          alt="UPB Kasarian Gender Studies Program Logo"
-          width={80}
-          height={80}
-          className="rounded-full object-cover mb-4 shadow-soft border-2 border-white"
-        />
+        <div className="flex flex-col items-center mb-6 text-center">
+            <Image
+                src="/kasarian-upb-logo.svg"
+                alt="UPB Kasarian Gender Studies Program Logo"
+                width={120}
+                height={120}
+                className="w-[70px] h-[70px] md:w-[120px] md:h-[120px]"
+            />
+            <div className="flex flex-col items-center">
+                <p className="body">UP BAGUIO</p>
+                <h1 className="heading-lg md:heading-xl uppercase">
+                    Kasarian
+                </h1>
+            </div>
+        </div>
         <h2 className="heading-md">Update Password</h2>
         <p className="caption text-[var(--gray)] mt-1">
           Please enter your new password below.

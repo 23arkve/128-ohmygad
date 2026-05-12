@@ -23,6 +23,7 @@ import {
   Modal,
   Toast,
   Checkbox,
+  PulsingLoader,
 } from "@/components/ui";
 
 import { SURVEY_STATUS_OPTIONS, SURVEY_STATUS_VARIANT as STATUS_VARIANT } from "@/lib/constants";
@@ -46,18 +47,24 @@ export default function SurveysPage() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [prevUrlSearch, setPrevUrlSearch] = useState(searchParams.get("search") || "");
 
-  // Sync search state with URL parameter synchronously to avoid "previous search" flash
-  const urlSearch = searchParams.get("search") || "";
-  if (urlSearch !== prevUrlSearch) {
-    setPrevUrlSearch(urlSearch);
-    setSearch(urlSearch);
-  }
+
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [analyticsTarget, setAnalyticsTarget] = useState<SurveyFormData | null>(null);
   const [sort, setSort] = useState<{ field: SortField; direction: "asc" | "desc"}>({ field: "open_at", direction: "desc"});
   const [statusFilters, setStatusFilters] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
+
+  // Sync search state with URL parameter synchronously to avoid "previous search" flash
+  const urlSearch = searchParams.get("search") || "";
+  if (urlSearch !== prevUrlSearch) {
+    setPrevUrlSearch(urlSearch);
+    setSearch(urlSearch);
+    // clear filters when searching from global search to ensure result is visible
+    if (urlSearch) {
+      setStatusFilters(new Set());
+    }
+  }
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<SurveyFormData | null>(null);
@@ -92,13 +99,21 @@ export default function SurveysPage() {
 
   useEffect(() => { getSurveys(); }, []);
 
+  // auto-open detail modal when navigated here with ?survey=<id>
+  const autoOpenId = searchParams.get("survey");
+  useEffect(() => {
+    if (!autoOpenId || isLoading || surveys.length === 0) return;
+    const match = surveys.find((e) => e.id === autoOpenId);
+    if (match) setAnalyticsTarget(match);
+  }, [autoOpenId, isLoading, surveys]);
+
   // filter / sort
   useEffect(() => {
     const q = search.toLowerCase();
     let result = surveys;
 
     result = result.filter((s) =>
-      `${s.title} ${s.status || ""}`.toLowerCase().includes(q)
+      `${s.title} ${s.description || ""}`.toLowerCase().includes(q)
     );
 
     if (statusFilters.size > 0)
@@ -203,10 +218,10 @@ export default function SurveysPage() {
     const { error } = await supabase.from("survey").delete().eq("id", deleteTarget.id);
 
     if (error) {
-      showToast("error", "Failed to delete survey", error.message);
+      showToast("error", "Failed to delete survey. Please try again.");
     } else {
       setSurveys((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-      showToast("success", "Survey deleted successfully");
+      showToast("success", `Survey "${deleteTarget.title}" deleted successfully!`);
     }
 
     setDeletingId(null);
@@ -419,18 +434,27 @@ export default function SurveysPage() {
             className="flex items-center justify-center gap-3 py-10"
             style={{ color: "var(--gray)" }}
           >
-            <Loader2 size={20} className="animate-spin" />
-            <span className="caption">Loading surveys…</span>
+            <PulsingLoader variant="breath" />
           </div>
         </Card>
       ) : filtered.length === 0 ? (
         <Card>
-          <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <p className="caption">
-              {search || hasActiveFilters
-                ? "No surveys match your search or filters."
-                : "No surveys yet. Add your first survey to get started."}
-            </p>
+          <div className="flex flex-col items-center justify-center text-center gap-3 py-12">
+            <div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+              <BarChart3 size={26} className="text-[var(--periwinkle)]" />
+            </div>
+            <div>
+              <p className="label text-[var(--primary-dark)]">
+                {search || hasActiveFilters
+                  ? "No surveys found"
+                  : "No surveys yet"}
+              </p>
+              {!search && !hasActiveFilters && (
+                <p className="caption text-[var(--gray)] mt-1">
+                  Add your first survey to get started.
+                </p>
+              )}
+            </div>
             {(search || hasActiveFilters) && (
               <Button
                 variant="ghost"
@@ -479,9 +503,10 @@ export default function SurveysPage() {
       >
         <SurveyForm
           mode="create"
-          onSuccess={() => {
+          onSuccess={(title) => {
             setCreateModalOpen(false);
             getSurveys();
+            showToast("success", `"Survey ${title}" created successfully!`);
           }}
           onCancel={() => setCreateModalOpen(false)}
         />
@@ -501,8 +526,7 @@ export default function SurveysPage() {
               className="flex items-center justify-center gap-3 py-10"
               style={{ color: "var(--gray)" }}
             >
-              <Loader2 size={20} className="animate-spin" />
-              <span className="caption">Loading survey…</span>
+              <PulsingLoader variant="breath" />
             </div>
           ) : (
             <SurveyForm
@@ -510,9 +534,10 @@ export default function SurveysPage() {
               mode="edit"
               initialData={editTarget}
               initialQuestions={editQuestions}
-              onSuccess={() => {
+              onSuccess={(title) => {
                 setEditTarget(null);
                 getSurveys();
+                showToast("success", `Survey "${title}" updated successfully!`);
               }}
               onCancel={() => setEditTarget(null)}
             />

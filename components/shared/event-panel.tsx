@@ -142,35 +142,49 @@ export const EventPanel = (): JSX.Element => {
 				{!loading && groups.length === 0 && (
 					<Card
 						variant="no-shadow"
-						className="flex flex-col items-center justify-center text-center flex-1 gap-3"
+						className="relative flex-1 min-h-[320px]"
 					>
-						<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
-							<Calendar
-								size={26}
-								className="text-[var(--periwinkle)]"
-							/>
+						{/* perfectly centered content */}
+						<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+							<div className="flex flex-col items-center text-center px-4">
+								<div className="w-14 h-14 rounded-full bg-[var(--lavender)] flex items-center justify-center">
+									<Calendar
+										size={26}
+										className="text-[var(--periwinkle)]"
+									/>
+								</div>
+
+								<div className="flex flex-col gap-1 mt-3">
+									<p className="label text-[var(--primary-dark)]">
+										No events found
+									</p>
+
+									<p className="caption text-[var(--gray)] mt-0.5">
+										{tab === "upcoming"
+											? "You haven't registered for any upcoming events."
+											: tab === "today"
+											? "You have no events scheduled for today."
+											: "You have no past registered events."}
+									</p>
+								</div>
+							</div>
 						</div>
-						<div className="flex flex-col gap-1">
-							<p className="label text-[var(--primary-dark)]">
-								No events found
-							</p>
-							<p className="caption text-[var(--gray)] mt-0.5">
-								{tab === "upcoming"
-									? "You haven't registered for any upcoming events."
-									: "You have no past registered events."}
-							</p>
-						</div>
+
+						{/* separate button so it does not affect centering */}
 						{tab === "upcoming" && (
-							<Button
-								variant="soft"
-								size="sm"
-								onClick={() => {
-									const base = window.location.pathname.split("/").slice(0, 2).join("/");
-									window.location.href = `${base}/events`;
-								}}
-							>
-								Browse Events
-							</Button>
+							<div className="absolute left-1/2 top-1/2 translate-x-[-50%] mt-16">
+								<Button
+									variant="soft"
+									size="sm"
+									onClick={() => {
+										const base = window.location.pathname.split("/").slice(0, 2).join("/");
+
+										window.location.href = `${base}/events`;
+									}}
+								>
+									Browse Events
+								</Button>
+							</div>
 						)}
 					</Card>
 				)}
@@ -407,9 +421,10 @@ export const EventPanel = (): JSX.Element => {
 								>
 									<button
 										onClick={() => setDetailEvent(null)}
-										className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/80 flex items-center justify-center cursor-pointer"
+										aria-label="Close"
+										className="modal-close"
 									>
-										<X size={14} />
+										<X size={15} />
 									</button>
 									{detailEvent.category && (
 										<div className="absolute bottom-3 left-3">

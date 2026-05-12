@@ -20,14 +20,17 @@ const MONTHS = [
 ];
 
 interface MiniCalendarProps {
-	/** Days in the current month that should show a dot indicator (1-based). */
+	/** days where an event starts. shows a pink dot. */
 	eventDays?: Set<number>;
-	/** Called when the user clicks a specific day number. */
+	/** days where an event is ongoing but didn't start that day. shows a periwinkle dot. */
+	ongoingDays?: Set<number>;
+	/** called when the user clicks a specific day number. */
 	onDayClick?: (date: Date) => void;
 }
 
 export function MiniCalendar({
-	eventDays = new Set([3, 10, 14, 18, 22]),
+	eventDays = new Set(),
+	ongoingDays,
 	onDayClick,
 }: MiniCalendarProps) {
 	const today = new Date();
@@ -110,30 +113,35 @@ export function MiniCalendar({
 								className={`w-full h-full rounded-full flex items-center justify-center text-[12px] font-medium transition-all duration-100 border-none relative ${
 									isToday(d)
 										? "bg-[var(--periwinkle)] text-white font-bold cursor-pointer"
-										: "text-[var(--primary-dark)] cursor-default bg-transparent" // Removed hover and changed cursor
+										: "text-[var(--primary-dark)] cursor-pointer bg-transparent hover:bg-[var(--periwinkle-light)] hover:text-[var(--primary-dark)]"
 								}`}
 							>
 								{d}
-								{eventDays.has(d) && (
-									<span
-										className={`absolute bottom-[3px] left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full ${
-											isToday(d)
-												? "bg-white"
-												: "bg-[var(--soft-pink)]"
-										}`}
-									/>
+								{(eventDays.has(d) || ongoingDays?.has(d)) && (
+									<span className="absolute bottom-[3px] left-1/2 -translate-x-1/2 flex items-center gap-[2px]">
+										{eventDays.has(d) && (
+											<span className={`w-[3px] h-[3px] rounded-full shrink-0 ${isToday(d) ? "bg-white" : "bg-[var(--soft-pink)]"}`} />
+										)}
+										{ongoingDays?.has(d) && (
+											<span className={`w-[3px] h-[3px] rounded-full shrink-0 ${isToday(d) ? "bg-white/60" : "bg-[var(--periwinkle)]"}`} />
+										)}
+									</span>
 								)}
 							</button>
 						) : null}
 					</div>
 				))}
 			</div>
-			{/* Legend */}
-			<div className="flex items-center gap-2 mt-3 px-2">
-				<span className="w-[4px] h-[4px] rounded-full bg-[var(--soft-pink)]"></span>
-				<span className="text-[12px] uppercase tracking-wide text-[var(--gray)]">
-					Event scheduled
-				</span>
+			{/* legend */}
+			<div className="flex flex-col gap-1 mt-3 px-2">
+				<div className="flex items-center gap-2">
+					<span className="w-[4px] h-[4px] rounded-full bg-[var(--soft-pink)] shrink-0" />
+					<span className="text-[12px] uppercase tracking-wide text-[var(--gray)]">Event start</span>
+				</div>
+				<div className="flex items-center gap-2">
+					<span className="w-[4px] h-[4px] rounded-full bg-[var(--periwinkle)] shrink-0" />
+					<span className="text-[12px] uppercase tracking-wide text-[var(--gray)]">Event ongoing</span>
+				</div>
 			</div>
 		</div>
 	);
