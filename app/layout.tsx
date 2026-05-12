@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     icon: '/kasarian-upb-logo.svg',
   },
   metadataBase: new URL(defaultUrl),
-  title: "OhMyGAD!",
+  title: "UPB Kasarian",
   description: "Event Management Platform for UPB Kasarian Gender Program",
 };
 
