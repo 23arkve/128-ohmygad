@@ -305,7 +305,7 @@ const [touched, setTouched] = useState<Record<string, boolean>>({});
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"
                     minLength={10}
-                    maxLength={3000}
+                    maxLength={5000}
                   />
                 </div>
               </div>

@@ -18,8 +18,8 @@ export async function deleteEventAndLinkedSurveys(eventId: string) {
       .eq("id", user.id)
       .single();
 
-    if (profile?.role !== "admin") {
-      return { success: false, error: "Forbidden: Admin access required" };
+    if (profile?.role !== "admin" && profile?.role !== "staff") {
+      return { success: false, error: "Forbidden: Admin or Staff access required" };
     }
 
     // 1. Get linked surveys
