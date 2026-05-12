@@ -103,19 +103,27 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
   }, [initialQuestions]);
 
   // ── Events list for dropdown ─
-  const [events, setEvents] = useState<{ id: string; title: string }[]>([]);
+  const [events, setEvents] = useState<{ id: string; title: string; end_date?: string }[]>([]);
+  const [selectedEventEndDate, setSelectedEventEndDate] = useState<Date | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
       const supabase = createClient();
       const { data } = await supabase
         .from("event")
-        .select("id, title")
+        .select("id, title, end_date")
         .order("start_date", { ascending: false });
       if (data) setEvents(data);
     };
     fetchEvents();
   }, []);
+
+  // When editing, sync the selected event's end_date once events list loads
+  useEffect(() => {
+    if (!event_id || events.length === 0) return;
+    const found = events.find((e) => e.id === event_id);
+    if (found?.end_date) setSelectedEventEndDate(new Date(found.end_date));
+  }, [event_id, events]);
 
   // ── Questions ──
   const [questions, setQuestions] = useState<SurveyQuestion[]>(
@@ -393,6 +401,8 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
               onChange={(e) => {
                 setEventId(e.target.value);
                 markTouched("event_id");
+                const found = events.find((ev) => ev.id === e.target.value);
+                setSelectedEventEndDate(found?.end_date ? new Date(found.end_date) : null);
               }}
             />
             {show("event_id") && eventError && (
@@ -426,6 +436,7 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
               mode="datetime"
               value={open_at}
               onChange={(val) => { setOpenAt(val); markTouched("open_at"); }}
+              minDate={selectedEventEndDate ?? undefined}
             />
             {show("open_at") && (openAtError || futureError) && (
               <Toast variant="error" title="Timing Error" message={(openAtError || futureError) || undefined} />
