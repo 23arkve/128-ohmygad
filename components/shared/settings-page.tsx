@@ -99,7 +99,7 @@ export default function SharedSettingsPage() {
             return;
         }
         
-        if (newPassword.length < 6) {
+        if (newPassword.length < 8) {
             setPasswordError("Password must be at least 6 characters long.");
             return;
         }
@@ -212,7 +212,7 @@ export default function SharedSettingsPage() {
             <div className="w-full shrink-0">
                 <h2 className="heading-md mb-2">Change Password</h2>
                 <p className="text-sm text-[var(--gray)] leading-relaxed">
-                Ensure your account is using a long, random password to stay secure. It must be at least 6 characters long.
+                Ensure your account is using a long, random password to stay secure. It must be at least 8 characters long.
                 </p>
             </div>
 
