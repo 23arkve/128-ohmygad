@@ -375,16 +375,25 @@ export default function SurveyForm({ mode, initialData, initialQuestions = [], o
               <Toast variant="error" title="Invalid Description" message={descriptionError} />
             )}
 
-            <Select
+            <Select 
+              className="w-full max-w-full overflow-hidden truncate"
               label="Linked Event *"
               required
               options={[
-                { value: "",     label: "Select linked event" },
-                ...events.map((e) => ({ value: e.id, label: e.title })),
+                { value: "", label: "Select linked event" },
+                ...events.map((e) => ({ 
+                  value: e.id, 
+                  // Truncate title if it's longer than 50 characters
+                  label: e.title.length > 50 
+                    ? `${e.title.substring(0, 47)}...` 
+                    : e.title 
+                })),
               ]}
               value={event_id}
-              onChange={(e) => { setEventId(e.target.value); markTouched("event_id"); }}
-              onBlur={() => markTouched("event_id")}
+              onChange={(e) => {
+                setEventId(e.target.value);
+                markTouched("event_id");
+              }}
             />
             {show("event_id") && eventError && (
               <Toast variant="error" title="Required Field" message={eventError} />
