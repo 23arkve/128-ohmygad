@@ -39,7 +39,7 @@ export default function DashboardPage({
 	}, []);
 
 	return (
-		<div className="w-full flex flex-col gap-4 md:gap-6 animate-in fade-in duration-500">
+		<div className="w-full flex flex-col gap-4 md:gap-6 animate-in fade-in duration-500 lg:flex-1">
 			{/* dashboard header */}
 			<div className="shrink-0 animate-in slide-in-from-bottom-2 duration-500 w-full flex">
 				<div className="flex flex-col gap-2 md:gap-4 w-full">
@@ -54,10 +54,10 @@ export default function DashboardPage({
 			</div>
 
 			{/* main grid: events panel left, right panel right on lg+ devices */}
-			<div className="flex gap-4 md:gap-6 md:mb-2 flex-1 min-h-10 w-full">
+			<div className="flex gap-4 md:gap-6 md:mb-2 w-full lg:flex-1 lg:min-h-0">
 				<Card
 					variant="no-hover"
-					className="flex flex-col overflow-y-auto min-h-0 flex-1 min-w-0"
+					className="flex flex-col flex-1 min-w-0 lg:overflow-y-auto"
 				>
 					<EventPanel />
 				</Card>
