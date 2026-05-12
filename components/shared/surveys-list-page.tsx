@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Loader2, Clock, X, ArrowUpDown, ClipboardList } from "lucide-react";
 import ScrollToTop from "@/components/ui/scroll-to-top";
 import type { SurveyFormData } from "@/components/admin/survey-form";
+import { deriveStatus } from "@/components/admin/survey-form";
 
 import {
   SearchBar,
@@ -125,8 +126,12 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
   const sortSurveys = (items: SurveyFormData[], sortState: SortState): SurveyFormData[] => {
     const { field, direction } = sortState;
     return [...items].sort((a, b) => {
-      let aVal: any = a[field as keyof SurveyFormData];
-      let bVal: any = b[field as keyof SurveyFormData];
+      let aVal: any = field === "status"
+        ? deriveStatus(a.open_at, a.close_at)
+        : a[field as keyof SurveyFormData];
+      let bVal: any = field === "status"
+        ? deriveStatus(b.open_at, b.close_at)
+        : b[field as keyof SurveyFormData];
       if (aVal == null && bVal == null) return 0;
       if (aVal == null) return direction === "asc" ? 1 : -1;
       if (bVal == null) return direction === "asc" ? -1 : 1;
@@ -278,7 +283,8 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 					{filtered.map((survey) => {
 						const responded = respondedIds.has(survey.id!);
-						const isClosed = survey.status === "closed";
+						const computedStatus = deriveStatus(survey.open_at, survey.close_at);
+						const isClosed = computedStatus === "closed";
 						const isDisabled = responded || isClosed;
 
 						return (
@@ -307,13 +313,11 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 											)}
 											<Badge
 												variant={
-													STATUS_VARIANT[
-														survey.status ?? ""
-													] ?? "dark"
+													STATUS_VARIANT[computedStatus] ?? "dark"
 												}
 											>
 												<span className="capitalize">
-													{survey.status}
+													{computedStatus}
 												</span>
 											</Badge>
 										</div>
