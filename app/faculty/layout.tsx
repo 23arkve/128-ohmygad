@@ -6,6 +6,7 @@ import FacultySidebar from "@/components/faculty-sidebar";
 import { getCurrentUserWithRole } from "@/lib/auth/get-current-user";
 import DashboardHeader from "@/components/shared/dashboard-header";
 import { MobileMenuProvider } from "@/components/ui/mobile-menu-context";
+import { PulsingLoader } from "@/components/ui";
 
 const PAGE_LABELS: Record<string, string> = {
 	dashboard: "Dashboard",
@@ -90,7 +91,7 @@ export default function FacultyLayout({
 							basePath="/faculty"
 							pageLabels={PAGE_LABELS}
 						/>
-						<main className="relative z-1 flex-1 overflow-scroll flex flex-col px-3 md:px-5 md:py-2">
+						<main className="relative z-1 flex-1 w-full overflow-scroll flex flex-col px-3 md:px-5">
 							<Suspense
 								fallback={
 									<div
@@ -103,7 +104,7 @@ export default function FacultyLayout({
 											fontSize: 14,
 										}}
 									>
-										Loading…
+										<PulsingLoader variant="breath" />
 									</div>
 								}
 							>
