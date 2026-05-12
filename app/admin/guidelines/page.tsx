@@ -24,8 +24,7 @@ import {
 
 
 
-const SORT_FIELDS = ["title"] as const;
-type SortField = typeof SORT_FIELDS[number];
+type SortField = "title";
 type SortDirection = "asc" | "desc";
 
 
