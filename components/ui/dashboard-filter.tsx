@@ -211,7 +211,7 @@ export function DashboardFilterChips({ value, onChange }: DashboardFilterChipsPr
 				</Badge>
 			))}
 			<Button
-				variant="soft"
+				variant="pink"
 				size="sm"
 				onClick={() => onChange(EmptyFilters)}
 			>
