@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import GuidelineForm, { type GuidelineFormData } from "@/components/admin/guideline-form";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, Modal } from "@/components/ui";
 import { PulsingLoader } from "@/components/ui";
 
 export default function EditGuidelinePage() {
@@ -15,6 +15,30 @@ export default function EditGuidelinePage() {
   const [guideline,   setGuideline]   = useState<GuidelineFormData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error,     setError]     = useState<string | null>(null);
+
+  const [isFormDirty, setIsFormDirty] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+  const [pendingNav, setPendingNav] = useState<(() => void) | null>(null);
+
+  const requestClose = (navFn: () => void) => {
+    if (isFormDirty) {
+      setPendingNav(() => navFn);
+      setShowDiscardConfirm(true);
+    } else {
+      navFn();
+    }
+  };
+
+  const confirmDiscard = () => {
+    setShowDiscardConfirm(false);
+    pendingNav?.();
+    setPendingNav(null);
+  };
+
+  const cancelDiscard = () => {
+    setShowDiscardConfirm(false);
+    setPendingNav(null);
+  };
 
   useEffect(() => {
     const fetchGuideline = async () => {
@@ -74,7 +98,7 @@ export default function EditGuidelinePage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/admin/guidelines")}
+          onClick={() => requestClose(() => router.push("/admin/guidelines"))}
         >
           <ArrowLeft size={15} /> Guidelines
         </Button>
@@ -82,7 +106,37 @@ export default function EditGuidelinePage() {
         <h1 className="heading-md">Edit Guideline</h1>
       </div>
 
-      <GuidelineForm mode="edit" initialData={guideline} />
+      <GuidelineForm
+        mode="edit"
+        initialData={guideline}
+        onDirtyChange={setIsFormDirty}
+        onCancel={() => requestClose(() => router.push("/admin/guidelines"))}
+      />
+
+      <Modal
+        open={showDiscardConfirm}
+        onClose={cancelDiscard}
+        title="Discard Changes?"
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button variant="ghost" style={{ flex: 1 }} onClick={cancelDiscard}>
+              Keep Editing
+            </Button>
+            <Button variant="primary" style={{ flex: 1 }} onClick={confirmDiscard}>
+              Discard
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
+            <p className="text-sm text-[var(--error)] font-bold mb-1">Warning</p>
+            <p className="text-sm text-[var(--primary-dark)]">
+              You have unsaved changes. Are you sure you want to discard them?
+            </p>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

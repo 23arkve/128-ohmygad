@@ -43,7 +43,7 @@ export default function DashboardPage({
 			{/* dashboard header */}
 			<div className="shrink-0 animate-in slide-in-from-bottom-2 duration-500 w-full flex">
 				<div className="flex flex-col gap-2 md:gap-4 w-full">
-					<p className="heading-md">Good day, {displayName}!</p>
+					{/* <p className="heading-md">Good day, {displayName}!</p> */}
 					<div>
 						<GlobalSearch
 							role={role}
@@ -74,6 +74,23 @@ export default function DashboardPage({
 					{rightPanel}
 				</div>
 			)}
+
+			{/* footer */}
+			<footer className="hidden static bottom-0 mt-6 mb-3 md:flex flex-wrap items-center justify-between gap-2 text-[10px] text-[var(--gray)]/60 border-t border-black/[0.05] pt-3">
+				<span className="flex flex-wrap items-center gap-x-1.5">
+					<strong className="font-semibold text-[var(--primary-dark)]/60">
+						Kasarian / Gender Studies UP Baguio
+					</strong>
+					<span className="opacity-30">·</span>
+					<span>University of the Philippines Baguio</span>
+					<span className="opacity-30">·</span>
+					<span>kasarian.upbaguio@up.edu.ph</span>
+					<span className="opacity-30">·</span>
+				</span>
+				<span className="flex items-center gap-3">
+					<span>© {new Date().getFullYear()} UP Baguio</span>
+				</span>
+			</footer>
 
 			{/* scroll to top */}
 			<ScrollToTop />

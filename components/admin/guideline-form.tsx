@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { submitFormData } from "@/lib/form-submit.utils";
 import { AlignLeft, Type } from "lucide-react";
@@ -17,9 +17,10 @@ type GuidelineFormProps = {
   mode: "create" | "edit";
   onSuccess?: (title: string) => void;
   onCancel?: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
-export default function GuidelineForm({ initialData, mode, onSuccess, onCancel }: GuidelineFormProps) {
+export default function GuidelineForm({ initialData, mode, onSuccess, onCancel, onDirtyChange }: GuidelineFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,9 +70,13 @@ export default function GuidelineForm({ initialData, mode, onSuccess, onCancel }
     }
   };
 
-  const hasChanges = 
+  const hasChanges =
     title !== (initialData?.title ?? "") ||
     description !== (initialData?.description ?? "");
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-full lg:h-auto w-full min-h-0 relative">
@@ -105,11 +110,11 @@ export default function GuidelineForm({ initialData, mode, onSuccess, onCancel }
               <div className="input-wrap">
                 <label htmlFor="description" className="label">Description</label>
                 <div className="input-icon-wrap">
-                  <AlignLeft className="input-prefix-icon w-4 h-4 top-5 translate-y-0" />
+                  <AlignLeft className="input-prefix-icon-description w-4 h-4" />
                   <textarea
                     id="description"
                     placeholder="Add Description..."
-                    rows={4}
+                    rows={20}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="input pl-[42px] py-3 resize-y"

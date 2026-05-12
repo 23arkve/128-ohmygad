@@ -91,33 +91,35 @@ function StaffSidebarPanel() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo */}
-				<div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
-					<div
-						className="flex shrink-0 items-center"
-						style={{ width: COLLAPSED, height: "100%" }}
-					>
-						<Image
-							src="/kasarian-upb-logo.svg"
-							alt="Kasarian UP Baguio"
-							width={55}
-							height={55}
-						/>
-					</div>
-					{open && (
-						<div className="flex flex-col justify-center overflow-hidden pr-3">
-							<span className="body-dark whitespace-nowrap">UP BAGUIO</span>
-							<span className="heading-md-dark uppercase whitespace-nowrap">Kasarian</span>
+				<div className="flex shrink-0 items-end pb-4 py-5 overflow-hidden">
+					<div className="flex w-full items-center gap-2">
+						<div
+							className="flex items-center justify-center shrink-0"
+							style={{ width: open ? 55 : "100%" }}
+						>
+							<Image
+								src="/kasarian-upb-logo.svg"
+								alt="Kasarian UP Baguio"
+								width={55}
+								height={55}
+							/>
 						</div>
-					)}
+						{open && (
+							<div className="flex flex-col justify-center overflow-hidden gap-1">
+								<span className="body-dark whitespace-nowrap leading-none">UP BAGUIO</span>
+								<span className="heading-md-dark uppercase whitespace-nowrap leading-none">Kasarian</span>
+							</div>
+						)}
+					</div>
 				</div>
 
 				{/* nav */}
-				<nav className="flex flex-col flex-1 gap-3 py-3 overflow-y-auto overflow-x-hidden">
+				<nav className="flex flex-col flex-1 gap-4 overflow-y-auto overflow-x-hidden">
 					<TooltipProvider delayDuration={70}>
 						{NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
 							const active = isActive(pathname, href, exact);
 							const linkClass = [
-								"flex items-center w-full h-[40px] rounded-[10px] px-1",
+								"flex items-center w-full h-[45px] rounded-[10px] px-1",
 								"text-[15px] font-medium transition-colors duration-150",
 								active
 									? "bg-white/[0.18] text-white"
@@ -209,7 +211,7 @@ function StaffPageHeader() {
 		activeId.charAt(0).toUpperCase() + activeId.slice(1);
 
 	return (
-		<header ref={headerRef} className="relative shrink-0">
+		<header ref={headerRef} className="relative shrink-0 flex items-center py-6">
 			<div
 				aria-hidden
 				className="absolute inset-0 pointer-events-none"
@@ -225,8 +227,8 @@ function StaffPageHeader() {
 						"background-color 0.2s ease, backdrop-filter 0.2s ease, border-color 0.2s ease",
 				}}
 			/>
-			<div className="relative z-10 flex items-center justify-between gap-3 px-3 md:px-5 mt-4 mb-3">
-				<div className="flex items-center gap-2 min-w-0">
+			<div className="relative z-10 flex w-full items-center justify-between gap-3 px-3 md:px-5">
+				<div className="flex items-center gap-2 min-w-0 min-h-[40px]">
 					{!isDashboard && (
 						<Button
 							size="sm"
@@ -237,7 +239,7 @@ function StaffPageHeader() {
 							<ArrowLeft size={15} />
 						</Button>
 					)}
-					<h1 className="heading-lg truncate">{pageLabel}</h1>
+					<h1 className="heading-lg truncate leading-none">{pageLabel}</h1>
 				</div>
 				<div className="flex items-center gap-2 shrink-0">
 					<UserMenu />

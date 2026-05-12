@@ -903,6 +903,15 @@ header {
   pointer-events: none;
 }
 
+.input-prefix-icon-description {
+    position: absolute;
+    left: 14px;
+    top: 4%;
+    color: var(--gray);
+    font-size: 16px;
+    pointer-events: none;
+  }
+
 .hint {
   font-size: 12px;
   color: var(--gray);

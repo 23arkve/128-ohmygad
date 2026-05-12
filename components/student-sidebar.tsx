@@ -22,8 +22,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useMobileMenu } from "@/components/ui/mobile-menu-context";
 
-const SPRING = { type: "spring", stiffness: 400, damping: 38 } as const;
-const FADE = { duration: 0.15, ease: "easeInOut" } as const;
+const SPRING = { type: "spring", stiffness: 300, damping: 30 } as const;
 
 const NAV_ITEMS = [
 	{
@@ -200,11 +199,12 @@ export default function StudentSidebar() {
 	const BTN = 28;
 
 	return (
-		<motion.div
-			initial={false}
-			animate={{ width: open ? EXPANDED : COLLAPSED }}
-			transition={SPRING}
-			style={{ position: "relative", flexShrink: 0 }}
+		<div
+			style={{
+				position: "relative",
+				flexShrink: 0,
+				width: open ? EXPANDED : COLLAPSED,
+			}}
 			className="hidden md:block"
 		>
 			<aside
@@ -213,28 +213,37 @@ export default function StudentSidebar() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo */}
-				<div className="flex shrink-0 items-center border-b border-white/[0.07] h-[110px] overflow-hidden">
-					<div className="flex shrink-0 items-center" style={{ width: COLLAPSED, height: "100%" }}>
-						<Image src="/kasarian-upb-logo.svg" alt="Kasarian UP Baguio" width={55} height={55} />
-					</div>
-					<motion.div
-						initial={false}
-						animate={{ opacity: open ? 1 : 0 }}
-						transition={FADE}
-						className="flex flex-col justify-center overflow-hidden pr-3"
+				<div className="flex shrink-0 items-end pb-4 py-5 overflow-hidden">
+					<div
+						className="flex shrink-0 items-center"
+						style={{ width: COLLAPSED, height: "100%" }}
 					>
-						<span className="body-dark whitespace-nowrap">UP BAGUIO</span>
-						<span className="heading-md-dark uppercase whitespace-nowrap">Kasarian</span>
-					</motion.div>
+						<Image
+							src="/kasarian-upb-logo.svg"
+							alt="Kasarian UP Baguio"
+							width={55}
+							height={55}
+						/>
+					</div>
+					{open && (
+						<div className="flex flex-col justify-center overflow-hidden gap-1">
+							<span className="body-dark whitespace-nowrap leading-none">
+								UP BAGUIO
+							</span>
+							<span className="heading-md-dark uppercase whitespace-nowrap leading-none">
+								Kasarian
+							</span>
+						</div>
+					)}
 				</div>
 
 				{/* nav */}
-				<nav className="flex flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden py-3">
+				<nav className="flex flex-1 flex-col gap-4 overflow-y-auto overflow-x-hidden">
 					<TooltipProvider delayDuration={70}>
 						{NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
 							const active = isActive(pathname, href, exact);
 							const linkClass = [
-								"flex items-center w-full h-[40px] rounded-[10px] px-1",
+								"flex items-center w-full h-[45px] rounded-[10px] px-1",
 								"text-[15px] font-medium transition-colors duration-150",
 								active
 									? "bg-white/[0.18] text-[var(--white)]"
@@ -243,33 +252,41 @@ export default function StudentSidebar() {
 
 							const linkContent = (
 								<>
-									<motion.div
-										initial={false}
-										animate={{ width: open ? 24 : "100%" }}
-										transition={SPRING}
-										className="flex shrink-0 justify-center"
+									<div
+										style={{ width: open ? 24 : "100%" }}
+										className="flex justify-center shrink-0"
 									>
 										<Icon size={18} />
-									</motion.div>
-									<motion.span
-										initial={false}
-										animate={{ opacity: open ? 1 : 0, width: open ? 140 : 0 }}
-										transition={FADE}
-										className="block overflow-hidden truncate whitespace-nowrap pl-[10px] text-left"
-									>
-										{label}
-									</motion.span>
+									</div>
+									{open && (
+										<span className="overflow-hidden block truncate pl-[10px] whitespace-nowrap text-left">
+											{label}
+										</span>
+									)}
 								</>
 							);
 
 							return open ? (
-								<Link key={href} href={href} className={linkClass}>{linkContent}</Link>
+								<Link
+									key={href}
+									href={href}
+									className={linkClass}
+								>
+									{linkContent}
+								</Link>
 							) : (
 								<Tooltip key={href}>
 									<TooltipTrigger asChild>
-										<Link href={href} className={linkClass}>{linkContent}</Link>
+										<Link href={href} className={linkClass}>
+											{linkContent}
+										</Link>
 									</TooltipTrigger>
-									<TooltipContent side="right" sideOffset={10}>{label}</TooltipContent>
+									<TooltipContent
+										side="right"
+										sideOffset={10}
+									>
+										{label}
+									</TooltipContent>
 								</Tooltip>
 							);
 						})}
@@ -277,15 +294,12 @@ export default function StudentSidebar() {
 				</nav>
 			</aside>
 
-			<motion.button
-				initial={false}
+			<button
 				onClick={() => setOpen((o: boolean) => !o)}
 				aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
-				animate={{ x: (open ? EXPANDED : COLLAPSED) - BTN / 2 }}
-				transition={SPRING}
 				style={{
 					position: "absolute",
-					left: 0,
+					left: (open ? EXPANDED : COLLAPSED) - BTN / 2,
 					top: "50%",
 					marginTop: -(BTN / 2),
 					width: BTN,
@@ -302,7 +316,7 @@ export default function StudentSidebar() {
 				}}
 			>
 				{open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-			</motion.button>
-		</motion.div>
+			</button>
+		</div>
 	);
 }

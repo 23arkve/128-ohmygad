@@ -54,6 +54,32 @@ export default function GuidelinesPage() {
 
   const [toast, setToast] = useState<{ variant: "success"|"error"; title: string; message?: string } | null>(null);
 
+  // discard changes confirm state
+  const [createFormDirty, setCreateFormDirty] = useState(false);
+  const [editFormDirty, setEditFormDirty] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+  const [pendingClose, setPendingClose] = useState<(() => void) | null>(null);
+
+  const requestClose = (closeFn: () => void, isDirty: boolean) => {
+    if (isDirty) {
+      setPendingClose(() => closeFn);
+      setShowDiscardConfirm(true);
+    } else {
+      closeFn();
+    }
+  };
+
+  const confirmDiscard = () => {
+    setShowDiscardConfirm(false);
+    pendingClose?.();
+    setPendingClose(null);
+  };
+
+  const cancelDiscard = () => {
+    setShowDiscardConfirm(false);
+    setPendingClose(null);
+  };
+
   const showToast = (variant: "success"|"error", title: string, message?: string) => {
     setToast({ variant, title, message });
     setTimeout(() => setToast(null), 3000);
@@ -378,28 +404,30 @@ const confirmDelete = async () => {
 			{/* create modal */}
 			<Modal
 				open={createModalOpen}
-				onClose={() => setCreateModalOpen(false)}
+				onClose={() => requestClose(() => { setCreateModalOpen(false); setCreateFormDirty(false); }, createFormDirty)}
 				title="Add Guideline"
 				modalStyle={{ maxWidth: 860 }}
 			>
 				<GuidelineForm
 					mode="create"
+					onDirtyChange={setCreateFormDirty}
 					onSuccess={(title) => {
 						setCreateModalOpen(false);
+						setCreateFormDirty(false);
 						getGuidelines();
 						showToast(
 							"success",
 							`"Guideline ${title}" created successfully`,
 						);
 					}}
-					onCancel={() => setCreateModalOpen(false)}
+					onCancel={() => requestClose(() => { setCreateModalOpen(false); setCreateFormDirty(false); }, createFormDirty)}
 				/>
 			</Modal>
 
 			{/* edit modal */}
 			<Modal
 				open={!!editTarget}
-				onClose={() => setEditTarget(null)}
+				onClose={() => requestClose(() => { setEditTarget(null); setEditFormDirty(false); }, editFormDirty)}
 				title="Edit Guideline"
 				subtitle={editTarget?.title}
 				modalStyle={{ maxWidth: 860 }}
@@ -409,17 +437,45 @@ const confirmDelete = async () => {
 						key={editTarget.id}
 						mode="edit"
 						initialData={editTarget}
+						onDirtyChange={setEditFormDirty}
 						onSuccess={(title) => {
 							setEditTarget(null);
+							setEditFormDirty(false);
 							getGuidelines();
 							showToast(
 								"success",
 								`"Guideline ${title}" updated successfully`,
 							);
 						}}
-						onCancel={() => setEditTarget(null)}
+						onCancel={() => requestClose(() => { setEditTarget(null); setEditFormDirty(false); }, editFormDirty)}
 					/>
 				)}
+			</Modal>
+
+			{/* discard changes confirm modal */}
+			<Modal
+				open={showDiscardConfirm}
+				onClose={cancelDiscard}
+				title="Discard Changes?"
+				footer={
+					<div className="flex gap-3 w-full">
+						<Button variant="ghost" style={{ flex: 1 }} onClick={cancelDiscard}>
+							Keep Editing
+						</Button>
+						<Button variant="primary" style={{ flex: 1 }} onClick={confirmDiscard}>
+							Discard
+						</Button>
+					</div>
+				}
+			>
+				<div className="space-y-4">
+					<div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
+						<p className="text-sm text-[var(--error)] font-bold mb-1">Warning</p>
+						<p className="text-sm text-[var(--primary-dark)]">
+							You have unsaved changes. Are you sure you want to discard them?
+						</p>
+					</div>
+				</div>
 			</Modal>
 
 			{/*  detail modal  */}
