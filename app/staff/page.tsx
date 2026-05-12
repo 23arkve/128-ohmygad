@@ -398,10 +398,10 @@ export default function DashboardPage() {
 	return (
 		<div className="flex flex-col gap-5 w-full animate-in fade-in duration-500">
 			{/* greeting ------------------------------------------------ */}
-			<div className="flex flex-col gap-2 w-full">
+			{/* <div className="flex flex-col gap-2 w-full">
 				<h2 className="heading-md">Good day, Staff!</h2>
 				<DashboardFilterChips value={filters} onChange={setFilters} />
-			</div>
+			</div> */}
 
 			{/* search + filter ------------------------------------------ */}
 			<div className="flex items-center gap-3 w-full">
