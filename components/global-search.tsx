@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, Loader2, ExternalLink, X, } from "lucide-react";
-import { PulsingLoader } from "@/components/ui";
+import { Button, PulsingLoader } from "@/components/ui";
 
 interface GlobalSearchProps {
   role: "admin" | "staff" |"faculty" | "student";
@@ -195,27 +195,32 @@ export default function GlobalSearch({ role, placeholder = "Search events, users
                 return (
                   <div key={c.id} className="border-b border-black/[0.05] last:border-0 pb-2">
                     <div className="px-4 py-3 flex items-center gap-3">
-                      <span className="text-[12px] uppercase tracking-wider font-bold text-[var(--gray)]">{c.id}</span>
-                      <span className="bg-[var(--lavender)] text-[var(--primary-dark)] px-2 py-0.5 rounded-full text-[10px] font-bold">{catResults.length}</span>
+                        <div className="flex flex-row justify-between w-full items-center">
+                            <div className="flex items-center gap-3">
+                                <span className="caption uppercase tracking-wider">{c.id}</span>
+                                <span className="bg-[var(--lavender)] text-[var(--primary-dark)] px-2 py-0.5 rounded-full text-[10px] font-bold">{catResults.length}</span>
+                            </div>
+                        {catResults.length >= 4 && (
+                            <Button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                isNavigating.current = true;
+                                setOpen(false);
+                                inputRef.current?.blur();
+                                if (c.id === "Guidelines") router.push(`/${role}/guidelines?search=${encodeURIComponent(query)}`);
+                                else if (c.id === "Events") router.push(`/${role}/events?search=${encodeURIComponent(query)}`);
+                                else if (c.id === "Users") router.push(`/admin/users?search=${encodeURIComponent(query)}`);
+                                else if (c.id === "Surveys") router.push(`/${role}/surveys?search=${encodeURIComponent(query)}`);
+                            }}
+                            variant="soft"
+                            size="sm"
+                            >
+                            See all <ExternalLink size={12} />
+                            </Button>
+                        )}
+                        </div>
                       
-                      {catResults.length >= 4 && (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            isNavigating.current = true;
-                            setOpen(false);
-                            inputRef.current?.blur();
-                            if (c.id === "Guidelines") router.push(`/${role}/guidelines?search=${encodeURIComponent(query)}`);
-                            else if (c.id === "Events") router.push(`/${role}/events?search=${encodeURIComponent(query)}`);
-                            else if (c.id === "Users") router.push(`/admin/users?search=${encodeURIComponent(query)}`);
-                            else if (c.id === "Surveys") router.push(`/${role}/surveys?search=${encodeURIComponent(query)}`);
-                          }}
-                          className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline bg-transparent border-none cursor-pointer flex items-center gap-1 transition-colors"
-                        >
-                          See all <ExternalLink size={12} />
-                        </button>
-                      )}
                     </div>
                     <div className="flex flex-col">
                       {catResults.slice(0, 3).map(r => {
