@@ -428,27 +428,32 @@ export default function DashboardPage() {
 
 	return (
 		<div className="flex flex-col gap-5 w-full animate-in fade-in duration-500">
-			{/* greeting ------------------------------------------------ */}
-			<div className="flex flex-col gap-2 w-full">
+			{/* greeting ------------------------------------------------
+			<div className="flex flex-col w-full">
 				<div className="flex items-center justify-between w-full">
 					<h2 className="heading-md">Good day, Admin!</h2>
-					<DashboardFilter
-						value={filters}
-						onChange={setFilters}
-						options={filterOptions}
-					/>
 				</div>
-				<DashboardFilterChips value={filters} onChange={setFilters} />
-			</div>
+			</div> */}
 
 			{/* ------------------------------------------------ MAIN CONTENT ------------------------------------------------*/}
 			<div className="flex flex-col xl:flex-row gap-5">
 				<div className="flex flex-col gap-5 flex-1 min-w-0 pb-2">
 					{/* KPI section ------------------------------------------------ */}
 					<div className="flex flex-col gap-5">
-						<GlobalSearch
-							role="admin"
-							placeholder="Search events, guidelines, surveys..."
+						<div className="flex flex-row gap-3">
+							<GlobalSearch
+								role="admin"
+								placeholder="Search events, guidelines, surveys..."
+							/>
+							<DashboardFilter
+								value={filters}
+								onChange={setFilters}
+								options={filterOptions}
+							/>
+						</div>
+						<DashboardFilterChips
+							value={filters}
+							onChange={setFilters}
 						/>
 						<div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
 							<StatCard
@@ -1136,10 +1141,7 @@ export default function DashboardPage() {
 													}}
 													shape={(props: any) => {
 														const {
-															x,
-															y,
 															width,
-															height,
 															payload,
 														} = props;
 														if (width <= 0)
