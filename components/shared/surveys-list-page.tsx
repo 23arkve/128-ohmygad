@@ -154,12 +154,14 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
     router.push(`${basePath}/${survey.id}`);
   };
 
-  const filtered = sortSurveys(
-    surveys.filter((s) =>
-      `${s.title} ${s.description || ""}`.toLowerCase().includes(search.toLowerCase())
-    ),
-    sort
-  );
+	const filtered = sortSurveys(
+	surveys.filter((s) => {
+		const computedStatus = deriveStatus(s.open_at, s.close_at);
+		if (computedStatus !== "open") return false;
+		return `${s.title} ${s.description || ""}`.toLowerCase().includes(search.toLowerCase());
+	}),
+	sort
+	);
 
   const sortLabel = `${SORT_OPTIONS.find((o) => o.field === sort.field)?.label} ${sort.direction === "asc" ? "↑" : "↓"}`;
 
