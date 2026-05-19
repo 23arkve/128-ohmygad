@@ -10,7 +10,7 @@
 \usepackage{lmodern}
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
-\usepackage{xcolor}
+\usepackage[table]{xcolor} % Added [table] option to fix \rowcolor error
 \usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -23,6 +23,7 @@
 \usepackage{parskip}
 \usepackage{tabularx}
 \usepackage{array}
+\usepackage{microtype} % Improves text justification and helps prevent overfull boxes
 
 % ── Colours ─────────────────────────────────────────────────────────────────
 \definecolor{primarydark}{HTML}{2D2A4A}
@@ -72,9 +73,9 @@
 }
 
 % ── Reusable field-description table ──────────────────────────────────────
-% Usage: \fieldtable{ rows with \fieldrow }
+% Adjusted column widths to securely fit inside typical page margins to avoid overfull hboxes
 \newenvironment{fieldtable}{%
-  \begin{longtable}{|>{\raggedright\arraybackslash}p{2.8cm}|>{\raggedright\arraybackslash}p{1.4cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{6cm}|}
+  \begin{longtable}{|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{1.5cm}|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{7.5cm}|}
   \hline
   \rowcolor{lightgray}
   \textbf{Field} & \textbf{Required} & \textbf{Limit} & \textbf{Validation \& Notes} \\
@@ -170,7 +171,7 @@ After logging in you will land on the \textbf{Dashboard}. This page gives you a 
 At the top of every page you will find the \textbf{Search bar}. You can use it to quickly find events, users, guidelines, or surveys by typing a keyword.
 
 \begin{fieldtable}
-  \fieldrow{Search query}{No}{64 characters}{Type at least 1 character to see results. Press Enter to open the full search page.}
+  \fieldrow{Search query}{No}{64 chars}{Type at least 1 character to see results. Press Enter to open the full search page.}
 \end{fieldtable}
 
 \screenshotplaceholder{Global Search — Dropdown Results}
@@ -202,16 +203,16 @@ Click the \textbf{``Create Event''} button (or the edit icon on an existing even
   \fieldrow{Banner Image}{No}{5\,MB file}{Accepted formats: JPG, PNG, or WebP. This image appears at the top of the event detail view.}
   \fieldrow{Capacity *}{Yes}{1 -- 500}{Must be a whole number greater than 0 and at most 500. Negative numbers and decimals are not allowed.}
   \fieldrow{Category *}{Yes}{Dropdown}{Choose one: GSO, ASHO, Forum, Research, Training, or Workshop. The placeholder ``Select category'' cannot be re-selected once a choice is made.}
-  \fieldrow{Status}{Read-only}{---}{Automatically calculated from the start and end dates. Possible values: \textit{Upcoming}, \textit{Today}, or \textit{Past}.}
+  \fieldrow{Status}{Auto}{---}{Automatically calculated from the start and end dates. Possible values: \textit{Upcoming}, \textit{Today}, or \textit{Past}.}
 \end{fieldtable}
 
 \subsubsection{Event Schedule Fields}
 
 \begin{fieldtable}
-  \fieldrow{Start Date \& Time *}{Yes}{Date-time picker}{Must be set in the future (for new events). The event cannot start after it ends.}
-  \fieldrow{End Date \& Time *}{Yes}{Date-time picker}{Must be after the Start Date. The minimum selectable date is automatically set to the chosen start date.}
-  \fieldrow{Registration Opens *}{Yes}{Date-time picker}{Must be before the event ends. This is when users can begin registering.}
-  \fieldrow{Registration Closes *}{Yes}{Date-time picker}{Must be after Registration Opens, must be before or at the event end date, and must be before the event starts. The minimum selectable date is the Registration Opens date.}
+  \fieldrow{Start Date \& Time *}{Yes}{Date-time}{Must be set in the future (for new events). The event cannot start after it ends.}
+  \fieldrow{End Date \& Time *}{Yes}{Date-time}{Must be after the Start Date. The minimum selectable date is automatically set to the chosen start date.}
+  \fieldrow{Registration Opens *}{Yes}{Date-time}{Must be before the event ends. This is when users can begin registering.}
+  \fieldrow{Registration Closes *}{Yes}{Date-time}{Must be after Registration Opens, must be before or at the event end date, and must be before the event starts. The minimum selectable date is the Registration Opens date.}
 \end{fieldtable}
 
 \subsubsection{Date Validation Summary}
@@ -249,14 +250,14 @@ Click \textbf{``Create Survey''} to open the survey form. It has three sections:
   \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty (e.g.\ ``Post-Event Feedback Form'').}
   \fieldrow{Description}{No}{3\,000 chars}{If provided, must be at least 5 characters long.}
   \fieldrow{Linked Event *}{Yes}{Dropdown}{Select the event this survey is for. The placeholder ``Select linked event'' is disabled once a choice is made. Long event names are automatically shortened in the dropdown.}
-  \fieldrow{Status}{Read-only}{---}{Automatically calculated: \textit{Upcoming} (before open), \textit{Open} (currently accepting responses), or \textit{Closed} (past close date).}
+  \fieldrow{Status}{Auto}{---}{Automatically calculated: \textit{Upcoming} (before open), \textit{Open} (currently accepting responses), or \textit{Closed} (past close date).}
 \end{fieldtable}
 
 \subsubsection{Availability Fields}
 
 \begin{fieldtable}
-  \fieldrow{Opens At *}{Yes}{Date-time picker}{When the survey becomes available to respondents. Must be in the future for new surveys. Minimum selectable date is the linked event's end date.}
-  \fieldrow{Closes At *}{Yes}{Date-time picker}{When the survey stops accepting responses. Must be after the Opens At date.}
+  \fieldrow{Opens At *}{Yes}{Date-time}{When the survey becomes available to respondents. Must be in the future for new surveys. Minimum selectable date is the linked event's end date.}
+  \fieldrow{Closes At *}{Yes}{Date-time}{When the survey stops accepting responses. Must be after the Opens At date.}
 \end{fieldtable}
 
 \subsubsection{Questions Section}
@@ -266,7 +267,7 @@ You can add up to \textbf{50 questions} per survey. Each question has the follow
 \begin{fieldtable}
   \fieldrow{Question Text *}{Yes}{500 chars}{The question you want to ask (e.g.\ ``How would you rate this event?'').}
   \fieldrow{Question Type}{Yes}{Dropdown}{Choose one: \textit{Text (open-ended)}, \textit{Multiple Choice}, \textit{Likert Scale (1--5)}, or \textit{Yes / No}.}
-  \fieldrow{Choices}{Conditional}{Up to 10 choices, 100 chars each}{Only shown for Multiple Choice questions. At least 2 non-empty choices are required. Duplicate choices are not allowed.}
+  \fieldrow{Choices}{Cond.}{Up to 10 choices}{Only shown for Multiple Choice questions. At least 2 non-empty choices are required. Duplicate choices are not allowed.}
   \fieldrow{Required toggle}{No}{Checkbox}{If checked, respondents must answer this question before submitting.}
 \end{fieldtable}
 
@@ -294,7 +295,7 @@ The \textbf{Guidelines} page lets you create and manage informational documents 
 
 \begin{fieldtable}
   \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty (e.g.\ ``Gender and Technology'').}
-  \fieldrow{Description}{No}{100\,000 chars}{A long-form text area for the guideline content. This supports detailed, multi-paragraph content.}
+  \fieldrow{Description}{No}{100k chars}{A long-form text area for the guideline content. This supports detailed, multi-paragraph content.}
 \end{fieldtable}
 
 % ════════════════════════════════════════════════════════════════════════════
@@ -318,7 +319,7 @@ The user form can appear in two layouts: a \textbf{modal} (pop-up) for quick edi
 \begin{fieldtable}
   \fieldrow{Full Name *}{Yes}{64--100 chars}{Cannot be empty. Only letters, spaces, periods, apostrophes, hyphens, and underscores are allowed.}
   \fieldrow{Email *}{Yes}{50 chars}{Must be a valid email ending in \texttt{@gmail.com} or \texttt{@up.edu.ph}.}
-  \fieldrow{Password *}{Yes (create); No (edit)}{8--128 chars}{Required when creating a new user. When editing, leave blank to keep the current password. Must be at least 8 characters.}
+  \fieldrow{Password *}{Cond.}{8--128 chars}{Required when creating a new user. When editing, leave blank to keep the current password. Must be at least 8 characters.}
   \fieldrow{Role *}{Yes}{Dropdown}{Choose one: Admin, Staff, Faculty, or Student. Changing the role on an existing user will trigger a confirmation prompt and reset role-specific fields.}
 \end{fieldtable}
 
@@ -326,7 +327,7 @@ The user form can appear in two layouts: a \textbf{modal} (pop-up) for quick edi
 
 \begin{fieldtable}
   \fieldrow{Display Name}{No}{30 chars}{A nickname or preferred name. Only letters, spaces, and basic punctuation are allowed.}
-  \fieldrow{Contact Number}{No}{Exactly 11 digits}{Only digits are allowed (e.g.\ ``09123456789'').}
+  \fieldrow{Contact Num}{No}{11 digits}{Only digits are allowed (e.g.\ ``09123456789'').}
   \fieldrow{Address}{No}{64--100 chars}{Free-text field for the user's address.}
 \end{fieldtable}
 
@@ -337,7 +338,7 @@ Depending on the selected role, additional fields will appear:
 \paragraph{Student-Only Fields}
 
 \begin{fieldtable}
-  \fieldrow{Student Number *}{Yes}{Exactly 9 digits}{Only digits allowed. The system automatically derives the year level from the first 4 digits (admission year).}
+  \fieldrow{Student Number *}{Yes}{9 digits}{Only digits allowed. The system automatically derives the year level from the first 4 digits (admission year).}
   \fieldrow{Year Level *}{Yes}{Dropdown}{Options: 1st--5th Year, or Extendee. Automatically set when a valid student number is entered. A warning appears if the selected year does not match the derived year.}
   \fieldrow{College *}{Yes}{Dropdown}{Choose one: College of Science (CS), College of Arts and Communication (CAC), or College of Social Sciences (CSS).}
   \fieldrow{Program *}{Yes}{Dropdown}{Options depend on the selected college. You must select a college first.}
@@ -382,7 +383,7 @@ These fields track how many orientation/session events a user has attended. Each
 \subsubsection{Onboarding Toggle}
 
 \begin{fieldtable}
-  \fieldrow{Onboarding complete}{No}{Toggle (on/off)}{Indicates whether the user has finished the onboarding process. Defaults to \textit{on}. Turn it off to force the user through onboarding again on their next login.}
+  \fieldrow{Onboarding complete}{No}{Toggle}{Indicates whether the user has finished the onboarding process. Defaults to \textit{on}. Turn it off to force the user through onboarding again on their next login.}
 \end{fieldtable}
 
 % ════════════════════════════════════════════════════════════════════════════
