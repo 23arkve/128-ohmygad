@@ -1,0 +1,534 @@
+% ============================================================================
+%  OhMyGAD — Admin User Manual
+%  LaTeX Template
+% ============================================================================
+\documentclass[12pt, a4paper]{article}
+
+% ── Packages ────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{tabularx}
+\usepackage{array}
+
+% ── Colours ─────────────────────────────────────────────────────────────────
+\definecolor{primarydark}{HTML}{2D2A4A}
+\definecolor{periwinkle}{HTML}{B8B5E8}
+\definecolor{softpink}{HTML}{F4A7B9}
+\definecolor{accentgold}{HTML}{F4C97A}
+\definecolor{linkblue}{HTML}{2563EB}
+\definecolor{lightgray}{HTML}{F5F5F5}
+
+% ── Hyperlink styling ──────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks  = true,
+  linkcolor   = primarydark,
+  urlcolor    = linkblue,
+  citecolor   = primarydark,
+  pdfauthor   = {OhMyGAD Development Team},
+  pdftitle    = {OhMyGAD Admin User Manual},
+  pdfsubject  = {User Manual for Admin Users},
+}
+
+% ── Header / Footer ───────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{primarydark}{OhMyGAD — Admin User Manual}}
+\fancyhead[R]{\small\textcolor{primarydark}{\thepage}}
+\fancyfoot[C]{\small\textcolor{gray}{Confidential — For Internal Use Only}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.2pt}
+
+% ── Section styling ────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\Large\bfseries\color{primarydark}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\large\bfseries\color{primarydark}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{primarydark}}{\thesubsubsection}{1em}{}
+
+% ── Reusable screenshot placeholder ───────────────────────────────────────
+\newcommand{\screenshotplaceholder}[1]{%
+  \begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.85\textwidth}{\vspace{4cm}
+      \centering\textcolor{gray}{\textit{Screenshot: #1}}
+    \vspace{4cm}}}
+    \caption{#1}
+  \end{figure}
+}
+
+% ── Reusable field-description table ──────────────────────────────────────
+% Usage: \fieldtable{ rows with \fieldrow }
+\newenvironment{fieldtable}{%
+  \begin{longtable}{|>{\raggedright\arraybackslash}p{2.8cm}|>{\raggedright\arraybackslash}p{1.4cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{6cm}|}
+  \hline
+  \rowcolor{lightgray}
+  \textbf{Field} & \textbf{Required} & \textbf{Limit} & \textbf{Validation \& Notes} \\
+  \hline
+  \endfirsthead
+  \hline
+  \rowcolor{lightgray}
+  \textbf{Field} & \textbf{Required} & \textbf{Limit} & \textbf{Validation \& Notes} \\
+  \hline
+  \endhead
+  \hline
+  \endfoot
+}{%
+  \end{longtable}
+}
+\newcommand{\fieldrow}[4]{%
+  #1 & #2 & #3 & #4 \\ \hline
+}
+
+% ════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Title Page ─────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+
+  % TODO: Replace with actual project logo
+  % \includegraphics[width=0.3\textwidth]{logo.png}\\[1.5cm]
+
+  {\Huge\bfseries\textcolor{primarydark}{OhMyGAD}}\\[0.4cm]
+  {\LARGE\textcolor{primarydark}{Admin User Manual}}\\[1.5cm]
+
+  {\large Gender and Development Information System}\\[0.5cm]
+  {\large University of the Philippines Baguio}\\[2cm]
+
+  \textcolor{gray}{\today}\\[0.5cm]
+  \textcolor{gray}{Version 1.0}
+
+  \vfill
+  {\small Prepared by the OhMyGAD Development Team}
+\end{titlepage}
+
+% ── Table of Contents ──────────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ════════════════════════════════════════════════════════════════════════════
+%  1. INTRODUCTION
+% ════════════════════════════════════════════════════════════════════════════
+\section{Introduction}
+
+\subsection{What is OhMyGAD?}
+OhMyGAD is a web-based information system built for the \textbf{Gender and Development (GAD)} office of UPB. It helps admin staff manage events, surveys, guidelines, and user accounts — all from one place.
+
+\subsection{Who Is This Manual For?}
+This manual is written for users who have been given the \textbf{Admin} role. Admins have the highest level of access and can manage all parts of the system, including creating and editing events, surveys, guidelines, and user accounts.
+
+\subsection{How to Use This Manual}
+\begin{itemize}[leftmargin=1.5em]
+  \item Each section covers one major page or feature of the system.
+  \item \textbf{Screenshots} are provided to help you identify what you see on screen.
+  \item \textbf{Field tables} list every input you can fill in, along with its character limit and what the system checks for (validation rules).
+  \item Fields marked with an asterisk (\textbf{*}) are required — the form will not submit without them.
+\end{itemize}
+
+\subsection{Accessing the System}
+\begin{enumerate}[leftmargin=1.5em]
+  \item Open your web browser (Chrome, Firefox, or Edge recommended).
+  \item Navigate to the system URL provided by your administrator.
+  \item Log in using your email and password, or sign in with Google.
+\end{enumerate}
+
+\screenshotplaceholder{Login Page}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  2. DASHBOARD
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Dashboard}
+
+After logging in you will land on the \textbf{Dashboard}. This page gives you a quick summary of what is happening across the system.
+
+\textbf{What you will see:}
+\begin{itemize}[leftmargin=1.5em]
+  \item Quick statistics (number of users, upcoming events, open surveys, etc.).
+  \item Shortcuts to common actions.
+\end{itemize}
+
+\screenshotplaceholder{Admin Dashboard — Overview}
+
+\subsection{Global Search}
+At the top of every page you will find the \textbf{Search bar}. You can use it to quickly find events, users, guidelines, or surveys by typing a keyword.
+
+\begin{fieldtable}
+  \fieldrow{Search query}{No}{64 characters}{Type at least 1 character to see results. Press Enter to open the full search page.}
+\end{fieldtable}
+
+\screenshotplaceholder{Global Search — Dropdown Results}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  3. EVENTS MANAGEMENT
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Events Management}
+
+The \textbf{Events} page lets you view, create, edit, and track all GAD-related events such as orientations, forums, research sessions, training, and workshops.
+
+\screenshotplaceholder{Events Management — List View}
+
+% ── 3.1 Creating / Editing an Event ───────────────────────────────────────
+\subsection{Creating or Editing an Event}
+
+Click the \textbf{``Create Event''} button (or the edit icon on an existing event) to open the event form. The form is split into two sections: \textit{Basic Information} and \textit{Event Schedule}.
+
+\screenshotplaceholder{Event Form — Basic Information (Left Column)}
+\screenshotplaceholder{Event Form — Event Schedule (Right Column)}
+
+\subsubsection{Basic Information Fields}
+
+\begin{fieldtable}
+  \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty. Briefly describe the event (e.g.\ ``Gender Sensitivity Orientation'').}
+  \fieldrow{Description}{No}{5\,000 chars}{If provided, must be at least 10 characters long. Describe the purpose and agenda of the event.}
+  \fieldrow{Location *}{Yes}{100 chars}{Cannot be empty. Enter the venue name (e.g.\ ``Sarmiento Hall'').}
+  \fieldrow{Banner Image}{No}{5\,MB file}{Accepted formats: JPG, PNG, or WebP. This image appears at the top of the event detail view.}
+  \fieldrow{Capacity *}{Yes}{1 -- 500}{Must be a whole number greater than 0 and at most 500. Negative numbers and decimals are not allowed.}
+  \fieldrow{Category *}{Yes}{Dropdown}{Choose one: GSO, ASHO, Forum, Research, Training, or Workshop. The placeholder ``Select category'' cannot be re-selected once a choice is made.}
+  \fieldrow{Status}{Read-only}{---}{Automatically calculated from the start and end dates. Possible values: \textit{Upcoming}, \textit{Today}, or \textit{Past}.}
+\end{fieldtable}
+
+\subsubsection{Event Schedule Fields}
+
+\begin{fieldtable}
+  \fieldrow{Start Date \& Time *}{Yes}{Date-time picker}{Must be set in the future (for new events). The event cannot start after it ends.}
+  \fieldrow{End Date \& Time *}{Yes}{Date-time picker}{Must be after the Start Date. The minimum selectable date is automatically set to the chosen start date.}
+  \fieldrow{Registration Opens *}{Yes}{Date-time picker}{Must be before the event ends. This is when users can begin registering.}
+  \fieldrow{Registration Closes *}{Yes}{Date-time picker}{Must be after Registration Opens, must be before or at the event end date, and must be before the event starts. The minimum selectable date is the Registration Opens date.}
+\end{fieldtable}
+
+\subsubsection{Date Validation Summary}
+The system enforces several rules to make sure your dates make sense:
+\begin{enumerate}[leftmargin=1.5em]
+  \item End date must be \textbf{after} the start date.
+  \item Registration close must be \textbf{after} registration open.
+  \item Registration must open \textbf{before} the event ends.
+  \item Registration must close \textbf{before or when} the event ends.
+\end{enumerate}
+
+If any rule is broken, a red error message will appear below the relevant date field.
+
+\screenshotplaceholder{Event Form — Date Validation Error Example}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  4. SURVEYS MANAGEMENT
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Surveys Management}
+
+The \textbf{Surveys} page lets you create post-event feedback forms, view responses, and analyze results.
+
+\screenshotplaceholder{Surveys Management — List View}
+
+\subsection{Creating or Editing a Survey}
+
+Click \textbf{``Create Survey''} to open the survey form. It has three sections: \textit{Survey Details}, \textit{Availability}, and \textit{Questions}.
+
+\screenshotplaceholder{Survey Form — Details and Availability}
+
+\subsubsection{Survey Details Fields}
+
+\begin{fieldtable}
+  \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty (e.g.\ ``Post-Event Feedback Form'').}
+  \fieldrow{Description}{No}{3\,000 chars}{If provided, must be at least 5 characters long.}
+  \fieldrow{Linked Event *}{Yes}{Dropdown}{Select the event this survey is for. The placeholder ``Select linked event'' is disabled once a choice is made. Long event names are automatically shortened in the dropdown.}
+  \fieldrow{Status}{Read-only}{---}{Automatically calculated: \textit{Upcoming} (before open), \textit{Open} (currently accepting responses), or \textit{Closed} (past close date).}
+\end{fieldtable}
+
+\subsubsection{Availability Fields}
+
+\begin{fieldtable}
+  \fieldrow{Opens At *}{Yes}{Date-time picker}{When the survey becomes available to respondents. Must be in the future for new surveys. Minimum selectable date is the linked event's end date.}
+  \fieldrow{Closes At *}{Yes}{Date-time picker}{When the survey stops accepting responses. Must be after the Opens At date.}
+\end{fieldtable}
+
+\subsubsection{Questions Section}
+
+You can add up to \textbf{50 questions} per survey. Each question has the following fields:
+
+\begin{fieldtable}
+  \fieldrow{Question Text *}{Yes}{500 chars}{The question you want to ask (e.g.\ ``How would you rate this event?'').}
+  \fieldrow{Question Type}{Yes}{Dropdown}{Choose one: \textit{Text (open-ended)}, \textit{Multiple Choice}, \textit{Likert Scale (1--5)}, or \textit{Yes / No}.}
+  \fieldrow{Choices}{Conditional}{Up to 10 choices, 100 chars each}{Only shown for Multiple Choice questions. At least 2 non-empty choices are required. Duplicate choices are not allowed.}
+  \fieldrow{Required toggle}{No}{Checkbox}{If checked, respondents must answer this question before submitting.}
+\end{fieldtable}
+
+\screenshotplaceholder{Survey Form — Questions Section}
+
+\subsection{Survey Analytics}
+
+After a survey receives responses, you can view analytics by clicking on the survey. The analytics modal shows each question's responses, including charts for multiple-choice and rating questions.
+
+\screenshotplaceholder{Survey Analytics Modal}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  5. GUIDELINES MANAGEMENT
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Guidelines Management}
+
+The \textbf{Guidelines} page lets you create and manage informational documents (e.g.\ ``Gender and Technology'') that are visible to all users.
+
+\screenshotplaceholder{Guidelines Management — List View}
+
+\subsection{Creating or Editing a Guideline}
+
+\screenshotplaceholder{Guideline Form}
+
+\begin{fieldtable}
+  \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty (e.g.\ ``Gender and Technology'').}
+  \fieldrow{Description}{No}{100\,000 chars}{A long-form text area for the guideline content. This supports detailed, multi-paragraph content.}
+\end{fieldtable}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  6. USER MANAGEMENT
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{User Management}
+
+The \textbf{Users} page lets you view all registered users, create new accounts, and edit existing ones. This page is \textbf{only available to Admin users}.
+
+\screenshotplaceholder{User Management — List View}
+
+\subsection{Creating or Editing a User}
+
+The user form can appear in two layouts: a \textbf{modal} (pop-up) for quick edits, or a \textbf{full page} for detailed entry. Both contain the same fields.
+
+\screenshotplaceholder{User Form — Account Information Section}
+
+\subsubsection{Account Information Fields}
+
+\begin{fieldtable}
+  \fieldrow{Full Name *}{Yes}{64--100 chars}{Cannot be empty. Only letters, spaces, periods, apostrophes, hyphens, and underscores are allowed.}
+  \fieldrow{Email *}{Yes}{50 chars}{Must be a valid email ending in \texttt{@gmail.com} or \texttt{@up.edu.ph}.}
+  \fieldrow{Password *}{Yes (create); No (edit)}{8--128 chars}{Required when creating a new user. When editing, leave blank to keep the current password. Must be at least 8 characters.}
+  \fieldrow{Role *}{Yes}{Dropdown}{Choose one: Admin, Staff, Faculty, or Student. Changing the role on an existing user will trigger a confirmation prompt and reset role-specific fields.}
+\end{fieldtable}
+
+\subsubsection{Personal Information Fields}
+
+\begin{fieldtable}
+  \fieldrow{Display Name}{No}{30 chars}{A nickname or preferred name. Only letters, spaces, and basic punctuation are allowed.}
+  \fieldrow{Contact Number}{No}{Exactly 11 digits}{Only digits are allowed (e.g.\ ``09123456789'').}
+  \fieldrow{Address}{No}{64--100 chars}{Free-text field for the user's address.}
+\end{fieldtable}
+
+\subsubsection{Role-Specific Fields}
+
+Depending on the selected role, additional fields will appear:
+
+\paragraph{Student-Only Fields}
+
+\begin{fieldtable}
+  \fieldrow{Student Number *}{Yes}{Exactly 9 digits}{Only digits allowed. The system automatically derives the year level from the first 4 digits (admission year).}
+  \fieldrow{Year Level *}{Yes}{Dropdown}{Options: 1st--5th Year, or Extendee. Automatically set when a valid student number is entered. A warning appears if the selected year does not match the derived year.}
+  \fieldrow{College *}{Yes}{Dropdown}{Choose one: College of Science (CS), College of Arts and Communication (CAC), or College of Social Sciences (CSS).}
+  \fieldrow{Program *}{Yes}{Dropdown}{Options depend on the selected college. You must select a college first.}
+\end{fieldtable}
+
+\paragraph{Faculty-Only Fields}
+
+\begin{fieldtable}
+  \fieldrow{College}{No}{Dropdown}{Same options as students.}
+  \fieldrow{Department}{No}{64 chars}{Free-text (e.g.\ ``Dept.\ of Math and Computer Science'').}
+\end{fieldtable}
+
+\paragraph{Admin / Staff Fields}
+
+\begin{fieldtable}
+  \fieldrow{Office / Unit}{No}{64 chars}{Free-text (e.g.\ ``Office of the Chancellor'').}
+\end{fieldtable}
+
+\subsubsection{Identity Fields (All Roles)}
+
+\screenshotplaceholder{User Form — Identity and Session Attendance}
+
+\begin{fieldtable}
+  \fieldrow{Pronouns}{No}{Dropdown}{Options: he/him, she/her, they/them, he/they, she/they, any/all, or Prefer not to say.}
+  \fieldrow{Sex at Birth *}{Yes}{Dropdown}{Options: Male, Female, Intersex, or Prefer not to say.}
+  \fieldrow{Gender Identity *}{Yes}{Dropdown}{Options: Man, Woman, Non-binary, Genderqueer, Genderfluid, or Prefer not to say.}
+\end{fieldtable}
+
+\subsubsection{Session Attendance Fields (Students \& Faculty)}
+
+These fields track how many orientation/session events a user has attended. Each field accepts a whole number from \textbf{0 to 5}.
+
+\begin{fieldtable}
+  \fieldrow{GSO Sessions}{No}{0--5}{Gender Sensitivity Orientation sessions attended.}
+  \fieldrow{ASHO Sessions}{No}{0--5}{Anti-Sexual Harassment Orientation sessions attended.}
+  \fieldrow{Forums}{No}{0--5}{Forum sessions attended.}
+  \fieldrow{Research}{No}{0--5}{Research sessions attended.}
+  \fieldrow{Training}{No}{0--5}{Training sessions attended.}
+  \fieldrow{Workshops}{No}{0--5}{Workshop sessions attended.}
+\end{fieldtable}
+
+\subsubsection{Onboarding Toggle}
+
+\begin{fieldtable}
+  \fieldrow{Onboarding complete}{No}{Toggle (on/off)}{Indicates whether the user has finished the onboarding process. Defaults to \textit{on}. Turn it off to force the user through onboarding again on their next login.}
+\end{fieldtable}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  7. PROFILE PAGE
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Profile Page}
+
+Your \textbf{Profile} page lets you view and update your own personal information. It is organized into three tabs: \textit{Personal}, \textit{Professional}, and \textit{Identity}.
+
+\screenshotplaceholder{Admin Profile Page — Personal Tab}
+
+\subsection{Personal Tab}
+
+\begin{fieldtable}
+  \fieldrow{Full Name}{Yes}{64 chars}{Only letters, spaces, and basic punctuation. Cannot be empty.}
+  \fieldrow{Display Name}{No}{32 chars}{Only letters, spaces, and basic punctuation.}
+  \fieldrow{Pronouns}{No}{Dropdown}{Options: he/him, she/her, they/them, he/they, she/they, any/all, or Prefer not to say.}
+  \fieldrow{Contact Number}{No}{11 digits}{Only digits (e.g.\ ``09171234567''). Must be exactly 11 digits if provided.}
+  \fieldrow{Address}{No}{100 chars}{Free-text field.}
+\end{fieldtable}
+
+\subsection{Professional Tab}
+
+\begin{fieldtable}
+  \fieldrow{Office / Unit}{No}{64 chars}{Your office or unit within the university (e.g.\ ``Office of the Chancellor'').}
+\end{fieldtable}
+
+\screenshotplaceholder{Admin Profile Page — Professional Tab}
+
+\subsection{Identity Tab}
+
+\begin{fieldtable}
+  \fieldrow{Sex at Birth}{No}{Dropdown}{Options: Male, Female, Intersex, or Prefer not to say.}
+  \fieldrow{Gender Identity}{No}{Dropdown}{Options: Man, Woman, Non-binary, Genderqueer, Genderfluid, or Prefer not to say.}
+\end{fieldtable}
+
+\textbf{Privacy Note:} The identity information is kept strictly private and is used only for institutional reporting. You are not required to fill this out.
+
+\screenshotplaceholder{Admin Profile Page — Identity Tab}
+
+\subsection{Profile Sidebar}
+
+On the left side of the profile page, you will see a summary card showing:
+\begin{itemize}[leftmargin=1.5em]
+  \item Your name and display name.
+  \item Your role badge (``Administrator'') and office.
+  \item Progress bars for session attendance (GSO, ASHO, Forums, Research, Training, Workshops).
+\end{itemize}
+
+\screenshotplaceholder{Admin Profile Page — Sidebar Summary Card}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  8. SETTINGS PAGE
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Settings Page}
+
+The \textbf{Settings} page lets you update your login credentials. It has two sections: \textit{Change Email Address} and \textit{Change Password}.
+
+\screenshotplaceholder{Settings Page}
+
+\subsection{Change Email Address}
+
+\begin{fieldtable}
+  \fieldrow{Current Email}{Read-only}{---}{Your current email is shown but cannot be edited directly.}
+  \fieldrow{New Email *}{Yes}{No explicit limit}{Must be a valid email address. After submitting, verification links will be sent to both your old and new email addresses. You must confirm from both inboxes.}
+\end{fieldtable}
+
+\subsection{Change Password}
+
+\textbf{Note:} This section is only available if you signed up with an email and password. If you use Google Sign-In, a message will explain that password management is handled through your Google account.
+
+\begin{fieldtable}
+  \fieldrow{Current Password *}{Yes}{16 chars}{Your existing password. The system verifies it before allowing a change.}
+  \fieldrow{New Password *}{Yes}{16 chars}{Must be at least 8 characters long.}
+  \fieldrow{Confirm Password *}{Yes}{16 chars}{Must match the New Password exactly.}
+\end{fieldtable}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  9. TIPS AND TROUBLESHOOTING
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Tips and Troubleshooting}
+
+\subsection{Common Validation Errors}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{5cm}|>{\raggedright\arraybackslash}p{8cm}|}
+\hline
+\rowcolor{lightgray}
+\textbf{Error Message} & \textbf{What To Do} \\
+\hline
+``Full name is required.'' & Make sure the Full Name field is not blank. \\
+\hline
+``Full name can only contain letters, spaces, and basic punctuation.'' & Remove any numbers or special characters (e.g.\ \texttt{\#}, \texttt{\&}) from the name. \\
+\hline
+``Email must end with @gmail.com or @up.edu.ph.'' & Only these two email domains are accepted. \\
+\hline
+``Password must be at least 8 characters long.'' & Use a longer password with at least 8 characters. \\
+\hline
+``Contact number must be 11 digits.'' & Enter exactly 11 digits with no spaces or dashes. \\
+\hline
+``Student number must be exactly 9 digits.'' & Enter the full 9-digit student number. \\
+\hline
+``End date must be after the start date.'' & Adjust your event dates so the end comes after the start. \\
+\hline
+``Registration close must be after open.'' & Make sure the registration closing date/time is later than the opening date/time. \\
+\hline
+``At least one question is required.'' & Add at least one question to your survey before submitting. \\
+\hline
+``Question X needs at least 2 non-empty choices.'' & Multiple-choice questions need at least 2 answer options that are not blank. \\
+\hline
+\end{longtable}
+
+\subsection{General Tips}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Save often.} Changes are only saved when you click the Save or Submit button.
+  \item \textbf{Check for red error messages.} They appear directly below the field that has a problem.
+  \item \textbf{Dropdown placeholders are disabled.} Once you pick an option from a dropdown (e.g.\ ``Select category''), you cannot go back to the placeholder. Pick a valid option instead.
+  \item \textbf{Use the search bar.} It is the fastest way to find any event, user, guideline, or survey.
+  \item \textbf{Date pickers enforce minimum dates.} For example, the End Date picker will not let you pick a date before the Start Date.
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  10. GLOSSARY
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Glossary}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}p{9cm}|}
+\hline
+\rowcolor{lightgray}
+\textbf{Term} & \textbf{Definition} \\
+\hline
+GAD & Gender and Development — the university office focused on gender equity programs. \\
+\hline
+GSO & Gender Sensitivity Orientation — a mandatory orientation session. \\
+\hline
+ASHO & Anti-Sexual Harassment Orientation — a mandatory orientation session. \\
+\hline
+Onboarding & The initial setup process a new user completes after their first login (selecting college, program, identity info, etc.). \\
+\hline
+Likert Scale & A 1-to-5 rating scale commonly used in surveys (1 = Strongly Disagree, 5 = Strongly Agree). \\
+\hline
+Banner Image & The cover photo shown at the top of an event's detail view. \\
+\hline
+\end{longtable}
+
+\end{document}
