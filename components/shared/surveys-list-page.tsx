@@ -313,7 +313,7 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 													Done
 												</Badge>
 											)}
-											<Badge
+											{/* <Badge
 												variant={
 													STATUS_VARIANT[computedStatus] ?? "dark"
 												}
@@ -321,7 +321,7 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 												<span className="capitalize">
 													{computedStatus}
 												</span>
-											</Badge>
+											</Badge> */}
 										</div>
 									</div>
 
