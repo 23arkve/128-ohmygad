@@ -119,7 +119,7 @@ function AdminSidebarPanel() {
 								<span className="body-dark whitespace-nowrap leading-none">
 									UP BAGUIO KASARIAN
 								</span>
-								<span className="heading-md-dark uppercase whitespace-nowrap leading-none">
+								<span className="heading-md-dark whitespace-nowrap leading-none">
 									OhMyGAD!
 								</span>
 							</div>

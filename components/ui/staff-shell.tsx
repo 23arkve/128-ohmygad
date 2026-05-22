@@ -107,7 +107,7 @@ function StaffSidebarPanel() {
 						{open && (
 							<div className="flex flex-col justify-center overflow-hidden gap-1">
 								<span className="body-dark whitespace-nowrap leading-none">UP BAGUIO KASARIAN</span>
-								<span className="heading-md-dark uppercase whitespace-nowrap leading-none">OhMyGAD!</span>
+								<span className="heading-md-dark whitespace-nowrap leading-none">OhMyGAD!</span>
 							</div>
 						)}
 					</div>
