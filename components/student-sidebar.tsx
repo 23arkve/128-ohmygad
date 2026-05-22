@@ -213,7 +213,7 @@ export default function StudentSidebar() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo */}
-				<div className="flex shrink-0 items-end pb-4 py-5 overflow-hidden">
+				<div className="flex shrink-0 items-center pb-4 py-5 overflow-hidden">
 					<div
 						className="flex shrink-0 items-center"
 						style={{ width: COLLAPSED, height: "100%" }}
