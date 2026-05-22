@@ -402,9 +402,9 @@ export default function SurveyTakePage() {
 
       {/* Survey header */}
       <div>
-        <h1 className="heading-lg">{survey?.title}</h1>
+        <h1 className="heading-xl">{survey?.title}</h1>
         {survey?.description && (
-          <p className="body mt-1">{survey.description}</p>
+          <p className="caption mt-2">{survey.description}</p>
         )}
       </div>
 
