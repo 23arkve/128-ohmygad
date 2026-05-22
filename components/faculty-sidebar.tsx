@@ -213,7 +213,7 @@ export default function FacultySidebar() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo */}
-				<div className="flex shrink-0 items-end pb-4 py-5 overflow-hidden">
+				<div className="flex shrink-0 items-center pb-4 py-5 overflow-hidden">
 					<div
 						className="flex shrink-0 items-center"
 						style={{ width: COLLAPSED, height: "100%" }}
@@ -227,11 +227,11 @@ export default function FacultySidebar() {
 					</div>
 					{open && (
 						<div className="flex flex-col justify-center overflow-hidden gap-1">
-							<span className="body-dark whitespace-nowrap leading-none">
-								UP BAGUIO
+							<span className="caption-dark whitespace-nowrap leading-none">
+								UP BAGUIO KASARIAN
 							</span>
-							<span className="heading-md-dark uppercase whitespace-nowrap leading-none">
-								Kasarian
+							<span className="heading-md-dark whitespace-nowrap leading-none">
+								OhMyGAD!
 							</span>
 						</div>
 					)}

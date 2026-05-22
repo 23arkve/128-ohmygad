@@ -39,9 +39,11 @@ export default function SignUpPage() {
 							className="w-[70px] h-[70px] md:w-[120px] md:h-[120px]"
 						/>
 						<div className="flex flex-col items-center md:items-start">
-							<p className="caption text-lg">UP BAGUIO</p>
-							<h1 className="heading-lg md:heading-xl uppercase">
-								Kasarian
+							<p className="caption text-lg">
+								UP BAGUIO KASARIAN
+							</p>
+							<h1 className="heading-lg md:heading-xl">
+								OhMyGAD!
 							</h1>
 						</div>
 					</div>

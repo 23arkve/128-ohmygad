@@ -89,9 +89,9 @@ export default function DashboardHeader({
 							height={38}
 						/>
 						<div className="flex flex-col justify-center">
-							<span className="caption">UP BAGUIO</span>
-							<span className="heading-sm uppercase">
-								Kasarian
+							<span className="caption">UP BAGUIO KASARIAN</span>
+							<span className="heading-sm">
+								OhMyGAD!
 							</span>
 						</div>
 					</div>

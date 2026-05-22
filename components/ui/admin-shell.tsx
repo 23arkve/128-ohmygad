@@ -101,7 +101,7 @@ function AdminSidebarPanel() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo - ALIGNED TO BOTTOM (items-end) WITH EXACT PADDING */}
-				<div className="flex shrink-0 items-end pb-4 py-5 overflow-hidden">
+				<div className="flex shrink-0 items-center pb-4 py-5 overflow-hidden">
 					<div className="flex w-full items-center gap-2">
 						<div
 							className="flex items-center justify-center shrink-0"
@@ -117,10 +117,10 @@ function AdminSidebarPanel() {
 						{open && (
 							<div className="flex flex-col justify-center overflow-hidden gap-1">
 								<span className="body-dark whitespace-nowrap leading-none">
-									UP BAGUIO
+									UP BAGUIO KASARIAN
 								</span>
 								<span className="heading-md-dark uppercase whitespace-nowrap leading-none">
-									Kasarian
+									OhMyGAD!
 								</span>
 							</div>
 						)}
