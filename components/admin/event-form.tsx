@@ -133,12 +133,6 @@ export default function EventForm({
 		new Date(registration_open) >= new Date(registration_close)
 			? "Registration close must be after open."
 			: undefined;
-	const regBeforeEventError =
-		registration_close &&
-		start_date &&
-		new Date(registration_close) > new Date(start_date)
-			? "Registration must close before event starts."
-			: undefined;
 
 	const hasFieldErrors = !!(
 		titleError ||
@@ -151,8 +145,7 @@ export default function EventForm({
 		eventSequenceError ||
 		regOpenError ||
 		regCloseError ||
-		regSequenceError ||
-		regBeforeEventError
+		regSequenceError
 	);
 
 	// for banner images
@@ -287,13 +280,6 @@ export default function EventForm({
 		const effectiveEnd = end ?? start;
 		if (regOpen >= effectiveEnd) {
 			setError("Registration must open before the event ends.");
-			setIsLoading(false);
-			return;
-		}
-
-		// Registration should typically close before or at the end of the event
-		if (regClose > effectiveEnd) {
-			setError("Registration must close before or when the event ends.");
 			setIsLoading(false);
 			return;
 		}
@@ -655,13 +641,11 @@ export default function EventForm({
 								/>
 								{touched.registration_close &&
 									(regCloseError ||
-										regSequenceError ||
-										regBeforeEventError) && (
+										regSequenceError) && (
 										<Toast
 											variant="error"
 											title="Registration Error"
 											message={
-												regBeforeEventError ||
 												regSequenceError ||
 												regCloseError
 											}
