@@ -21,7 +21,7 @@ import {
 	EmptyFilters,
 	Modal,
 	SearchBar,
-    PulsingLoader,
+	PulsingLoader,
 } from "@/components/ui";
 import { Pagination } from "@/components/pagination";
 import type { DateRange, DashboardFilters } from "@/components/ui";
@@ -42,8 +42,12 @@ import {
 	Rectangle,
 } from "recharts";
 import { createClient } from "@/lib/supabase/client";
-import { useDashboardData, type RawEvent } from "./hooks/use-dashboard-data";
 import { useSurveyCompletionRates } from "./hooks/use-survey-completion-rates";
+import {
+	useDashboardData,
+	getEventsForDate,
+	type RawEvent,
+} from "./hooks/use-dashboard-data";
 import GlobalSearch from "@/components/global-search";
 import EventForm, { type EventFormData } from "@/components/admin/event-form";
 import { EventDetailModal } from "@/components/admin/event-detail-modal";
@@ -51,7 +55,8 @@ import UserForm from "@/components/admin/user-form";
 import GuidelineForm from "@/components/admin/guideline-form";
 import SurveyForm from "@/components/admin/survey-form";
 
-// constants ------------------------------------------------
+// ------------------------------------------------ CONSTANTS / TOOLTIPS ------------------------------------------------
+
 const BRAND_COLORS = [
 	"#B8B5E8",
 	"#F4A7B9",
@@ -92,7 +97,6 @@ function colorFor(map: Record<string, string>, key: string, idx: number) {
 	return map[key] ?? BRAND_COLORS[idx % BRAND_COLORS.length];
 }
 
-// tooltip ------------------------------------------------
 interface TooltipEntry {
 	color?: string;
 	payload?: {
@@ -106,6 +110,7 @@ interface TooltipEntry {
 	dataKey?: string;
 	value?: number | string;
 }
+
 function CustomTooltip({
 	active,
 	payload,
@@ -117,10 +122,15 @@ function CustomTooltip({
 }) {
 	if (!active || !payload?.length) return null;
 	const firstPayload =
-		payload.find((entry) => entry.payload?.respondentCount !== undefined || entry.payload?.completedCount !== undefined || entry.payload?.totalRegistrations !== undefined)
-			?.payload ?? payload[0]?.payload;
+		payload.find(
+			(entry) =>
+				entry.payload?.respondentCount !== undefined ||
+				entry.payload?.completedCount !== undefined ||
+				entry.payload?.totalRegistrations !== undefined,
+		)?.payload ?? payload[0]?.payload;
 	const eventTitle = firstPayload?.eventTitle;
-	const totalRespondents = firstPayload?.respondentCount ?? firstPayload?.completedCount;
+	const totalRespondents =
+		firstPayload?.respondentCount ?? firstPayload?.completedCount;
 	const totalAttendees = firstPayload?.totalRegistrations;
 	return (
 		<div className="bg-white/90 backdrop-blur-md border border-black/[0.07] shadow-[var(--shadow-float)] rounded-xl p-2 min-w-[160px]">
@@ -128,31 +138,40 @@ function CustomTooltip({
 				<p className="body uppercase tracking-wider mb-1.5">{label}</p>
 			)}
 			{eventTitle && (
-				<p className="caption text-[var(--gray)] mb-1">Linked event: {eventTitle}</p>
-			)}
-			{typeof totalRespondents === "number" && typeof totalAttendees === "number" && (
 				<p className="caption text-[var(--gray)] mb-1">
-					Respondents: {totalRespondents} / {totalAttendees} attendees
+					Linked event: {eventTitle}
 				</p>
 			)}
-			{typeof totalRespondents === "number" && typeof totalAttendees !== "number" && (
-				<p className="caption text-[var(--gray)] mb-1">
-					Respondents: {totalRespondents}
-				</p>
-			)}
-			{typeof totalAttendees === "number" && typeof totalRespondents !== "number" && (
-				<p className="caption text-[var(--gray)] mb-1">
-					Attendees: {totalAttendees}
-				</p>
-			)}
+			{typeof totalRespondents === "number" &&
+				typeof totalAttendees === "number" && (
+					<p className="caption text-[var(--gray)] mb-1">
+						Respondents: {totalRespondents} / {totalAttendees}{" "}
+						attendees
+					</p>
+				)}
+			{typeof totalRespondents === "number" &&
+				typeof totalAttendees !== "number" && (
+					<p className="caption text-[var(--gray)] mb-1">
+						Respondents: {totalRespondents}
+					</p>
+				)}
+			{typeof totalAttendees === "number" &&
+				typeof totalRespondents !== "number" && (
+					<p className="caption text-[var(--gray)] mb-1">
+						Attendees: {totalAttendees}
+					</p>
+				)}
 			{payload.map((e: TooltipEntry, i: number) => {
-				const isCompletion = e.name === "Completed" || e.name === "Incomplete";
+				const isCompletion =
+					e.name === "Completed" || e.name === "Incomplete";
 				let displayValue = e.value?.toString();
-				
+
 				if (isCompletion && firstPayload) {
-					const count = e.name === "Completed" 
-						? firstPayload.completedCount 
-						: ((firstPayload.respondentCount ?? 0) - (firstPayload.completedCount ?? 0));
+					const count =
+						e.name === "Completed"
+							? firstPayload.completedCount
+							: (firstPayload.respondentCount ?? 0) -
+								(firstPayload.completedCount ?? 0);
 					displayValue = `${count} (${e.value}%)`;
 				} else if (isCompletion) {
 					displayValue = `${e.value}%`;
@@ -174,7 +193,6 @@ function CustomTooltip({
 	);
 }
 
-// dummy data for line chart to see
 const DUMMY_ATTENDANCE = [
 	{ month: "Aug", attendees: 24 },
 	{ month: "Sep", attendees: 61 },
@@ -189,6 +207,7 @@ const DUMMY_ATTENDANCE = [
 ];
 
 // ------------------------------------------------ DASHBOARD PAGE ------------------------------------------------
+
 export default function DashboardPage() {
 	const [attendanceRange, setAttendanceRange] = useState<DateRange>(() => {
 		const now = new Date();
@@ -203,17 +222,18 @@ export default function DashboardPage() {
 	const [surveyPage, setSurveyPage] = useState(1);
 	const hoveredSurveyBarKey = useRef<string | null>(null);
 
-	const SurveyTooltip = useCallback(
-		({ active, payload, label }: any) => {
-			if (!active || !payload?.length || !hoveredSurveyBarKey.current) return null;
-			const filtered = payload.filter((p: any) => p.dataKey === hoveredSurveyBarKey.current);
-			if (!filtered.length) return null;
-			return <CustomTooltip active={active} payload={filtered} label={label} />;
-		},
-		[],
-	);
+	const SurveyTooltip = useCallback(({ active, payload, label }: any) => {
+		if (!active || !payload?.length || !hoveredSurveyBarKey.current)
+			return null;
+		const filtered = payload.filter(
+			(p: any) => p.dataKey === hoveredSurveyBarKey.current,
+		);
+		if (!filtered.length) return null;
+		return (
+			<CustomTooltip active={active} payload={filtered} label={label} />
+		);
+	}, []);
 
-	// quick action modals
 	const [activeModal, setActiveModal] = useState<
 		"event" | "user" | "guideline" | "survey" | null
 	>(null);
@@ -244,22 +264,28 @@ export default function DashboardPage() {
 		const supabase = createClient();
 		const { data } = await supabase
 			.from("event")
-			.select("id, start_date, end_date, title, location, category, description, capacity, banner_url, registration_open, registration_close")
+			.select(
+				"id, start_date, end_date, title, location, category, description, capacity, banner_url, registration_open, registration_close",
+			)
 			.eq("id", prev.id)
 			.single();
-		setSelectedEvent(data ? {
-			id: data.id,
-			start_date: data.start_date,
-			end_date: data.end_date,
-			title: data.title ?? "",
-			location: data.location ?? "",
-			category: data.category ?? "",
-			description: data.description ?? null,
-			capacity: data.capacity ?? null,
-			banner_url: data.banner_url ?? null,
-			registration_open: data.registration_open ?? null,
-			registration_close: data.registration_close ?? null,
-		} : prev);
+		setSelectedEvent(
+			data
+				? {
+						id: data.id,
+						start_date: data.start_date,
+						end_date: data.end_date,
+						title: data.title ?? "",
+						location: data.location ?? "",
+						category: data.category ?? "",
+						description: data.description ?? null,
+						capacity: data.capacity ?? null,
+						banner_url: data.banner_url ?? null,
+						registration_open: data.registration_open ?? null,
+						registration_close: data.registration_close ?? null,
+					}
+				: prev,
+		);
 	}, []);
 
 	const handleEditCancel = useCallback(() => {
@@ -273,6 +299,7 @@ export default function DashboardPage() {
 	const [selectedEvent, setSelectedEvent] = useState<RawEvent | null>(null);
 	const [editTarget, setEditTarget] = useState<RawEvent | null>(null);
 	const editFromDetailRef = useRef<RawEvent | null>(null);
+    const openedFromDateRef = useRef<Date | null>(null);
 
 	const {
 		eventAttendanceData,
@@ -348,7 +375,6 @@ export default function DashboardPage() {
 		}
 	}, [surveyPage, surveyPageCount]);
 
-	// dynamic Set for the MiniCalendar
 	const activeEventDays = useMemo(() => {
 		const days = new Set<number>();
 		const now = new Date();
@@ -356,11 +382,12 @@ export default function DashboardPage() {
 		const curMonth = now.getMonth();
 
 		allEvents.forEach((e) => {
-			// Parse as local date to avoid UTC-offset shifting
 			const part = e.start_date?.split("T")[0];
 			if (!part) return;
 			const [y, m, d] = part.split("-").map(Number);
-			if (y === curYear && m - 1 === curMonth) days.add(d);
+			if (y === curYear && m - 1 === curMonth) {
+				days.add(d);
+			}
 		});
 
 		return days;
@@ -371,8 +398,6 @@ export default function DashboardPage() {
 		const now = new Date();
 		const curYear = now.getFullYear();
 		const curMonth = now.getMonth();
-		const monthStart = new Date(curYear, curMonth, 1);
-		const monthEnd = new Date(curYear, curMonth + 1, 0);
 
 		function toLocal(iso: string): Date {
 			const part = iso?.split("T")[0];
@@ -382,17 +407,27 @@ export default function DashboardPage() {
 		}
 
 		allEvents.forEach((e) => {
-			const start = toLocal(e.start_date);
-			const end = e.end_date ? toLocal(e.end_date) : start;
-			if (isNaN(start.getTime())) return;
-			// Only events that started before this month but are still ongoing
-			if (start >= monthStart) return;
-			if (end < monthStart) return;
+			if (!e.start_date || !e.end_date) return;
 
-			const cur = new Date(monthStart);
-			const cap = new Date(Math.min(end.getTime(), monthEnd.getTime()));
-			while (cur <= cap) {
-				days.add(cur.getDate());
+			const start = toLocal(e.start_date);
+			const end = toLocal(e.end_date);
+			if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
+
+			// Skip if it's a single day event
+			if (start.getTime() === end.getTime()) return;
+
+			const cur = new Date(start);
+			// Advance by 1 day because the start date is already tagged in activeEventDays
+			cur.setDate(cur.getDate() + 1);
+
+			// Traverse the event duration step-by-step
+			while (cur <= end) {
+				if (
+					cur.getFullYear() === curYear &&
+					cur.getMonth() === curMonth
+				) {
+					days.add(cur.getDate());
+				}
 				cur.setDate(cur.getDate() + 1);
 			}
 		});
@@ -402,43 +437,13 @@ export default function DashboardPage() {
 
 	const selectedDateEvents = useMemo(() => {
 		if (!selectedDate) return null;
-		const dayStart = new Date(selectedDate);
-		dayStart.setHours(0, 0, 0, 0);
-		const dayEnd = new Date(selectedDate);
-		dayEnd.setHours(23, 59, 59, 999);
-		return allEvents
-			.filter((e) => {
-				const start = new Date(e.start_date);
-				const end = new Date(e.end_date);
-				return start <= dayEnd && end >= dayStart;
-			})
-			.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
-			.map((e) => ({
-				id: e.id,
-				time: new Date(e.start_date).toLocaleTimeString("en-US", {
-					hour: "2-digit",
-					minute: "2-digit",
-					hour12: true,
-				}),
-				title: e.title,
-				location: e.location,
-				category: e.category,
-			}));
+		return getEventsForDate(allEvents, selectedDate);
 	}, [selectedDate, allEvents]);
 
 	return (
 		<div className="flex flex-col gap-5 w-full animate-in fade-in duration-500">
-			{/* greeting ------------------------------------------------
-			<div className="flex flex-col w-full">
-				<div className="flex items-center justify-between w-full">
-					<h2 className="heading-md">Good day, Admin!</h2>
-				</div>
-			</div> */}
-
-			{/* ------------------------------------------------ MAIN CONTENT ------------------------------------------------*/}
 			<div className="flex flex-col xl:flex-row gap-5">
 				<div className="flex flex-col gap-5 flex-1 min-w-0 pb-2">
-					{/* KPI section ------------------------------------------------ */}
 					<div className="flex flex-col gap-5">
 						<div className="flex flex-row gap-3">
 							<GlobalSearch
@@ -507,9 +512,7 @@ export default function DashboardPage() {
 						</div>
 					</div>
 
-					{/* attendance and quick actions ------------------------------------------------ */}
 					<div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-4">
-						{/* attendance over time */}
 						<Card
 							variant="no-hover"
 							className="flex flex-col p-4 min-h-[320px]"
@@ -647,7 +650,6 @@ export default function DashboardPage() {
 							</div>
 						</Card>
 
-						{/* quick actions */}
 						<Card
 							variant="no-hover"
 							className="flex flex-col justify-around p-4 gap-3"
@@ -688,10 +690,8 @@ export default function DashboardPage() {
 						</Card>
 					</div>
 
-					{/* other analytics ------------------------------------------------ */}
 					<div>
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-							{/* users per college */}
 							<Card
 								variant="no-hover"
 								className="flex flex-col p-5 min-h-[250px]"
@@ -803,7 +803,6 @@ export default function DashboardPage() {
 								</div>
 							</Card>
 
-							{/* sex at birth */}
 							<Card
 								variant="no-hover"
 								className="flex flex-col p-5 min-h-[250px]"
@@ -892,7 +891,6 @@ export default function DashboardPage() {
 								</div>
 							</Card>
 
-							{/* gender identity */}
 							<Card
 								variant="no-hover"
 								className="flex flex-col p-5 min-h-[260px]"
@@ -986,7 +984,6 @@ export default function DashboardPage() {
 						</div>
 					</div>
 
-					{/* survey completion analytics ------------------------------------------------ */}
 					<div>
 						<Card
 							variant="no-hover"
@@ -1146,7 +1143,6 @@ export default function DashboardPage() {
 														} = props;
 														if (width <= 0)
 															return <></>;
-														// Round right side only if incomplete is 0
 														const r =
 															payload.incompletePct ===
 															0
@@ -1159,16 +1155,7 @@ export default function DashboardPage() {
 															/>
 														);
 													}}
-												>
-													{/*--<LabelList
-														dataKey="completedPct"
-														position="right"
-														formatter={(value) =>
-															`${value}%`
-														}
-														fill="var(--primary-dark)"
-													/>--*/}
-												</Bar>
+												/>
 												<Bar
 													dataKey="incompletePct"
 													name="Incomplete"
@@ -1187,15 +1174,11 @@ export default function DashboardPage() {
 													}}
 													shape={(props: any) => {
 														const {
-															x,
-															y,
 															width,
-															height,
 															payload,
 														} = props;
 														if (width <= 0)
 															return <></>;
-														// Round left side only if completed is 0
 														const r =
 															payload.completedPct ===
 															0
@@ -1208,20 +1191,7 @@ export default function DashboardPage() {
 															/>
 														);
 													}}
-												>
-													{/*--<LabelList
-														dataKey="incompletePct"
-														position="insideRight"
-														formatter={(value) =>
-															typeof value ===
-																"number" &&
-															value > 0
-																? `${value}%`
-																: ""
-														}
-														fill="var(--primary-dark)"
-													/>--*/}
-												</Bar>
+												/>
 											</BarChart>
 										</ResponsiveContainer>
 										{(surveyPageCount > 1 ||
@@ -1241,9 +1211,7 @@ export default function DashboardPage() {
 					</div>
 				</div>
 
-				{/* right panel ------------------------------------------------------------------------------------------------ */}
 				<aside className="flex flex-col gap-5 xl:w-[268px] shrink-0 pb-8">
-					{/* calendar */}
 					<Card variant="no-hover" className="p-4">
 						<MiniCalendar
 							eventDays={activeEventDays}
@@ -1252,7 +1220,6 @@ export default function DashboardPage() {
 						/>
 					</Card>
 
-					{/* timeline */}
 					<Card variant="no-hover" className="p-4">
 						<TodayTimeline
 							events={todayEvents}
@@ -1265,10 +1232,7 @@ export default function DashboardPage() {
 					</Card>
 				</aside>
 			</div>
-			{/* end xl:flex-row */}
 
-			{/* quick action modals */}
-			{/* -------------------------------------- event modal -------------------------------------- */}
 			<Modal
 				open={activeModal === "event"}
 				onClose={closeModal}
@@ -1282,7 +1246,6 @@ export default function DashboardPage() {
 				/>
 			</Modal>
 
-			{/* -------------------------------------- user modal -------------------------------------- */}
 			<Modal
 				open={activeModal === "user"}
 				onClose={closeModal}
@@ -1291,7 +1254,6 @@ export default function DashboardPage() {
 				<UserForm onSuccess={closeModal} />
 			</Modal>
 
-			{/* -------------------------------------- guideline modal -------------------------------------- */}
 			<Modal
 				open={activeModal === "guideline"}
 				onClose={closeModal}
@@ -1305,7 +1267,6 @@ export default function DashboardPage() {
 				/>
 			</Modal>
 
-			{/* -------------------------------------- survey modal -------------------------------------- */}
 			<Modal
 				open={activeModal === "survey"}
 				onClose={closeModal}
@@ -1319,7 +1280,6 @@ export default function DashboardPage() {
 				/>
 			</Modal>
 
-			{/* -------------------------------------- today events modal -------------------------------------- */}
 			<Modal
 				open={selectedDate !== null}
 				onClose={() => setSelectedDate(null)}
@@ -1355,8 +1315,13 @@ export default function DashboardPage() {
 									const full = allEvents.find(
 										(e) => e.id === event.id,
 									);
-									setSelectedDate(null);
-									if (full) setSelectedEvent(full);
+									if (full) {
+										// save the current date before closing the modal
+										openedFromDateRef.current =
+											selectedDate;
+										setSelectedDate(null);
+										setSelectedEvent(full);
+									}
 								}}
 								className="flex items-center gap-2 w-full text-left rounded-[8px] border border-black/[0.06] bg-white/60 px-3 py-2.5 hover:bg-[var(--periwinkle-light)] transition-colors cursor-pointer"
 							>
@@ -1388,10 +1353,16 @@ export default function DashboardPage() {
 				)}
 			</Modal>
 
-			{/* -------------------------------------- event detail modal -------------------------------------- */}
 			<EventDetailModal
 				event={selectedEvent}
-				onClose={() => setSelectedEvent(null)}
+				onClose={() => {
+					setSelectedEvent(null);
+					// iff it was opened from the calendar, restore the calendar modal
+					if (openedFromDateRef.current) {
+						setSelectedDate(openedFromDateRef.current);
+						openedFromDateRef.current = null; // clear the ref
+					}
+				}}
 				onEdit={() => {
 					editFromDetailRef.current = selectedEvent;
 					setSelectedEvent(null);
@@ -1399,7 +1370,6 @@ export default function DashboardPage() {
 				}}
 			/>
 
-			{/* -------------------------------------- edit event modal (from dashboard) -------------------------------------- */}
 			<Modal
 				open={editTarget !== null}
 				onClose={handleEditCancel}

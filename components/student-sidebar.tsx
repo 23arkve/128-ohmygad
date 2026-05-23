@@ -22,8 +22,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useMobileMenu } from "@/components/ui/mobile-menu-context";
 
-const SPRING = { type: "spring", stiffness: 300, damping: 30 } as const;
-
 const NAV_ITEMS = [
 	{
 		href: "/student",
