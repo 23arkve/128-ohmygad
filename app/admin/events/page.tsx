@@ -13,7 +13,7 @@ import {
 	Loader2,
 	Calendar,
 	X,
-    Upload,
+	Upload,
 } from "lucide-react";
 import EventForm, {
 	type EventFormData,
@@ -124,6 +124,12 @@ export default function EventsPage() {
 
 	const [createModalOpen, setCreateModalOpen] = useState(false);
 	const [editTarget, setEditTarget] = useState<EventFormData | null>(null);
+
+	// discard changes confirm state
+	const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+	const [pendingClose, setPendingClose] = useState<(() => void) | null>(null);
+	const [createFormDirty, setCreateFormDirty] = useState(false);
+	const [editFormDirty, setEditFormDirty] = useState(false);
 
 	// for the delete confirmation modal
 	const [deleteTarget, setDeleteTarget] = useState<{
@@ -433,12 +439,33 @@ export default function EventsPage() {
 		setDeletingId(null);
 	}, [deleteTarget, deletePassword, showToast]);
 
+	const requestClose = (closeFn: () => void, isDirty: boolean) => {
+		if (isDirty) {
+			setPendingClose(() => closeFn);
+			setShowDiscardConfirm(true);
+		} else {
+			closeFn();
+		}
+	};
+
+	const confirmDiscard = () => {
+		setShowDiscardConfirm(false);
+		pendingClose?.();
+		setPendingClose(null);
+	};
+
+	const cancelDiscard = () => {
+		setShowDiscardConfirm(false);
+		setPendingClose(null);
+	};
+
 	// stable callbacks for modal success handlers
 	// props on every render and prevents unnecessary child re-renders
 	const handleCreateSuccess = useCallback(
 		(title: string) => {
 			getEvents();
 			setCreateModalOpen(false);
+			setCreateFormDirty(false);
 			showToast("success", `Event "${title}" created successfully!`);
 		},
 		[getEvents, showToast],
@@ -452,20 +479,31 @@ export default function EventsPage() {
 			}
 			setDetailEvent(null);
 			setEditTarget(null);
+			setEditFormDirty(false);
 			showToast("success", `Event "${title}" updated successfully!`);
 		},
 		[getEvents, showToast],
 	);
 
-	const handleCreateCancel = useCallback(() => setCreateModalOpen(false), []);
+	const handleCreateCancel = useCallback(
+		() =>
+			requestClose(() => {
+				setCreateModalOpen(false);
+				setCreateFormDirty(false);
+			}, createFormDirty),
+		[createFormDirty],
+	);
 	const handleEditCancel = useCallback(() => {
-		// reopen detail modal if edit was triggered from it
-		if (editFromDetailRef.current) {
-			setDetailEvent(editFromDetailRef.current);
-			editFromDetailRef.current = null;
-		}
-		setEditTarget(null);
-	}, []);
+		requestClose(() => {
+			// reopen detail modal if edit was triggered from it
+			if (editFromDetailRef.current) {
+				setDetailEvent(editFromDetailRef.current);
+				editFromDetailRef.current = null;
+			}
+			setEditTarget(null);
+			setEditFormDirty(false);
+		}, editFormDirty);
+	}, [editFormDirty]);
 
 	const activeFilterCount = categoryFilters.size + statusFilters.size;
 	const hasActiveFilters = activeFilterCount > 0;
@@ -943,6 +981,7 @@ export default function EventsPage() {
 					mode="create"
 					onSuccess={handleCreateSuccess}
 					onCancel={handleCreateCancel}
+					onDirtyChange={setCreateFormDirty}
 				/>
 			</Modal>
 
@@ -961,6 +1000,7 @@ export default function EventsPage() {
 						initialData={editTarget}
 						onSuccess={handleEditSuccess}
 						onCancel={handleEditCancel}
+						onDirtyChange={setEditFormDirty}
 					/>
 				)}
 			</Modal>
@@ -1030,6 +1070,43 @@ export default function EventsPage() {
 						</div>
 					</div>
 				)}
+			</Modal>
+
+			{/* discard changes confirm modal */}
+			<Modal
+				open={showDiscardConfirm}
+				onClose={cancelDiscard}
+				title="Discard Changes?"
+				footer={
+					<div className="flex gap-3 w-full">
+						<Button
+							variant="ghost"
+							style={{ flex: 1 }}
+							onClick={cancelDiscard}
+						>
+							Keep Editing
+						</Button>
+						<Button
+							variant="primary"
+							style={{ flex: 1 }}
+							onClick={confirmDiscard}
+						>
+							Discard
+						</Button>
+					</div>
+				}
+			>
+				<div className="space-y-4">
+					<div className="p-4 rounded-xl bg-[var(--pink-light)] border border-[rgba(244,123,123,0.2)]">
+						<p className="text-sm text-[var(--error)] font-bold mb-1">
+							Warning
+						</p>
+						<p className="text-sm text-[var(--primary-dark)]">
+							You have unsaved changes. Are you sure you want to
+							discard them?
+						</p>
+					</div>
+				</div>
 			</Modal>
 
 			{/* floating toast notification */}
