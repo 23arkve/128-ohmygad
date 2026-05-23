@@ -84,7 +84,14 @@ function StaffSidebarPanel() {
 	const BTN = 28;
 
 	return (
-		<div style={{ position: "relative", flexShrink: 0, width: open ? EXPANDED : COLLAPSED }} className="hidden md:block">
+		<div
+			style={{
+				position: "relative",
+				flexShrink: 0,
+				width: open ? EXPANDED : COLLAPSED,
+			}}
+			className="hidden md:block"
+		>
 			<aside
 				data-state={open ? "expanded" : "collapsed"}
 				className="group/sidebar flex h-full flex-col overflow-hidden pr-2"
@@ -106,8 +113,12 @@ function StaffSidebarPanel() {
 						</div>
 						{open && (
 							<div className="flex flex-col justify-center overflow-hidden gap-1">
-								<span className="body-dark whitespace-nowrap leading-none">UP BAGUIO KASARIAN</span>
-								<span className="heading-md-dark whitespace-nowrap leading-none">OhMyGAD!</span>
+								<span className="caption-dark whitespace-nowrap leading-none">
+									UP BAGUIO KASARIAN
+								</span>
+								<span className="heading-md-dark whitespace-nowrap leading-none">
+									OhMyGAD!
+								</span>
 							</div>
 						)}
 					</div>
@@ -128,7 +139,10 @@ function StaffSidebarPanel() {
 
 							const linkContent = (
 								<>
-									<div style={{ width: open ? 24 : "100%" }} className="flex justify-center shrink-0">
+									<div
+										style={{ width: open ? 24 : "100%" }}
+										className="flex justify-center shrink-0"
+									>
 										<Icon size={18} />
 									</div>
 									{open && (
@@ -140,7 +154,11 @@ function StaffSidebarPanel() {
 							);
 
 							return open ? (
-								<Link key={href} href={href} className={linkClass}>
+								<Link
+									key={href}
+									href={href}
+									className={linkClass}
+								>
 									{linkContent}
 								</Link>
 							) : (
@@ -150,7 +168,10 @@ function StaffSidebarPanel() {
 											{linkContent}
 										</Link>
 									</TooltipTrigger>
-									<TooltipContent side="right" sideOffset={10}>
+									<TooltipContent
+										side="right"
+										sideOffset={10}
+									>
 										{label}
 									</TooltipContent>
 								</Tooltip>
