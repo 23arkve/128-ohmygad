@@ -418,7 +418,7 @@ export default function DashboardPage() {
 				time: new Date(e.start_date).toLocaleTimeString("en-US", {
 					hour: "2-digit",
 					minute: "2-digit",
-					hour12: false,
+					hour12: true,
 				}),
 				title: e.title,
 				location: e.location,
@@ -1358,12 +1358,12 @@ export default function DashboardPage() {
 									setSelectedDate(null);
 									if (full) setSelectedEvent(full);
 								}}
-								className="flex items-start gap-3 w-full text-left rounded-[8px] border border-black/[0.06] bg-white/60 px-3 py-2.5 hover:bg-[var(--periwinkle-light)] transition-colors cursor-pointer"
+								className="flex items-center gap-2 w-full text-left rounded-[8px] border border-black/[0.06] bg-white/60 px-3 py-2.5 hover:bg-[var(--periwinkle-light)] transition-colors cursor-pointer"
 							>
-								<span className="caption w-[34px] shrink-0 pt-0.5 text-[var(--gray)]">
+								<span className="caption w-[65px] shrink-0 pt-0.5 text-[var(--gray)] self-start">
 									{event.time}
 								</span>
-								<div className="flex-1 min-w-0">
+								<div className="flex-1 min-w-0 items-center">
 									<p
 										title={event.title}
 										className="caption-bold truncate"

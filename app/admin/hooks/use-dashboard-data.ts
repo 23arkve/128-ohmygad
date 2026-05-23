@@ -214,20 +214,23 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 			if (e1) throw e1;
 			if (e2) throw e2;
 
-			const todayStart = new Date();
-			todayStart.setHours(0, 0, 0, 0);
-			const todayEnd = new Date();
-			todayEnd.setHours(23, 59, 59, 999);
-			// AFTER
+			// get today's date as YYYY-MM-DD (local timezone)
+			const today = new Date();
+			const todayStr = today.toISOString().split("T")[0];
+			const tomorrow = new Date(today.getTime() + 86400000);
+			const tomorrowStr = tomorrow.toISOString().split("T")[0];
+
 			const { data: todayRows, error: e3 } = await supabase
 				.from("event")
 				.select("id, title, start_date, end_date, location, category")
-				.lte("start_date", todayEnd.toISOString()) // started on or before end of today
-				.gte("end_date", todayStart.toISOString()) // ends on or after start of today
+				.gte("start_date", `${todayStr}T00:00:00`)
+				.lt("start_date", `${tomorrowStr}T00:00:00`)
 				.order("start_date", { ascending: true });
 			const { data: eventRows, error: e4 } = await supabase
 				.from("event")
-				.select("id, start_date, end_date, title, location, category, description, capacity, banner_url, registration_open, registration_close");
+				.select(
+					"id, start_date, end_date, title, location, category, description, capacity, banner_url, registration_open, registration_close",
+				);
 			if (e4) throw e4;
 
 			if (!cancelled) {
@@ -242,7 +245,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 							{
 								hour: "2-digit",
 								minute: "2-digit",
-								hour12: false,
+								hour12: true,
 							},
 						),
 						title: r.title ?? "",
@@ -250,7 +253,7 @@ export function useDashboardData(dateRange?: DateRange, filters?: DashboardFilte
 						category: r.category ?? "",
 					})),
 				);
-                setEventDates(
+				setEventDates(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(eventRows ?? []).map((r: any) => r.start_date as string),
 				);

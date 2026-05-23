@@ -73,8 +73,8 @@ export function TodayTimeline({ events, loading, onEventClick }: TodayTimelinePr
       ) : (
         <div className="flex flex-col gap-2">
           {events.map((item, i) => (
-            <div key={i} className="flex items-start gap-2.5">
-              <span className="caption w-[34px] shrink-0 pt-1">
+            <div key={i} className="flex items-start gap-2">
+              <span className="caption w-[40px] shrink-0 pt-1 text-left">
                 {item.time}
               </span>
               <button
