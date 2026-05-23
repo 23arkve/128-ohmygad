@@ -92,7 +92,7 @@ function StaffSidebarPanel() {
 			>
 				{/* logo */}
 				<div className="flex shrink-0 items-center pb-4 py-5 overflow-hidden">
-					<div className="flex w-full items-center gap-2">
+					<div className="flex w-full items-center gap-1">
 						<div
 							className="flex items-center justify-center shrink-0"
 							style={{ width: open ? 55 : "100%" }}
@@ -119,7 +119,7 @@ function StaffSidebarPanel() {
 						{NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
 							const active = isActive(pathname, href, exact);
 							const linkClass = [
-								"flex items-center w-full h-[45px] rounded-[10px] px-1",
+								"flex items-center w-full h-[45px] rounded-[10px] px-4",
 								"text-[15px] font-medium transition-colors duration-150",
 								active
 									? "bg-white/[0.18] text-white"
