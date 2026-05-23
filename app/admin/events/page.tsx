@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, memo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { deleteEventAndLinkedSurveys } from "./actions";
@@ -20,7 +20,6 @@ import EventForm, {
 	deriveStatus,
 } from "@/components/admin/event-form";
 import { EventDetailModal } from "@/components/admin/event-detail-modal";
-import { Tabs } from "@/components/ui";
 import { paginate, totalPages, PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
 import { PulsingLoader } from "@/components/ui";
@@ -45,8 +44,6 @@ import {
 	EVENT_CATEGORY_OPTIONS,
 	EVENT_STATUS_OPTIONS,
 	EVENT_STATUS_VARIANT as STATUS_VARIANT,
-	CATEGORY_GRADIENT,
-	DEFAULT_GRADIENT,
 } from "@/lib/constants";
 
 // constants
@@ -61,15 +58,6 @@ const SORT_OPTIONS: { label: string; field: SortField }[] = [
 	{ label: "Date", field: "start_date" },
 ];
 
-type BadgeVariant =
-	| "pink-light"
-	| "periwinkle"
-	| "dark"
-	| "success"
-	| "warning"
-	| "error"
-	| "ghost";
-
 // stable modal style constants
 const MODAL_STYLE_LG = { maxWidth: 900 };
 
@@ -77,9 +65,6 @@ const MODAL_STYLE_LG = { maxWidth: 900 };
 
 export default function EventsPage() {
 	const searchParams = useSearchParams();
-	const router = useRouter();
-	const fromParam = searchParams.get("from");
-	const dateParam = searchParams.get("date");
 
 	const [events, setEvents] = useState<EventFormData[]>([]);
 	// debounced search input. raw input state drives the displayed value
@@ -873,7 +858,7 @@ export default function EventsPage() {
 
 					{/* Category pills */}
 					{[...categoryFilters].map((c) => (
-						<Badge key={c} variant={"dark"} dot>
+						<Badge key={c} variant={"ghost"} dot>
 							{c}
 							<button
 								onClick={() => {
