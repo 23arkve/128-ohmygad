@@ -811,11 +811,13 @@ The \textbf{Registrations and Attendance} tab in the event detail modal allows y
 
 \paragraph{Accessing the Attendance Section}
 
-\begin{itemize}[leftmargin=1.5em]
-  \item Click on any event row in the table to open the \textbf{Event Detail Modal}.
-  \item At the top of the modal, click the \textbf{Registrations and Attendance} tab to switch from the event details view.
-  \item The tab displays counts of total registrations and current attendance.
-\end{itemize}
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Navigate to Events Management.} Access the \textbf{Events Management} page from the main navigation sidebar to view the list of all events.
+  \item \textbf{Find the target event.} Locate the specific event you want to manage. You can use the search bar to find it by title or apply filters to narrow down the list.
+  \item \textbf{Open the Event Detail Modal.} Click anywhere on the selected event's row within the table. This action opens the \textbf{Event Detail Modal}, which initially displays the event's basic information.
+  \item \textbf{Switch to the Attendance tab.} Look at the top navigation area of the modal and click the \textbf{Registrations and Attendance} tab. This switches your view away from the default event details.
+  \item \textbf{Review attendance overview.} Once on the tab, review the top section which provides a quick summary, displaying the overall counts for total user registrations and the current confirmed attendance.
+\end{enumerate}
 
 \paragraph{Registrations vs. Attendance}
 
@@ -948,7 +950,7 @@ At the top of the Users page, you will find several controls for searching, sort
 Type a keyword to search users by full name, email, or role. Results filter in real-time as you type.
 
 \begin{fieldtable}
-  \fieldrow{Search query}{No}{---}{Type to filter by user full name, email address, or role. Searches are case-insensitive. Clearing the search box shows all users again.}
+  \fieldrow{Search query}{No}{---}{Type to search by user full name, email address, or role. Searches are case-insensitive. Clearing the search box shows all users again.}
 \end{fieldtable}
 
 \screenshotfigure[1\textwidth]{a-figures/4-Users/users-search.png}{Users Management — Search}
@@ -960,7 +962,7 @@ Click the \textbf{Sort} button (with an up/down arrow icon) to open the sort men
 \begin{itemize}[leftmargin=1.5em]
   \item \textbf{Full Name} — Alphabetically by user's full name, ascending or descending.
   \item \textbf{Email} — Alphabetically by email address, ascending or descending.
-  \item \textbf{Role} — Alphabetically by role (Admin, Staff, Faculty, Student), ascending or descending.
+  \item \textbf{Role} — Alphabetically by role (Admin, Faculty, Staff, Student), ascending or descending.
 \end{itemize}
 
 Click the same sort option again to reverse the sort direction (ascending ↑ or descending ↓). The current sort field and direction are displayed on the button. You can also click ``Reset sort'' in the menu to return to the default sort (Full Name, ascending).
@@ -1054,7 +1056,7 @@ After confirming your password, the user and all associated data will be deleted
 
 \subsubsection{Pagination}
 
-If you have more than one page of users, pagination controls appear at the bottom of the table. Use the navigation buttons to move between pages. The display shows which users are currently shown (e.g.\ ``Showing 1–10 of 156 users'').
+If you have more than one page of users, pagination controls appear at the bottom of the table. Use the navigation buttons to move between pages. The display shows which users are currently shown (e.g.\ ``Showing 1–10 of 43 users'').
 
 \screenshotfigure[1\textwidth]{a-figures/4-Users/users-pagination.png}{Users Management — User Pagination}
 
@@ -1151,7 +1153,7 @@ Depending on the selected role, additional fields will appear:
 \paragraph{Faculty-Only Fields}
 
 \begin{fieldtable}
-  \fieldrow{College}{No}{Dropdown}{Same options as students (CS, CAC, CSS). Optional for faculty members.}
+  \fieldrow{College}{No}{Dropdown}{Same options as students (CS, CAC, CSS).}
   \fieldrow{Department}{No}{64 chars}{Free-text (e.g.\ ``Dept.\ of Math and Computer Science''). Enter the faculty member's department or academic unit.}
 \end{fieldtable}
 
@@ -1209,9 +1211,8 @@ These fields track how many orientation/session events a user has attended. Each
   \item Verify email addresses carefully. Typos in email addresses prevent users from receiving important notifications. Double-check before creating accounts.
   \item Set strong passwords. When creating accounts for others, provide temporary strong passwords and ensure they change them on first login.
   \item Complete student information. If importing student data, ensure student numbers, year levels, colleges, and programs are accurate. These fields are used for reporting.
-  \item Track attendance manually only when necessary. The system automatically tracks event attendance when users register and attend events. Only manually update the Session Attendance fields if a user attended an event without registering.
+  \item Track attendance manually only when necessary. The system automatically tracks event attendance when users attend events. Only manually update the Session Attendance fields if a user attended an event without registering.
   \item Review role assignments. Ensure users are assigned the correct role (Student, Faculty, Staff, Admin) based on their institutional status.
-  \item Archive instead of delete. Consider whether a user truly needs to be deleted or if they should be deactivated instead. Deletion is permanent and removes all history.
 \end{itemize}
 
 % ════════════════
@@ -1220,7 +1221,7 @@ These fields track how many orientation/session events a user has attended. Each
 \newpage
 \section{Guidelines Management}
 
-The \textbf{Guidelines Management} page lets you create, edit, view, and delete informational documents (e.g.\ ``Gender and Technology'') that are visible to all users. You can search, sort, and manage guideline content.
+The \textbf{Guidelines Management} page lets you create, edit, view, and delete informational documents (e.g.\ ``UP Gender Guidelines'') that are visible to all users. You can search, sort, and manage guideline content.
 
 \screenshotfigure[1\textwidth]{a-figures/5-Guidelines/guidelines-view.png}{Guidelines Management — List View}
 
@@ -1235,7 +1236,7 @@ At the top of the Guidelines page, you will find several controls for searching,
 Type a keyword to search guidelines by title or description. Results filter in real-time as you type.
 
 \begin{fieldtable}
-  \fieldrow{Search query}{No}{---}{Type to filter by guideline title or content. Searches are case-insensitive. Clearing the search box shows all guidelines again.}
+  \fieldrow{Search query}{No}{---}{Type to search by guideline title or content. Searches are case-insensitive. Clearing the search box shows all guidelines again.}
 \end{fieldtable}
 
 \screenshotfigure[1\textwidth]{a-figures/5-Guidelines/guidelines-search.png}{Guidelines Management — Search}
@@ -1304,14 +1305,21 @@ After confirming your password, the guideline will be deleted, and you will see 
 
 \subsubsection{Pagination}
 
-If you have more than one page of guidelines, pagination controls appear at the bottom of the table. Use the navigation buttons to move between pages. The display shows which guidelines are currently shown (e.g.\ ``Showing 1–5 of 5 guidelines'').
+If you have more than one page of guidelines, pagination controls appear at the bottom of the table. Use the navigation buttons to move between pages. The display shows which guidelines are currently shown (e.g.\ ``Showing 1–4 of 4 guidelines'').
 
 \screenshotfigure[1\textwidth]{a-figures/5-Guidelines/guidelines-pagination.png}{Guidelines Management — Guideline Pagination}
 
 % ============ 5.2 Creating / Editing a Guideline %
 \subsection{Creating or Editing a Guideline}
 
-Click the \textbf{``Add Guideline''} button on the Guidelines page (or the edit icon on an existing guideline) to open the guideline form.
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Click the ``Add Guideline'' button or edit icon.} On the Guidelines page, click the \textbf{``Add Guideline''} button to create a new guideline, or click the \textbf{edit (pencil) icon} on an existing guideline row to modify its content.
+  \item \textbf{Complete the form fields.} The guideline form requires you to provide a Title and a detailed Description. See the subsections below for detailed field descriptions.
+  \item \textbf{Fill in all required fields.} The Title field marked with an asterisk (*) is required. You cannot submit the form without completing it. The Description field is optional but highly recommended.
+  \item \textbf{Verify your information.} Review your content for accuracy, clarity, and formatting before submitting.
+  \item \textbf{Submit the form.} Scroll to the bottom of the form and click the \textbf{``Create Guideline''} button (for new guidelines) or \textbf{``Save Changes''} button (for editing existing guidelines).
+  \item \textbf{Confirm success.} A green success notification appears confirming the guideline was created or updated. The page returns to the guidelines list.
+\end{enumerate}
 
 \screenshotfigure[0.75\textwidth]{a-figures/5-Guidelines/guidelines-create.png}{Guidelines Management — Create Guideline Form}
 
@@ -1322,7 +1330,7 @@ Click the \textbf{``Add Guideline''} button on the Guidelines page (or the edit 
 \subsubsection{Guideline Fields}
 
 \begin{fieldtable}
-  \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty. Briefly describe the guideline (e.g.\ ``Gender and Technology'').}
+  \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty. Briefly describe the guideline (e.g.\ ``UP Gender Guidelines'').}
   \fieldrow{Description}{No}{100\,000 chars}{A long-form text area for the guideline content. This supports detailed, multi-paragraph content. If provided, must be at least 10 characters long.}
 \end{fieldtable}
 
@@ -1332,7 +1340,7 @@ Click the \textbf{``Add Guideline''} button on the Guidelines page (or the edit 
   \item \textbf{Required fields:} All fields marked with an asterisk (*) are required. You cannot submit the form without filling them in.
   \item \textbf{Character limits:} Fields with character limits will not accept input beyond the maximum.
   \item \textbf{Discard changes confirmation:} If you have unsaved changes and close the form or navigate away, a modal will ask if you want to discard your changes. Click ``Keep Editing'' to stay in the form, or ``Discard'' to leave without saving.
-  \item \textbf{Submission status:} While the form is submitting, the submit button shows ``Creating...'' or ``Saving...'' and becomes disabled. Do not close the page or refresh while submitting.
+  \item \textbf{Submission status:} While the form is submitting, the submit button shows ``Creating...'' and becomes disabled. Do not close the page or refresh while submitting.
   \item \textbf{Success feedback:} After a successful submission, you will see a green success notification confirming that the guideline was created or updated. The page then returns to the guidelines list.
   \item \textbf{Error handling:} If an error occurs (e.g.\ network failure), an error message will appear in the form. Read the message to understand what went wrong, fix the issue, and try again.
 \end{itemize}
@@ -1340,7 +1348,7 @@ Click the \textbf{``Add Guideline''} button on the Guidelines page (or the edit 
 \subsubsection{Tips for Guideline Creation}
 
 \begin{itemize}[leftmargin=1.5em]
-  \item Use clear, descriptive titles. Titles should convey the topic at a glance (e.g.\ ``Gender and Technology: Bridging the Digital Divide'' instead of just ``Guidelines'').
+  \item Use clear, descriptive titles. Titles should convey the topic at a glance (e.g.\ ``UP Gender Guidelines'' instead of just ``Guidelines'').
   \item Write comprehensive content. Use the description field to provide detailed, well-structured information. Break up long text with clear sections and bullet points for readability.
   \item Review for accuracy. Before publishing, carefully review your content for typos, factual errors, and clarity. Poor documentation creates confusion.
   \item Update regularly. If guidelines become outdated, edit them promptly. Users rely on current information.
@@ -1502,7 +1510,15 @@ If you have more than one page of surveys, pagination controls appear at the bot
 % ============ 6.2 Creating / Editing a Survey %
 \subsection{Creating or Editing a Survey}
 
-Click the \textbf{``Add Survey''} button on the Surveys page (or the edit icon on an existing survey) to open the survey form. The form is organized into three sections: \textit{Survey Details}, \textit{Availability}, and \textit{Questions}.
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Click the ``Add Survey'' button or edit icon.} On the Surveys page, click the \textbf{``Add Survey''} button to create a new survey, or click the \textbf{edit (pencil) icon} on an existing survey row to modify it.
+  \item \textbf{Complete the three form sections.} The survey form is organized into three sections: \textit{Survey Details}, \textit{Availability}, and \textit{Questions}. See the subsections below for detailed field descriptions.
+  \item \textbf{Fill in all required fields.} Fields marked with an asterisk (*) are required. You cannot submit the form without completing them.
+  \item \textbf{Configure your questions.} Add the specific questions you want to ask, choose their answer formats, and define whether each question is mandatory.
+  \item \textbf{Verify your information.} Review all survey details, dates, and question phrasing for accuracy before submitting.
+  \item \textbf{Submit the form.} Scroll to the bottom of the form and click the \textbf{``Create Survey''} button (for new surveys) or \textbf{``Save Changes''} button (for editing existing surveys).
+  \item \textbf{Confirm success.} A green success notification appears confirming the survey was created or updated. The page returns to the surveys list.
+\end{enumerate}
 
 \screenshotfigure[0.6\textwidth]{a-figures/6-Surveys/surveys-create.png}{Surveys Management — Create Survey Form}
 
@@ -1576,7 +1592,6 @@ You can add up to \textbf{50 questions} per survey. Each question has the follow
   \item Use clear, unbiased wording. Avoid leading questions (e.g., ``Did you love this event?'') and instead use neutral language (e.g., ``How did you feel about this event?'').
   \item Balance question types. Mix yes/no, multiple choice, and open-ended questions to get both quantitative and qualitative feedback.
   \item Make critical questions required. Mark questions that capture key metrics (e.g., overall satisfaction) as required so you don't get incomplete data.
-  \item Test before publishing. If possible, preview the survey in a test mode to ensure questions and choices display correctly and make sense.
   \item Analyze results promptly. Review survey responses while they are still relevant. Use insights to improve future events.
 \end{itemize}
 
@@ -1588,10 +1603,6 @@ You can add up to \textbf{50 questions} per survey. Each question has the follow
 
 Your \textbf{Profile} page lets you view and update your own personal information. It is organized into three tabs: \textit{Personal}, \textit{Professional}, and \textit{Identity}.
 
-\screenshotfigure[0.75\textwidth]{a-figures/7-Profile/profile-personal.png}{Admin Profile Page — Personal Tab}
-
-\subsection{Personal Tab}
-
 \begin{fieldtable}
   \fieldrow{Full Name}{Yes}{64 chars}{Only letters, spaces, and basic punctuation. Cannot be empty.}
   \fieldrow{Display Name}{No}{32 chars}{Only letters, spaces, and basic punctuation.}
@@ -1599,6 +1610,10 @@ Your \textbf{Profile} page lets you view and update your own personal informatio
   \fieldrow{Contact Number}{No}{11 digits}{Only digits (e.g.\ ``09171234567''). Must be exactly 11 digits if provided.}
   \fieldrow{Address}{No}{100 chars}{Free-text field.}
 \end{fieldtable}
+
+\subsection{Personal Tab}
+
+\screenshotfigure[0.75\textwidth]{a-figures/7-Profile/profile-personal.png}{Admin Profile Page — Personal Tab}
 
 \subsection{Professional Tab}
 
