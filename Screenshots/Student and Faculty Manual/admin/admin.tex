@@ -1,0 +1,1733 @@
+% ============================================================================
+%  OhMyGAD — Admin User Manual
+%  LaTeX Template
+% ============================================================================
+\documentclass[12pt, a4paper]{article}
+
+% ── Packages ────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage[table]{xcolor} % Added [table] option to fix \rowcolor error
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{microtype} % Improves text justification and helps prevent overfull boxes
+
+% ── Colours ─────────────────────────────────────────────────────────────────
+\definecolor{primarydark}{HTML}{2D2A4A}
+\definecolor{periwinkle}{HTML}{B8B5E8}
+\definecolor{softpink}{HTML}{F4A7B9}
+\definecolor{accentgold}{HTML}{F4C97A}
+\definecolor{linkblue}{HTML}{2563EB}
+\definecolor{lightgray}{HTML}{F5F5F5}
+
+% ── Hyperlink styling ──────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks  = true,
+  linkcolor   = primarydark,
+  urlcolor    = linkblue,
+  citecolor   = primarydark,
+  pdfauthor   = {OhMyGAD Development Team},
+  pdftitle    = {OhMyGAD Admin User Manual},
+  pdfsubject  = {User Manual for Admin Users},
+}
+
+% ── Header / Footer ───────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{primarydark}{OhMyGAD — Admin User Manual}}
+\fancyhead[R]{\small\textcolor{primarydark}{\thepage}}
+\fancyfoot[C]{\small\textcolor{gray}{Confidential — For Internal Use Only}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.2pt}
+
+% ── Section styling ────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\Large\bfseries\color{primarydark}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\large\bfseries\color{primarydark}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{primarydark}}{\thesubsubsection}{1em}{}
+
+% ── Reusable screenshot placeholder ───────────────────────────────────────
+\newcommand{\screenshotplaceholder}[1]{%
+  \begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.85\textwidth}{\vspace{4cm}
+      \centering\textcolor{gray}{\textit{Screenshot: #1}}
+    \vspace{4cm}}}
+    \caption{#1}
+  \end{figure}
+}
+
+\newcommand{\screenshotfigure}[3][0.95\textwidth]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#1]{#2}
+    \caption{#3}
+  \end{figure}
+}
+
+% ── Reusable field-description table ──────────────────────────────────────
+% Adjusted column widths to securely fit inside typical page margins to avoid overfull hboxes
+\newenvironment{fieldtable}{%
+  \begin{longtable}{|>{\raggedright\arraybackslash}p{2.2cm}|>{\centering\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{7.3cm}|}
+  \hline
+  \rowcolor{lightgray}
+  \textbf{Field} & \textbf{Required} & \textbf{Limit} & \textbf{Validation \& Notes} \\
+  \hline
+  \endfirsthead
+  \hline
+  \rowcolor{lightgray}
+  \textbf{Field} & \textbf{Required} & \textbf{Limit} & \textbf{Validation \& Notes} \\
+  \hline
+  \endhead
+  \hline
+  \endfoot
+}{%
+  \end{longtable}
+}
+\newcommand{\fieldrow}[4]{%
+  #1 & #2 & #3 & #4 \\ \hline
+}
+
+% ════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Title Page ─────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+
+  % TODO: Replace with actual project logo
+  % \includegraphics[width=0.3\textwidth]{logo.png}\\[1.5cm]
+
+  {\Huge\bfseries\textcolor{primarydark}{OhMyGAD!}}\\[0.4cm]
+  {\LARGE\textcolor{primarydark}{Admin User Manual}}\\[1.5cm]
+
+  {\large Kasarian Gender Studies Program}\\[0.5cm]
+  {\large University of the Philippines Baguio}\\[2cm]
+
+  \textcolor{gray}{\today}\\[0.5cm]
+  \textcolor{gray}{Version 1.0}
+
+  \vfill
+  {\small CMSC 128: Software Engineering}
+  {\small by 128 Sheeps}
+\end{titlepage}
+
+% ── Table of Contents ──────────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ════════════════════════════════════════════════════════════════════════════
+%  1. INTRODUCTION
+% ════════════════════════════════════════════════════════════════════════════
+\section{Introduction}
+
+\subsection{What is OhMyGAD?}
+OhMyGAD is a web-based information system built for the \textbf{Gender and Development (GAD)} office of UPB. It helps admin staff manage events, surveys, guidelines, and user accounts — all from one place.
+
+\subsection{Who Is This Manual For?}
+This manual is written for users who have been given the \textbf{Admin} role. Admins have the highest level of access and can manage all parts of the system, including creating, editing, and deleting events, surveys, guidelines, and user accounts.
+
+\subsection{How to Use This Manual}
+\begin{itemize}[leftmargin=1.5em]
+  \item Each section covers one major page or feature of the system.
+  \item \textbf{Screenshots} are provided to help you identify what you see on screen.
+  \item \textbf{Field tables} list every input you can fill in, along with its character limit and what the system checks for (validation rules).
+  \item Fields marked with an asterisk (\textbf{*}) are required — the form will not submit without them.
+\end{itemize}
+
+\subsection{Accessing the System}
+\begin{enumerate}[leftmargin=1.5em]
+  \item Open your web browser (Chrome, Firefox, or Edge recommended).
+  \item Navigate to this link: \url{https://upb-kasarian-omg.vercel.app/}
+  \item Enter your \textbf{Admin Mail} and \textbf{Password}, then click \textbf{Login}. Alternatively, click \textbf{Sign in with UP Mail} to log in using your Admin Google account.
+  \item You will be taken directly to your \textbf{Dashboard}.
+\end{enumerate}
+
+\screenshotfigure[0.75\textwidth]{a-figures/1-Introduction/login.png}{Login Page}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  2. DASHBOARD
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Dashboard}
+
+After logging in, you will land on the \textbf{Dashboard}. This page gives you a comprehensive overview of the system's activity, user statistics, attendance trends, survey responses, and quick access to common administrative tasks.
+\screenshotfigure[1\textwidth]{a-figures/2-Dashboard/dashboard-overview-1.png}{Admin Dashboard — Overview}
+\screenshotfigure[1\textwidth]{a-figures/2-Dashboard/dashboard-overview-2.png}{Admin Dashboard — Overview (Scrolled)}
+
+\subsection{Key Performance Indicators (KPIs)}
+
+At the top of the dashboard, you will see four stat cards displaying summary of system information:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Registered Users} — Total number of user accounts created in the system.
+  \item \textbf{Onboarded Users} — Number of users who have completed the onboarding process.
+  \item \textbf{Total Events} — Total number of GAD-related events created in the system.
+  \item \textbf{Active Surveys} — Number of surveys currently open for responses.
+\end{itemize}
+
+\screenshotfigure[1\textwidth]{a-figures/2-Dashboard/dashboard-kpi.png}{Admin Dashboard — Key Performance Indicators}
+
+\subsection{Global Search}
+
+At the top of the dashboard, you will find the \textbf{Search bar}.
+
+\begin{fieldtable}
+  \fieldrow{Search query}{No}{64 chars}{Type a keyword to search events, guidelines, surveys, or user data. Results appear instantly as you type. Minimum 1 character required.}
+\end{fieldtable}
+
+\screenshotfigure[1\textwidth]{a-figures/2-Dashboard/dashboard-search-filter.png}{Dashboard — Global Search and Filters}
+\screenshotfigure[1\textwidth]{a-figures/2-Dashboard/dashboard-globalsearch.png}{Dashboard — Global Search Dropdown}
+
+\subsection{Dashboard Filters}
+
+The \textbf{Filters} panel allows you to refine the user data displayed across the dashboard. When you apply filters to select specific users, all analytics charts and statistics automatically recalculate to show only data for those filtered users. This helps you analyze demographics and engagement patterns for specific student or faculty groups.
+
+\subsubsection{How Filters Work}
+
+Filters work by identifying which users match your selected criteria, then updating all dashboard analytics to reflect only those users' data. Here's what happens:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item You select one or more filter criteria (e.g., College: CS, Year Level: 3rd Year).
+  \item The system queries the user database to find all profiles matching your filters.
+  \item All dashboard data (KPIs, charts, attendance) recalculates to show only statistics for those matched users.
+  \item If filters match zero users, all metrics display as empty or zero.
+\end{enumerate}
+
+\subsubsection{Opening the Filter Panel}
+Click the \textbf{Filters} button at the top of the dashboard (next to the Search bar) to open the filter panel. A dropdown will appear with multiple filter categories.
+
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-filter-options.png}{Dashboard — Filter Panel}
+
+\subsubsection{Selecting Filters}
+To select filters, click on the \textbf{checkbox} to the left of each option. Once you select, they will appear as coloured \textbf{chips} (small rounded labels) below the toolbar. Multiple filters can be active at the same time. To remove a single filter, click the \textbf{X} on its chip. To remove all filters at once, click the ``Clear all'' link that appears when any filter is active. The \textbf{Filters} button at the top of the dashboard displays a badge showing how many filters are currently active. This gives you a visual indicator of how many filter criteria you've selected without needing to open the filter panel.
+
+\screenshotfigure[0.3\textwidth]{a-figures/2-Dashboard/dashboard-selectedfilter.png}{Dashboard — Selected Filter Option}
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-activefilterchips.png}{Dashboard — Active Filter Chips}
+\screenshotfigure[0.3\textwidth]{a-figures/2-Dashboard/dashboard-activefilterbutton.png}{Dashboard — Active Filter Button}
+
+\subsubsection{Filter Categories}
+The filter panel is organized into six main categories. You can select multiple options within each category, or combine options across categories.
+
+\paragraph{Year Level}
+Filter users by their academic year. Select one or more:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{1st Year, 2nd Year, 3rd Year, 4th Year} — Student year of enrollment.
+  \item \textbf{Extendee} — Students who have extended beyond the normal graduation timeline.
+\end{itemize}
+
+\paragraph{College}
+Filter users by their college of enrollment. Select one or more:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{CS} — College of Science.
+  \item \textbf{CAC} — College of Arts and Communication.
+  \item \textbf{CSS} — College of Social Sciences.
+\end{itemize}
+
+\paragraph{Degree Program}
+Filter users by their specific degree program. Select one or more from the list:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{College of Science programs:}
+  \begin{itemize}[leftmargin=1.5em]
+    \item BS Biology
+    \item BS Computer Science
+    \item BS Mathematics
+    \item BS Physics
+    \item MS Conservation and Restoration Ecology
+    \item MS Mathematics
+    \item Doctor of Philosophy in Mathematics
+  \end{itemize}
+  \item \textbf{College of Arts and Communication programs:}
+  \begin{itemize}[leftmargin=1.5em]
+    \item BA Communication
+    \item BA Fine Arts
+    \item BA Language and Literature
+    \item Certificate in Fine Arts
+    \item MA Language and Literature
+  \end{itemize}
+  \item \textbf{College of Social Sciences programs:}
+  \begin{itemize}[leftmargin=1.5em]
+    \item BA Social Sciences (History)
+    \item BA Social Sciences (Economics)
+    \item BA Social Sciences (Anthropology)
+    \item BS Management Economics
+    \item MA History (Ethnohistory and Local History)
+    \item MA Social and Development Studies
+    \item Master of Management
+    \item Doctor of Philosophy in Indigenous Studies
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Sex at Birth}
+Filter users by sex at birth data. Users who did not provide this information can be included via the ``Prefer not to say'' option. Select one or more:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Male, Female, Intersex} — Biological sex categories.
+  \item \textbf{Prefer not to say} — Users who chose not to disclose this information.
+\end{itemize}
+
+\paragraph{Gender Identity}
+Filter users by their gender identity. Select one or more:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Man, Woman} — Binary gender identities.
+  \item \textbf{Non-binary, Genderqueer, Genderfluid} — Non-binary gender identities.
+  \item \textbf{Prefer not to say} — Users who chose not to disclose.
+\end{itemize}
+
+\paragraph{Role}
+Filter users by their system role. Select one or more:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Admin} — System administrators at the Kasarian Gender Studies Program Office.
+  \item \textbf{Staff} — Administrative Office Personnel.
+  \item \textbf{Student} — Student users.
+  \item \textbf{Faculty} — Faculty and teaching staff.
+\end{itemize}
+
+\textbf{Note:} \textit{By default, administrators are excluded from dashboard statistics unless you explicitly select the Admin role in your filters. This is to keep the focus on student and faculty engagement data.}
+
+\subsubsection{What Changes When Filters Are Applied}
+
+When you apply user filters, the following dashboard elements update automatically to reflect only the selected users:
+
+\paragraph{KPI Cards (top of dashboard)}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Registered Users} — Total count of users matching your filters.
+  \item \textbf{Onboarded Users} — Count of filtered users who have completed onboarding.
+\end{itemize}
+
+\paragraph{Analytics Charts}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Users per College} — Shows the college distribution only for your filtered users (not all users in the system).
+  \item \textbf{Users Sex at Birth} — Displays sex at birth demographics for filtered users only.
+  \item \textbf{Users Gender Identity} — Shows gender identity breakdown for filtered users only.
+\end{itemize}
+
+\paragraph{Attendance Over Time Chart}
+\begin{itemize}[leftmargin=1.5em]
+  \item Shows attendance counts only for events attended by filtered users.
+  \item If you filter by College: CS, only attendees from the College of Science are counted.
+  \item Multi-day events are counted in every time bucket they span (e.g. if an event runs across two days, both days show attendance for that event).
+\end{itemize}
+
+\subsubsection{Combining Multiple Filters}
+
+You can apply multiple filters simultaneously to narrow down into specific user groups. When multiple filters are selected, the dashboard shows data matching \textbf{all} selected criteria.
+
+\textbf{Key point:} When you select multiple options \textit{within the same category} (e.g., both 1st Year and 2nd Year), the dashboard shows users matching \textit{any} of those options (OR). When you combine \textit{different categories} (e.g., Year Level AND College), the dashboard shows only users matching \textit{all} selected criteria (AND).
+
+\textbf{Example filter combinations:}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{College: CS + Year Level: 3rd Year} — Data for 3rd year students in the College of Science only (excludes 1st, 2nd, 4th year CS students and students from other colleges).
+  \item \textbf{Role: Student + College: CAC + Gender Identity: Woman} — Analytics for female students in the College of Arts and Communication (excludes male, non-binary students and all faculty/staff).
+  \item \textbf{Year Level: 1st Year + Year Level: 2nd Year} — Data for students in their 1st or 2nd year (combines both cohorts into one view).
+  \item \textbf{Role: Faculty + College: CSS} — Shows all faculty members in the College of Social Sciences, regardless of department or program.
+\end{itemize}
+
+\subsubsection{Filter Logic Examples}
+
+To clarify how the AND/OR logic works:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Filters: [1st Year OR 2nd Year] AND [College: CS]} — Shows 1st or 2nd year students from College of Science (users must be CS students, but can be either year).
+  \item \textbf{Filters: [College: CS OR CAC] AND [Role: Student]} — Shows students from College of Science or College of Arts and Communications (users must be students, but can be from either college).
+  \item \textbf{Filters: [Male] AND [College: CSS] AND [Degree Program: BA Social Sciences (History)]} — Shows only male students in BA Social Sciences (History) program within College of Social Science (matches all three criteria).
+\end{itemize}
+
+\subsubsection{Clearing Filters}
+
+To remove all active filters and return to the full unfiltered dashboard view, click ``Clear all'' when filters are active. This will reset all analytics to display data for all users in the system (excluding admins by default).
+
+\subsubsection{Empty Results}
+
+If filters match zero users (for example, filtering for a nonexistent degree program + specific college + year combination), you will see:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item KPI Cards showing 0 Registered Users and 0 Onboarded Users.
+  \item All charts (college, demographics, attendance) displaying empty states or zero values.
+\end{itemize}
+
+This is expected behavior and indicates that no users in your system match all the selected filter criteria.
+
+\screenshotfigure[1\textwidth]{a-figures/2-Dashboard/dashboard-emptykpi.png}{Dashboard — Empty KPI Results}
+\screenshotfigure[1\textwidth]{a-figures/2-Dashboard/dashboard-emptyuserdata.png}{Dashboard — Empty User Data Results}
+
+\subsubsection{Tips for Using Filters Effectively}
+\begin{itemize}[leftmargin=1.5em]
+  \item Apply college filters one at a time to compare participation rates between CS, CAC, and CSS.
+  \item Filter by year level to see how engagement changes as students advance through their degree (e.g., do 4th year students attend more or fewer events?).
+  \item Use gender identity and sex at birth filters to monitor inclusivity in your events and programs.
+  \item Combine filters to find student populations with lower engagement (e.g., Female + CSS + 1st Year).
+  \item Filter by Role to see differences in participation between students, faculty, and staff.
+  \item Use filters before taking screenshots to focus on the specific user group you need to report on.
+  \item When combining filters, verify the KPI counts are reasonable for the population you're analyzing. If counts seem too low, you may have combined incompatible filters.
+\end{itemize}
+
+\subsection{Attendance Over Time}
+
+This line chart displays total event attendance trends over a selected date range. Use this to identify peak attendance periods and monitor engagement trends.
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Date Range Picker} — Click to select a custom date range. By default, the last 7 days are shown.
+  \item \textbf{Chart} — Shows the number of attendees per period (weekly or monthly depending on the date range).
+  \item \textbf{Interactive Tooltips} — Hover over data points to see exact attendance figures.
+\end{itemize}
+
+\screenshotfigure[1\textwidth]{a-figures/2-Dashboard/dashboard-attendanceovertime.png}{Dashboard — Attendance Over Time Chart}
+
+\subsection{Quick Actions}
+
+On the right side of the dashboard, you will find a \textbf{Quick Actions} card with buttons for the most common administrative tasks:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{New Event} — Click to create a new event. Opens the Event Form modal.
+  \item \textbf{New User} — Click to manually add a new user account. Opens the User Form modal.
+  \item \textbf{New Guideline} — Click to publish a new guideline document. Opens the Guideline Form modal.
+  \item \textbf{New Survey} — Click to create a new post-event survey. Opens the Survey Form modal.
+\end{itemize}
+
+\screenshotfigure[0.4\textwidth]{a-figures/2-Dashboard/dashboard-quick-actions.png}{Dashboard — Quick Actions Card}
+
+\subsection{Analytics Section}
+
+The dashboard includes three detailed analytics charts to monitor user demographics and engagement:
+
+\subsubsection{Users per College}
+
+A bar chart showing the breakdown of registered users by college (CS, CAC, CSS). Use this to understand which colleges have the highest participation rates. Hovering over a bar displays the exact count for that college.
+
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-users-per-college.png}{Dashboard — Users Per College Chart (Default State)}
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-users-per-college-hovered.png}{Dashboard — Users per College Chart (Hovered State)}
+
+\subsubsection{Users' Sex at Birth}
+
+A donut chart displaying the distribution of users by sex at birth (Male, Female, Intersex, Prefer not to say). This data is used for institutional reporting purposes. Hovering over a segment displays the exact count for that category.
+
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-users-sex-at-birth.png}{Dashboard — Users Sex at Birth Chart (Default State)}
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-users-sex-at-birth-hovered.png}{Dashboard — Users Sex at Birth Chart (Hovered State)}
+
+\subsubsection{Users' Gender Identity}
+
+A donut chart showing the distribution of users by gender identity (Man, Woman, Non-binary, Genderqueer, Genderfluid, Prefer not to say). This data supports the university's commitment to inclusive gender representation. Hovering over a segment displays the exact count for that category.
+
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-users-gender-identity.png}{Dashboard — Users Gender Identity Chart (Default State)}
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-users-gender-identity-hovered.png}{Dashboard — Users Gender Identity Chart (Hovered State)}
+
+\subsection{Response Rate by Survey}
+
+This horizontal bar chart displays survey completion rates across all active surveys. Each bar shows the percentage of completed and incomplete responses. Hovering over a segment shows the exact number who answered.
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Search Surveys} — Use the search box to search surveys by title or description.
+  \item \textbf{Completed (green)} — Percentage of respondents who finished the survey.
+  \item \textbf{Incomplete (yellow)} — Percentage of respondents who started but did not complete the survey.
+  \item \textbf{Pagination} — If more than four surveys are displayed, use the pagination controls to view additional surveys.
+\end{itemize}
+
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-response-rate-by-survey.png}{Dashboard — Response Rate by Survey}
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover.png}{Dashboard — Response Rate by Survey (Hovered State Complete)}
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover2.png}{Dashboard — Response Rate by Survey (Hovered State Incomplete)}
+
+\subsection{Right Sidebar}
+
+\subsubsection{Mini Calendar}
+
+A compact monthly calendar shows:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Event Start Days} — Dates with events that start on that day show a pink dot below the date.
+  \item \textbf{Event Ongoing Days} — Dates with ongoing events on that day show a periwinkle dot below the date.
+  \item \textbf{Day Selection} — Click any day to view all events scheduled for that date in a modal popup.
+\end{itemize}
+
+\screenshotfigure[0.4\textwidth]{a-figures/2-Dashboard/dashboard-mini-calendar.png}{Dashboard — Mini Calendar}
+
+\screenshotfigure[0.75\textwidth]{a-figures/2-Dashboard/dashboard-mini-calendar-selected.png}{Dashboard — Mini Calendar (Selected Date)}
+
+\subsubsection{Today's Timeline}
+
+Below the calendar, a timeline displays all events happening today, organized by time.
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Event List} — Shows event title, time, and location.
+  \item \textbf{Event Click} — Click an event to open its full detail modal for editing or viewing.
+  \item \textbf{Empty State} — If no events are scheduled today, a message will appear.
+\end{itemize}
+
+\screenshotfigure[0.4\textwidth]{a-figures/2-Dashboard/dashboard-timeline.png}{Dashboard — Today's Timeline}
+% ════════════════════════════════════════════════════════════════════════════
+%  3. EVENTS MANAGEMENT
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Events Management}
+
+The \textbf{Events Management} page lets you view, create, edit, and delete all GAD-related events such as orientations, forums, research sessions, training, and workshops. You can search, filter, sort, and export event data, as well as manage event registrations and attendance.
+
+\screenshotfigure[1\textwidth]{a-figures/3-Events/events-list.png}{Events Management Page — Overview}
+
+\subsection{Toolbar and Controls}
+
+At the top of the Events page, you will find several controls for searching, sorting, filtering, exporting, and creating events:
+\screenshotfigure[1\textwidth]{a-figures/3-Events/events-toolbar.png}{Events Management Page — Toolbar}
+
+\subsubsection{Search Bar}
+Type a keyword to search events by title, category, or location. Results filter in real-time as you type.
+
+\begin{fieldtable}
+  \fieldrow{Search query}{No}{---}{Type to search by event title, category name, or location. Searches are case-insensitive. Clearing the search box shows all events again.}
+\end{fieldtable}
+
+\screenshotfigure[1\textwidth]{a-figures/3-Events/events-search.png}{Events Management Page — Search}
+
+\subsubsection{Sort Dropdown}
+
+Click the \textbf{Sort} button (with an up/down arrow icon) to open the sort menu. You can sort events by:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Title} — Alphabetically by event name, ascending or descending.
+  \item \textbf{Category} — Alphabetically by event category, ascending or descending.
+  \item \textbf{Status} — By status (Past, Today, Upcoming).
+  \item \textbf{Date} — By start date, ascending or descending (default).
+\end{itemize}
+
+Click the same sort option again to reverse the sort direction (ascending ↑ or descending ↓). The current sort field and direction are displayed on the button. You can also click ``Reset sort'' in the menu to return to the default sort (Date, descending).
+
+\screenshotfigure[0.4\textwidth]{a-figures/3-Events/events-sort-options.png}{Events Management Page — Sort Options}
+
+\subsubsection{Filter Dropdown}
+
+Click the \textbf{Filter} button (with a sliders icon) to open the filter panel. The filter button displays a badge showing the number of active filters (e.g., ``Filter 2'' if two filters are selected).
+
+You can filter events by:
+
+\paragraph{Status}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Today} — Events happening on the current date.
+  \item \textbf{Upcoming} — Events that have not yet started.
+  \item \textbf{Past} — Events that have already ended.
+\end{itemize}
+
+\paragraph{Category}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{GSO} — Gender Sensitivity Orientation.
+  \item \textbf{ASHO} — Anti-Sexual Harassment Orientation.
+  \item \textbf{Forum} — Discussion forums and panel events.
+  \item \textbf{Research} — Research sessions and seminars.
+  \item \textbf{Training} — Skill-building and professional development.
+  \item \textbf{Workshop} — Hands-on workshop events.
+\end{itemize}
+
+You can select multiple categories and statuses. For example, selecting both ``Upcoming'' and ``Today'' shows all events happening today or in the future.
+
+\screenshotfigure[0.2\textwidth]{a-figures/3-Events/events-filter-options.png}{Events Management Page — Filter Options}
+
+\paragraph{Active Filter Chips}
+
+Once you apply filters, they appear as coloured \textbf{chips} below the toolbar. Each chip shows the filter name and an ``×'' button to remove it. You can also click ``Clear all filters'' in the filter dropdown to remove all active filters at once.
+
+\screenshotfigure[1\textwidth]{a-figures/3-Events/events-filter-chips.png}{Events Management Page — Active Filter Chips}
+
+\subsubsection{Export to CSV}
+
+Click the \textbf{Export CSV} button to download all events (including current filters and search results) as a CSV file. The file includes:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Event Title
+  \item Event Category (GSO, ASHO, Forum, Research, Training, Workshop)
+  \item Number of registrations and attendees.
+  \item Event Description
+  \item Event Location
+  \item Event Start Date 
+  \item Event End Date
+  \item Event Capacity
+  \item Event Registration Opening Date 
+  \item Event Registration Closing Date
+\end{itemize}
+
+The downloaded file is named with the current date (e.g., \texttt{events\_list\_2026\_05\_23.csv}).
+
+\screenshotfigure[0.4\textwidth]{a-figures/3-Events/events-export-csv.png}{Events Management Page — Export CSV Button}
+
+\subsubsection{Add Event Button}
+
+Click the \textbf{Add Event} button to create a new event. This opens the event creation form (see Creating or Editing an Event below).
+
+\screenshotfigure[0.4\textwidth]{a-figures/3-Events/events-add-event-button.png}{Events Management Page — Add Event Button}
+
+\subsection{Viewing and Interacting with Events}
+
+Events are displayed in a table with the following columns:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Title} — Event name (truncated if too long; hover to see full title).
+  \item \textbf{Category} — Event category badge.
+  \item \textbf{Status} — Colour-coded status badge (Past, Today, or Upcoming).
+  \item \textbf{Start Date} — Event start date and time.
+  \item \textbf{End Date} — Event end date and time (or ``—'' if not set).
+  \item \textbf{Capacity} — Maximum number of attendees.
+  \item \textbf{Location} — Venue name (truncated if too long; hover to see full location).
+  \item \textbf{Actions} — Edit and Delete buttons.
+\end{itemize}
+
+\subsubsection{Viewing Event Details}
+
+Click anywhere on an event row to open the \textbf{Event Detail Modal}. This modal displays:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Full event title and banner image.
+  \item An \textbf{Export to CSV} button to export the details of the event. The CSV file includes the following:
+    \begin{itemize}[leftmargin=1.5em]
+      \item Event Title
+      \item Event Category (GSO, ASHO, Forum, Research, Training, Workshop)
+      \item Event Status (Upcoming, Today, Past)
+      \item Event Location
+      \item Event Start Date
+      \item Event End Date
+      \item Event Capacity
+      \item Event Registration Opening Date
+      \item Event Registration Closing Date
+      \item Event Registered Users details:
+        \begin{itemize}
+          \item Registered User Display Name 
+          \item Resitered User Email
+          \item Registered User Date Registered
+          \item Registered User Attended (Yes/No)
+        \end{itemize}
+      \item Event User Attendance details:
+        \begin{itemize}
+          \item Total count of registered users who attended the event 
+          \item Event attendees Display Name
+          \item Event attendees email
+        \end{itemize}
+    \end{itemize}
+  \item An \textbf{Edit} button to modify event details.
+  \item Event Title
+  \item Event Category (GSO, ASHO, Forum, Research, Training, Workshop)
+  \item Event status (Upcoming, Today, Past)
+  \item Event start date
+  \item Event end date
+  \item Event start time
+  \item Event end time
+  \item Event location
+  \item Event capacity 
+  \item Event registration opening date
+  \item Event registration closing date
+  \item Event description
+  \item Event registration tab:
+    \begin{itemize}
+      \item Search bar to search for a specific user who is registered to the event
+      \item Total count of registered users
+      \item "Copy emails" button to copy all registered user's emails
+      \item Registered user display name 
+      \item Resitered user email 
+      \item Checkbox to mark registered user's attendance
+    \end{itemize}
+  \item Event attendace tab:
+    \begin{itemize}
+      \item Search bar to search for a specific user who attended the event
+      \item Total count of attended users out of the total registered users
+      \item {}"Copy emails" button to copy all attendee's emails
+      \item Attendees display name 
+      \item Attendees email 
+  \end{itemize}
+\end{itemize}
+
+\screenshotfigure[0.75\textwidth]{a-figures/3-Events/events-detail-view.png}{Events Management Page — Event Detail Modal}
+
+\subsubsection{Edit an Event}
+
+Click the \textbf{Edit} (pencil) icon in the Actions column, or click the \textbf{Edit} button in the event detail modal. This opens the event form in edit mode. Make your changes and click ``Save Changes'' to update the event. See \textit{Creating or Editing an Event} below for field details.
+
+\subsubsection{Delete an Event}
+
+Click the \textbf{Delete} (trash) icon in the Actions column to delete an event. A confirmation modal will appear.
+
+\screenshotfigure[0.3\textwidth]{a-figures/3-Events/events-actions-button.png}{Events Management Page — Actions (Edit and Delete Icons)}
+
+
+\paragraph{Delete Confirmation}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item The modal shows the event title you are about to delete.
+  \item You must enter your password to confirm. This is a security measure to prevent accidental deletions.
+  \item \textbf{Warning:} Deleting an event will permanently remove all registrations, attendance records, and linked surveys for that event. This action \textbf{cannot be undone}.
+\end{itemize}
+
+After confirming your password, the event and all associated data will be deleted, and you will see a success notification.
+
+\screenshotfigure[0.75\textwidth]{a-figures/3-Events/events-delete.png}{Events Management Page — Delete Confirmation Window}
+
+\subsubsection{Pagination}
+
+If you have more than one page of events, pagination controls appear at the bottom of the table. Use the navigation buttons to move between pages. The display shows which events are currently shown (e.g., ``Showing 1–10 of 47 events'').
+
+\screenshotfigure[1\textwidth]{a-figures/3-Events/events-pagination.png}{Events Management Page — Event Pagination}
+
+% ============ 3.2 Creating / Editing an Event %
+\subsection{Creating or Editing an Event}
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Click the ``Add Event'' button or edit icon.} On the Events page, click the \textbf{``Add Event''} button to create a new event, or click the \textbf{edit (pencil) icon} on an existing event row to modify its details.
+
+  \item \textbf{Complete the two form sections.} The event form is organized into two primary sections: \textit{Basic Information} and \textit{Event Schedule}. See the subsections below for detailed field descriptions.
+
+  \item \textbf{Fill in the Basic Information.} Enter a clear and descriptive \textbf{Title}, specify the exact \textbf{Location}, define the attendee \textbf{Capacity}, and select the appropriate event \textbf{Category}. You may also provide an optional \textbf{Description} and upload a \textbf{Banner Image} to make the event visually appealing.
+
+  \item \textbf{Configure the Event Schedule.} Carefully select the \textbf{Start Date \& Time} and \textbf{End Date \& Time}. The system will enforce that the end time logically occurs after the start time.
+
+  \item \textbf{Set the Registration Window.} Define the \textbf{Registration Opens} and \textbf{Registration Closes} dates. Ensure the registration window is open before the event concludes and allows users sufficient time to sign up.
+
+  \item \textbf{Fill in all required fields.} Fields marked with an asterisk (*) are required. You cannot submit the form without completing them. Optional fields, such as the banner image and description, may be left blank.
+
+  \item \textbf{Verify your information.} Review all entries and dates for accuracy before submitting. Pay special attention to the event schedule and registration window to ensure they logically align.
+
+  \item \textbf{Submit the form.} Scroll to the bottom of the form and click the \textbf{``Create Event''} button (for new events) or \textbf{``Save Changes''} button (for editing existing events). Wait until the submission is fully processed, especially if an image is uploading.
+
+  \item \textbf{Confirm success.} A green success notification appears confirming the event was created or updated. The page automatically returns to the events list.
+\end{enumerate}
+
+\screenshotfigure[0.75\textwidth]{a-figures/3-Events/events-create-event.png}{Event Management Page — Create Event Form}
+
+\screenshotfigure[0.75\textwidth]{a-figures/3-Events/events-edit.png}{Event Management Page — Edit Event Form}
+
+\subsubsection{Creating vs. Editing an Event}
+
+The event form works in two modes: create mode (for new events) and edit mode (for modifying existing events).
+
+\paragraph{Create Mode (Adding a New Event)}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Access:} Click the ``Add Event'' button at the top of the Events page.
+  \item \textbf{All fields blank:} All form fields start empty. You must fill in all required fields before submitting.
+  \item \textbf{Submit button:} Shows ``Create Event'' at the bottom of the form.
+  \item \textbf{Result:} New event is created and added to the system. Students and faculty can view it based on its schedule, category, and registration window.
+\end{itemize}
+
+\paragraph{Edit Mode (Modifying an Existing Event)}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Access:} Click the edit (pencil) icon in the Actions column of an event row, or click the ``Edit'' button in the event detail modal.
+  \item \textbf{Pre-filled fields:} All fields are pre-populated with the event's current information.
+  \item \textbf{Banner optional:} Leave the existing banner image unchanged, upload a replacement image, or remove it if no banner is needed.
+  \item \textbf{Submit button:} Shows ``Save Changes'' at the bottom of the form.
+  \item \textbf{Result:} Event details are updated. The updated information appears in the events list and event detail view.
+\end{itemize}
+
+\paragraph{Discard Changes Confirmation}
+
+When creating or editing an event, if you close the form or navigate away with unsaved changes, a modal appears asking if you want to discard your changes.
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{``Keep Editing''} — Stay in the form to continue editing.
+  \item \textbf{``Discard''} — Leave the form without saving. All changes are lost.
+\end{itemize}
+
+This prevents accidental loss of event details.
+
+\screenshotfigure[0.75\textwidth]{a-figures/3-Events/events-discard-changes.png}{Event Management Page — Discard Changes Window}
+
+\subsubsection{Basic Information Fields}
+
+\begin{fieldtable}
+  \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty. Briefly describe the event (e.g., ``Gender Sensitivity Orientation'').}
+  \fieldrow{Description}{No}{5\,000 chars}{If provided, must be at least 10 characters long. Describe the purpose, agenda, and learning objectives of the event.}
+  \fieldrow{Location *}{Yes}{100 chars}{Cannot be empty. Enter the venue name or building (e.g., ``Sarmiento Hall). This is what students see when browsing events.}
+  \fieldrow{Banner Image}{No}{5\,MB file}{Accepted formats: JPG, PNG, or WebP. This image appears at the top of the event detail view and makes events more visually appealing. Click the upload area to choose a file, or click the × button to remove an uploaded image.}
+  \fieldrow{Capacity *}{Yes}{1 -- 500}{Must be a whole number greater than 0. This limits how many users can register for the event.}
+  \fieldrow{Category *}{Yes}{Dropdown}{Choose one category: GSO, ASHO, Forum, Research, Training, or Workshop.}
+  \fieldrow{Status}{Auto}{---}{Automatically calculated from the start and end dates. Display only. Possible values: \textit{Upcoming}, \textit{Today}, or \textit{Past}.}
+\end{fieldtable}
+
+\subsubsection{Event Schedule Fields}
+
+\begin{fieldtable}
+  \fieldrow{Start Date \& Time *}{Yes}{Date-time picker}{Must be set and must be in the future (for new events). Cannot be after the end date. Click the field to open a calendar and time picker.}
+  \fieldrow{End Date \& Time *}{Yes}{Date-time picker}{Must be set and must be after the Start Date. The calendar automatically prevents selecting dates before the start date.}
+  \fieldrow{Registration Opens *}{Yes}{Date-time picker}{Must be set and must be before the event ends. This is when the registration window opens for students and faculty.}
+  \fieldrow{Registration Closes *}{Yes}{Date-time picker}{Must be set, must be after Registration Opens, and must be before or when the event ends. The calendar automatically prevents selecting dates before Registration Opens.}
+\end{fieldtable}
+
+\subsubsection{Date Validation Rules}
+
+The system enforces strict date validation to ensure your event schedule is logically sound:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{End date must be after start date.} You cannot create a same-day event where the end time is before the start time.
+  \item \textbf{Registration close must be after registration open.} The registration window must span at least a few minutes.
+  \item \textbf{Registration must open before the event ends.} Students and faculty must have at least some time to register before the event concludes.
+  \item \textbf{Registration must close before or when the event ends.} Late registrations are not permitted; registration must close by the time the event finishes.
+\end{itemize}
+
+If any rule is violated, a red error message will appear below the relevant date field. Fix the date and try again.
+
+\screenshotfigure[0.5\textwidth]{a-figures/3-Events/events-data-validation-error.png}{Events Creating and Editing — Data Validation Error}
+
+\subsubsection{Form Validation and Submission}
+
+\begin{itemize}
+  \item \textbf{Required fields:} All fields marked with an asterisk (*) are required. You cannot submit the form without filling them in.
+  \item \textbf{Character limits:} Fields with character limits will not accept input beyond the maximum. For example, the Title field stops accepting input after 500 characters.
+  \item \textbf{Discard changes confirmation:} If you have unsaved changes and close the form or navigate away, a modal will ask if you want to discard your changes. Click ``Keep Editing'' to stay in the form, or ``Discard'' to leave without saving.
+  \item \textbf{Submission status:} While the form is submitting, the submit button shows ``Creating...'' or ``Saving...'' and becomes disabled. If a banner image is being uploaded, the button shows ``Uploading banner…''. Do not close the page or refresh while uploading.
+  \item \textbf{Success feedback:} After a successful submission, you will see a green success notification confirming that the event was created or updated. The page then returns to the events list.
+  \item \textbf{Error handling:} If an error occurs (e.g., network failure, invalid banner file), an error message will appear in the form. Read the message to understand what went wrong, fix the issue, and try again.
+\end{itemize}
+
+\subsubsection{Tips for Event Creation}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Plan registration windows early. Open registration at least one week before the event, and close it at least a few hours before the event starts (or when it ends).
+  \item Choose descriptive titles. Use clear event names that tell students what to expect (e.g., ``GSO: Inclusive Language and Allyship'' instead of just ``GSO'').
+  \item Write helpful descriptions. Include learning objectives, prerequisites, and what participants will take away. This encourages sign-ups.
+  \item Set realistic capacities. Consider the venue size and equipment. If your venue can fit 40 people comfortably, set the capacity to 40, not 100.
+  \item Add a banner image. Events with eye-catching banners get more registrations. Use high-quality images that are relevant to the event topic.
+  \item Test date fields. Before submitting, carefully review all four date fields to make sure the registration window and event schedule make sense together.
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════════════════
+% EVENTS MANAGEMENT — ATTENDANCE TRACKING SUBSECTION
+% ════════════════════════════════════════════════════════════════════════════
+
+\subsubsection{Checking and Marking User Attendance}
+
+The \textbf{Registrations and Attendance} tab in the event detail modal allows you to view all users who registered for an event and mark them as attended. This is how you record who attended the event.
+
+\screenshotfigure[0.55\textwidth]{a-figures/3-Events/events-registrations-tab.png}{Events Management — Registrations Tab}
+\screenshotfigure[0.55\textwidth]{a-figures/3-Events/events-attendance-tab.png}{Events Management — Attendance Tab}
+
+\paragraph{Accessing the Attendance Section}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Click on any event row in the table to open the \textbf{Event Detail Modal}.
+  \item At the top of the modal, click the \textbf{Registrations and Attendance} tab to switch from the event details view.
+  \item The tab displays counts of total registrations and current attendance.
+\end{itemize}
+
+\paragraph{Registrations vs. Attendance}
+
+The tab is divided into two sections:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Registered Users} — All users who signed up for the event (includes both attended and no-shows).
+  \item \textbf{Attended Users} — Only users who have been marked as attended (updates in real-time as you mark checkboxes).
+\end{itemize}
+
+\screenshotfigure[0.75\textwidth]{a-figures/3-Events/events-attendance-counts.png}{Events Management — Registration and Attendance Counts}
+
+\paragraph{Searching for a User}
+
+To find a specific user quickly:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item In the Registered Users section, find the \textbf{Search bar} above the user table.
+  \item Type the user's \textbf{first name, last name, or email address}.
+  \item Results filter in real-time as you type. The table shows only matching users.
+  \item To see all users again, clear the search box.
+\end{enumerate}
+
+\screenshotfigure[0.75\textwidth]{a-figures/3-Events/events-registered-search.png}{Events Management — Search Registered Users}
+
+\paragraph{Marking a Single User as Attended}
+
+Here is the step-by-step process to mark one user as attended:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Open the event detail modal.} Click on any event in the list.
+  \item \textbf{Go to Registrations tab.}
+  \item \textbf{Search for the user (optional).} If the list is long, type their name or email in the search bar to find them quickly.
+  \item \textbf{Locate the user's row.} Scroll through the Registered Users table to find the person you want to mark as attended.
+  \item \textbf{Check the checkbox.} In the rightmost column of the user's row, there is a checkbox. Click it to mark the user as attended.
+  \item \textbf{Observe the update.} The checkbox becomes checked. The user will then appear in the Attendance Tab.
+  \item \textbf{Repeat as needed.} Continue checking off users as they arrive or complete the event.
+\end{enumerate}
+
+\screenshotfigure[0.55\textwidth]{a-figures/3-Events/events-attendance-marking-1.png}{Events Management — Marking Users as Attended (Unchecked)}
+\screenshotfigure[0.55\textwidth]{a-figures/3-Events/events-attendance-marking-2.png}{Events Management — Marking Users as Attended (Checked)}
+
+\paragraph{Registered Users Table Columns}
+
+The Registered Users section displays the following columns:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Full Name} — User's full name as registered in the system.
+  \item \textbf{Email} — User's email address.
+  \item \textbf{Attended (Checkbox)} — A checkbox in the rightmost column. Check this to mark the user as attended.
+\end{itemize}
+
+\screenshotfigure[0.55\textwidth]{a-figures/3-Events/events-registered-users-table.png}{Events Management — Registered Users Table}
+
+\paragraph{Attended Users Section}
+
+Below the Registered Users table, the \textbf{Attended Users} section shows all users you have marked as attended. This section displays:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Full Name} — User's full name.
+  \item \textbf{Email} — User's email address.
+  \item List is updated automatically as you check attendance checkboxes.
+  \item This section provides a quick summary of who attended.
+\end{itemize}
+
+\screenshotfigure[0.55\textwidth]{a-figures/3-Events/events-attended-users-table.png}{Events Management — Attended Users Table}
+
+\paragraph{Unchecking (Removing Attendance)}
+
+If you accidentally mark a user as attended, you can undo it:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Find the user.} Search or scroll to locate the user in the Registered Users table.
+  \item \textbf{Uncheck the checkbox.} Click the checkbox again to uncheck it.
+  \item \textbf{Observe the update.} The checkbox becomes unchecked. The attendance count decreases by one. The user is removed from the Attended Users section.
+\end{enumerate}
+
+\paragraph{Bulk Workflow: Marking Multiple Users at an Event}
+
+For events with many registrations, here is an efficient workflow:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Prepare a list.} As users arrive, ask their names as they enter.
+  \item \textbf{Open the event.} Click the event in the management page to open its detail modal.
+  \item \textbf{Go to attendance tab.} Click Registrations and Attendance.
+  \item \textbf{Work through attendees one by one.} For each person who arrived:
+    \begin{enumerate}
+      \item Search for their name (if needed).
+      \item Check their attendance checkbox.
+      \item Move to the next person.
+    \end{enumerate}
+  \item \textbf{Monitor the count.} The attendance counter updates in real-time, so you can see progress.
+  \item \textbf{Close the modal.} The attendance data is automatically saved. No additional save button is needed.
+\end{enumerate}
+
+\paragraph{Important Notes}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Real-time updates.} Attendance changes are saved immediately. You do not need to manually save.
+  \item \textbf{No attendance email.} Marking a user as attended does NOT automatically send them a notification. Attendance is for admin records only.
+  \item \textbf{Change history.} The system does not keep a log of who was checked/unchecked and when.
+  \item \textbf{Report data.} The final attendance numbers are used in institutional reports and surveys. Ensure accuracy before closing the event.
+\end{itemize}
+
+\paragraph{Tips for Efficient Attendance Tracking}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Delegate during the event.} Have a staff member manage attendance check-in.
+  \item \textbf{Use search strategically.} For large events, search by first or last name in batches rather than scrolling through hundreds of names.
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  4. USER MANAGEMENT
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Users Management}
+
+The \textbf{Users Management} page lets you view all registered users, create new accounts, edit existing ones, and manage user data. This page is \textbf{only available to Admin users}.
+
+\screenshotfigure[1\textwidth]{a-figures/4-Users/users-list-view.png}{Users Management — List View}
+
+\subsection{Toolbar and Controls}
+
+At the top of the Users page, you will find several controls for searching, sorting, filtering, and creating users:
+
+\screenshotfigure[1\textwidth]{a-figures/4-Users/users-toolbar.png}{Users Management — Toolbar}
+
+\subsubsection{Search Bar}
+
+Type a keyword to search users by full name, email, or role. Results filter in real-time as you type.
+
+\begin{fieldtable}
+  \fieldrow{Search query}{No}{---}{Type to filter by user full name, email address, or role. Searches are case-insensitive. Clearing the search box shows all users again.}
+\end{fieldtable}
+
+\screenshotfigure[1\textwidth]{a-figures/4-Users/users-search.png}{Users Management — Search}
+
+\subsubsection{Sort Dropdown}
+
+Click the \textbf{Sort} button (with an up/down arrow icon) to open the sort menu. You can sort users by:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Full Name} — Alphabetically by user's full name, ascending or descending.
+  \item \textbf{Email} — Alphabetically by email address, ascending or descending.
+  \item \textbf{Role} — Alphabetically by role (Admin, Staff, Faculty, Student), ascending or descending.
+\end{itemize}
+
+Click the same sort option again to reverse the sort direction (ascending ↑ or descending ↓). The current sort field and direction are displayed on the button. You can also click ``Reset sort'' in the menu to return to the default sort (Full Name, ascending).
+
+\screenshotfigure[0.4\textwidth]{a-figures/4-Users/users-sort-options.png}{Users Management — Sort Options}
+
+\subsubsection{Filter Dropdown}
+
+Click the \textbf{Filter} button (with a sliders icon) to open the filter panel. The filter button displays a badge showing the number of active filters (e.g.\ ``Filter 2'' if two filters are selected).
+
+You can filter users by:
+
+\paragraph{Role}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Student} — Users with the Student role.
+  \item \textbf{Faculty} — Users with the Faculty role.
+  \item \textbf{Staff} — Users with the Staff role.
+  \item \textbf{Admin} — Users with the Admin role.
+\end{itemize}
+
+You can select multiple roles. For example, selecting both ``Student'' and ``Faculty'' shows all students and faculty members, excluding staff and admins.
+
+\screenshotfigure[0.3\textwidth]{a-figures/4-Users/users-filter-options.png}{Users Management — Filter Options}
+
+\paragraph{Active Filter Chips}
+
+Once you apply filters, they appear as coloured \textbf{chips} below the toolbar. Each chip shows the filter name and an ``×'' button to remove it. You can also click ``Clear all filters'' in the filter dropdown to remove all active filters at once.
+
+\screenshotfigure[1\textwidth]{a-figures/4-Users/users-filter-chips.png}{Users Management — Active Filter Chips}
+
+\subsubsection{Add User Button}
+
+Click the \textbf{Add User} button to create a new user account. This opens the user creation form (see Creating or Editing a User below).
+
+\screenshotfigure[0.4\textwidth]{a-figures/4-Users/users-add-button.png}{Users Management — Add User Button}
+
+\subsection{Viewing and Interacting with Users}
+
+Users are displayed in a table with the following columns:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{User} — Full name (truncated if too long; hover to see full name).
+  \item \textbf{Email} — Email address.
+  \item \textbf{Role} — Role badge (Student, Staff, Faculty, or Admin).
+  \item \textbf{Total Events Attended} — Count of all events the user has attended across all categories.
+  \item \textbf{Actions} — Edit and Delete buttons.
+\end{itemize}
+
+\subsubsection{Viewing User Details}
+
+Click anywhere on a user row to open the \textbf{User Detail Modal}. This modal displays:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item User's name, email, and role badge.
+  \item Personal information (display name, pronouns, contact number, address).
+  \item Identity information (sex at birth, gender identity).
+  \item Role-specific information:
+    \begin{itemize}
+      \item \textit{Student:} Student number, year level, college, program.
+      \item \textit{Faculty:} College, department.
+      \item \textit{Staff/Admin:} Office or unit.
+    \end{itemize}
+  \item Session attendance counts (GSO, ASHO, Forums, Research, Training, Workshops).
+  \item Onboarding status.
+  \item \textbf{Edit} button to modify the user.
+\end{itemize}
+
+\screenshotfigure[0.55\textwidth]{a-figures/4-Users/users-detailed-view.png}{Users Management — User Detail Modal}
+
+\subsubsection{Edit a User}
+
+Click the \textbf{Edit} (pencil) icon in the Actions column, or click the \textbf{Edit} button in the user detail modal. This opens the user form in edit mode. Make your changes and click ``Save Changes'' to update the user. See \textit{Creating or Editing a User} below for field details.
+
+\subsubsection{Delete a User}
+
+Click the \textbf{Delete} (trash) icon in the Actions column to delete a user. A confirmation modal will appear.
+
+\screenshotfigure[0.3\textwidth]{a-figures/4-Users/users-actions-button.png}{Users Management — Actions (Edit and Delete Icons)}
+
+\paragraph{Delete Confirmation}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item The modal shows the user's name and email you are about to delete.
+  \item You must enter your password to confirm. This is a security measure to prevent accidental deletions.
+  \item \textbf{Warning:} Deleting a user will permanently remove all account data, event registrations, attendance records, and survey responses. This action \textbf{cannot be undone}.
+\end{itemize}
+
+After confirming your password, the user and all associated data will be deleted, and you will see a success notification.
+
+\screenshotfigure[0.75\textwidth]{a-figures/4-Users/users-delete.png}{Users Management — Delete Confirmation Window}
+
+\subsubsection{Pagination}
+
+If you have more than one page of users, pagination controls appear at the bottom of the table. Use the navigation buttons to move between pages. The display shows which users are currently shown (e.g.\ ``Showing 1–10 of 156 users'').
+
+\screenshotfigure[1\textwidth]{a-figures/4-Users/users-pagination.png}{Users Management — User Pagination}
+
+% ============ 4.2 Creating / Editing a User %
+\subsection{Creating or Editing a User}
+ 
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Click the ``Add User'' button or edit icon.} On the Users page, click the \textbf{``Add User''} button to create a new user account, or click the \textbf{edit (pencil) icon} on an existing user row to modify their account.
+  
+  \item \textbf{Complete the five form sections.} The user form is organized into five sections: \textit{Account Information}, \textit{Personal Information}, \textit{Role-Specific Fields}, \textit{Identity}, and \textit{Session Attendance}. See the subsections below for detailed field descriptions.
+  
+  \item \textbf{Fill in all required fields.} Fields marked with an asterisk (*) are required. You cannot submit the form without completing them. Optional fields may be left blank.
+  
+  \item \textbf{Verify your information.} Review all entries for accuracy before submitting. Pay special attention to email addresses, student numbers (if applicable), and role-specific information.
+  
+  \item \textbf{Submit the form.} Scroll to the bottom of the form and click the \textbf{``Create User''} button (for new users) or \textbf{``Save Changes''} button (for editing existing users).
+  
+  \item \textbf{Confirm success.} A green success notification appears confirming the user was created or updated. The page returns to the users list.
+\end{enumerate}
+ 
+\screenshotfigure[0.55\textwidth]{a-figures/4-Users/users-create.png}{User Management — Create User Form}
+ 
+\screenshotfigure[0.55\textwidth]{a-figures/4-Users/users-edit.png}{User Management — Edit User Form}
+ 
+\subsubsection{Creating vs. Editing a User}
+ 
+The user form works in two modes: create mode (for new users) and edit mode (for modifying existing users).
+ 
+\paragraph{Create Mode (Adding a New User)}
+ 
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Access:} Click the ``Add User'' button at the top of the Users page.
+  \item \textbf{All fields blank:} All form fields start empty. You must fill in all required fields.
+  \item \textbf{Submit button:} Shows ``Create User'' at the bottom of the form.
+  \item \textbf{Result:} New user account is created and added to the system. The user can log in with the email and temporary password you provided.
+\end{itemize}
+ 
+\paragraph{Edit Mode (Modifying an Existing User)}
+ 
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Access:} Click the edit (pencil) icon in the Actions column of a user row, or click the ``Edit'' button in the user detail modal.
+  \item \textbf{Pre-filled fields:} All fields are pre-populated with the user's current information.
+  \item \textbf{Password optional:} Password field is empty. Leave it blank to keep the current password, or enter a new password to change it.
+  \item \textbf{Submit button:} Shows ``Save Changes'' at the bottom of the form.
+  \item \textbf{Role change warning:} If you change a user's role (e.g., from Student to Faculty), a confirmation modal appears warning that role-specific fields will be reset. Confirm to proceed.
+  \item \textbf{Result:} User account is updated. The user's next login will use the updated information. If you changed the password, they use the new one.
+\end{itemize}
+ 
+\paragraph{Discard Changes Confirmation}
+ 
+When editing a user, if you close the form or navigate away with unsaved changes, a modal appears asking if you want to discard your changes.
+ 
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{``Keep Editing''} — Stay in the form to continue editing.
+  \item \textbf{``Discard''} — Leave the form without saving. All changes are lost.
+\end{itemize}
+ 
+This prevents accidental loss of data.
+ 
+\screenshotfigure[0.75\textwidth]{a-figures/4-Users/users-discard-changes.png}{User Management — Discard Changes Window}
+
+\screenshotfigure[0.75\textwidth]{a-figures/4-Users/users-confirm-role-change.png}{Users Management — Role Change Confirmation}
+
+\subsubsection{Account Information Fields}
+
+\begin{fieldtable}
+  \fieldrow{Full Name *}{Yes}{64--100 chars}{Cannot be empty. Only letters, spaces, periods, apostrophes, hyphens, and underscores are allowed. Enter the user's legal name.}
+  \fieldrow{Email *}{Yes}{50 chars}{Must be a valid email ending in \texttt{@gmail.com} or \texttt{@up.edu.ph}. Emails must be unique; you cannot use an email that is already registered.}
+  \fieldrow{Password *}{Cond.}{8--128 chars}{Required when creating a new user. When editing, leave blank to keep the current password. Must be at least 8 characters. Use strong passwords with a mix of letters, numbers, and symbols.}
+  \fieldrow{Role *}{Yes}{Dropdown}{Choose one: Admin, Staff, Faculty, or Student. Changing the role on an existing user will trigger a confirmation prompt and reset role-specific fields.}
+\end{fieldtable}
+
+\subsubsection{Personal Information Fields}
+
+\begin{fieldtable}
+  \fieldrow{Display Name}{No}{30 chars}{A nickname or preferred name. Only letters, spaces, and basic punctuation are allowed. This is optional and does not need to match the full name.}
+  \fieldrow{Contact Number}{No}{11 digits}{Only digits are allowed (e.g.\ ``09123456789''). Must be exactly 11 digits if provided. This is typically a mobile number.}
+  \fieldrow{Address}{No}{64--100 chars}{Free-text field for the user's home or work address.}
+\end{fieldtable}
+
+\subsubsection{Role-Specific Fields}
+
+Depending on the selected role, additional fields will appear:
+
+\paragraph{Student-Only Fields}
+
+\begin{fieldtable}
+  \fieldrow{Student Number *}{Yes}{9 digits}{Only digits allowed. The system automatically derives the year level from the first 4 digits (admission year). Must be exactly 9 digits.}
+  \fieldrow{Year Level *}{Yes}{Dropdown}{Options: 1st Year, 2nd Year, 3rd Year, 4th Year, 5th Year, or Extendee. Automatically set when a valid student number is entered. A warning appears if the selected year does not match the derived year.}
+  \fieldrow{College *}{Yes}{Dropdown}{Choose one: College of Science (CS), College of Arts and Communication (CAC), or College of Social Sciences (CSS).}
+  \fieldrow{Program *}{Yes}{Dropdown}{Options depend on the selected college. You must select a college first. Choose the student's major or degree program.}
+\end{fieldtable}
+
+\paragraph{Faculty-Only Fields}
+
+\begin{fieldtable}
+  \fieldrow{College}{No}{Dropdown}{Same options as students (CS, CAC, CSS). Optional for faculty members.}
+  \fieldrow{Department}{No}{64 chars}{Free-text (e.g.\ ``Dept.\ of Math and Computer Science''). Enter the faculty member's department or academic unit.}
+\end{fieldtable}
+
+\paragraph{Admin and Staff Fields}
+
+\begin{fieldtable}
+  \fieldrow{Office / Unit}{No}{64 chars}{Free-text (e.g.\ ``Office of the Chancellor''). Enter the admin or staff member's office or department.}
+\end{fieldtable}
+
+\subsubsection{Identity Fields (All Roles)}
+
+\begin{fieldtable}
+  \fieldrow{Pronouns}{No}{Dropdown}{Options: he/him, she/her, they/them, he/they, she/they, any/all, or Prefer not to say. Optional field to respect user identity.}
+  \fieldrow{Sex at Birth *}{Yes}{Dropdown}{Options: Male, Female, Intersex, or Prefer not to say. Required for institutional reporting purposes.}
+  \fieldrow{Gender Identity *}{Yes}{Dropdown}{Options: Man, Woman, Non-binary, Genderqueer, Genderfluid, or Prefer not to say. Required to capture user's gender identity.}
+\end{fieldtable}
+
+\subsubsection{Session Attendance Fields (Students \& Faculty)}
+
+These fields track how many orientation/session events a user has attended. Each field accepts a whole number from \textbf{0 to 5}.
+
+\begin{fieldtable}
+  \fieldrow{GSO Sessions}{No}{0--5}{Number of Gender Sensitivity Orientation sessions the user has attended.}
+  \fieldrow{ASHO Sessions}{No}{0--5}{Number of Anti-Sexual Harassment Orientation sessions the user has attended.}
+  \fieldrow{Forums}{No}{0--5}{Number of forum sessions the user has attended.}
+  \fieldrow{Research}{No}{0--5}{Number of research sessions the user has attended.}
+  \fieldrow{Training}{No}{0--5}{Number of training sessions the user has attended.}
+  \fieldrow{Workshops}{No}{0--5}{Number of workshop sessions the user has attended.}
+\end{fieldtable}
+
+\subsubsection{Onboarding Toggle}
+
+\begin{fieldtable}
+  \fieldrow{Onboarding complete}{No}{Toggle}{Indicates whether the user has finished the onboarding process. Defaults to \textit{on}. Turn it off to force the user through onboarding again on their next login.}
+\end{fieldtable}
+
+\subsubsection{Form Validation and Submission}
+
+\begin{itemize}
+  \item \textbf{Required fields:} All fields marked with an asterisk (*) are required. You cannot submit the form without filling them in.
+  \item \textbf{Field validation:} The form validates specific fields in real-time. For example, the student number must be exactly 9 digits, and the contact number must be 11 digits.
+  \item \textbf{Email uniqueness:} The system checks that the email is not already in use by another account.
+  \item \textbf{Role-specific validation:} When you change a user's role, role-specific fields are reset. The form will ask you to confirm this action.
+  \item \textbf{Character limits:} Fields with character limits will not accept input beyond the maximum.
+  \item \textbf{Discard changes confirmation:} If you have unsaved changes and close the form or navigate away, a modal will ask if you want to discard your changes. Click ``Keep Editing'' to stay in the form, or ``Discard'' to leave without saving.
+  \item \textbf{Submission status:} While the form is submitting, the submit button shows ``Creating...'' or ``Saving...'' and becomes disabled. Do not close the page or refresh while submitting.
+  \item \textbf{Success feedback:} After a successful submission, you will see a green success notification confirming that the user was created or updated. The page then returns to the users list.
+  \item \textbf{Error handling:} If an error occurs (e.g.\ network failure, email already exists), an error message will appear in the form. Read the message to understand what went wrong, fix the issue, and try again.
+\end{itemize}
+
+\subsubsection{Tips for User Management}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Use consistent naming conventions. Ensure full names are formatted consistently (e.g., ``John Doe'' not ``JOHN DOE'').
+  \item Verify email addresses carefully. Typos in email addresses prevent users from receiving important notifications. Double-check before creating accounts.
+  \item Set strong passwords. When creating accounts for others, provide temporary strong passwords and ensure they change them on first login.
+  \item Complete student information. If importing student data, ensure student numbers, year levels, colleges, and programs are accurate. These fields are used for reporting.
+  \item Track attendance manually only when necessary. The system automatically tracks event attendance when users register and attend events. Only manually update the Session Attendance fields if a user attended an event without registering.
+  \item Review role assignments. Ensure users are assigned the correct role (Student, Faculty, Staff, Admin) based on their institutional status.
+  \item Archive instead of delete. Consider whether a user truly needs to be deleted or if they should be deactivated instead. Deletion is permanent and removes all history.
+\end{itemize}
+
+% ════════════════
+%  5. GUIDELINES MANAGEMENT
+% ════════════════
+\newpage
+\section{Guidelines Management}
+
+The \textbf{Guidelines Management} page lets you create, edit, view, and delete informational documents (e.g.\ ``Gender and Technology'') that are visible to all users. You can search, sort, and manage guideline content.
+
+\screenshotfigure[1\textwidth]{a-figures/5-Guidelines/guidelines-view.png}{Guidelines Management — List View}
+
+\subsection{Toolbar and Controls}
+
+At the top of the Guidelines page, you will find several controls for searching, sorting, and creating guidelines:
+
+\screenshotfigure[1\textwidth]{a-figures/5-Guidelines/guidelines-toolbar.png}{Guidelines Management — Toolbar}
+
+\subsubsection{Search Bar}
+
+Type a keyword to search guidelines by title or description. Results filter in real-time as you type.
+
+\begin{fieldtable}
+  \fieldrow{Search query}{No}{---}{Type to filter by guideline title or content. Searches are case-insensitive. Clearing the search box shows all guidelines again.}
+\end{fieldtable}
+
+\screenshotfigure[1\textwidth]{a-figures/5-Guidelines/guidelines-search.png}{Guidelines Management — Search}
+
+\subsubsection{Sort Dropdown}
+
+Click the \textbf{Sort} button (with an up/down arrow icon) to open the sort menu. You can sort guidelines by:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Title} — Alphabetically by guideline name, ascending or descending (default).
+\end{itemize}
+
+Click the same sort option again to reverse the sort direction (ascending ↑ or descending ↓). The current sort field and direction are displayed on the button.
+
+\screenshotfigure[0.4\textwidth]{a-figures/5-Guidelines/guidelines-sort-options.png}{Guidelines Management — Sort Options}
+
+\subsubsection{Add Guideline Button}
+
+Click the \textbf{Add Guideline} button to create a new guideline. This opens the guideline creation form (see Creating or Editing a Guideline below).
+
+\screenshotfigure[0.4\textwidth]{a-figures/5-Guidelines/guidelines-add-guideline-button.png}{Guidelines Management — Add Guideline Button}
+
+\subsection{Viewing and Interacting with Guidelines}
+
+Guidelines are displayed in a table with the following columns:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Title} — Guideline name (truncated if too long; hover to see full title).
+  \item \textbf{Description} — Guideline summary or first line of content (truncated; hover to see full text).
+  \item \textbf{Actions} — Edit and Delete buttons.
+\end{itemize}
+
+\subsubsection{Viewing Guideline Details}
+
+Click anywhere on a guideline row to open the \textbf{Guideline Detail Modal}. This modal displays:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Full guideline title at the top.
+  \item Complete guideline content/description.
+  \item \textbf{Edit} button to modify the guideline.
+\end{itemize}
+
+\screenshotfigure[0.75\textwidth]{a-figures/5-Guidelines/guidelines-detail-view.png}{Guidelines Management — Guideline Detail Modal}
+
+\subsubsection{Edit a Guideline}
+
+Click the \textbf{Edit} (pencil) icon in the Actions column, or click the \textbf{Edit} button in the guideline detail modal. This opens the guideline form in edit mode. Make your changes and click ``Save Changes'' to update the guideline. See \textit{Creating or Editing a Guideline} below for field details.
+
+\subsubsection{Delete a Guideline}
+
+Click the \textbf{Delete} (trash) icon in the Actions column to delete a guideline. A confirmation modal will appear.
+
+\screenshotfigure[0.3\textwidth]{a-figures/5-Guidelines/guidelines-actions-button.png}{Guidelines Management — Actions (Edit and Delete Icons)}
+
+\paragraph{Delete Confirmation}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item The modal shows the guideline title you are about to delete.
+  \item You must enter your password to confirm. This is a security measure to prevent accidental deletions.
+  \item \textbf{Warning:} Deleting a guideline will permanently remove it. This action \textbf{cannot be undone}.
+\end{itemize}
+
+After confirming your password, the guideline will be deleted, and you will see a success notification.
+
+\screenshotfigure[0.55\textwidth]{a-figures/5-Guidelines/guidelines-delete-confirmation.png}{Guidelines Management — Delete Confirmation Window}
+
+\subsubsection{Pagination}
+
+If you have more than one page of guidelines, pagination controls appear at the bottom of the table. Use the navigation buttons to move between pages. The display shows which guidelines are currently shown (e.g.\ ``Showing 1–5 of 5 guidelines'').
+
+\screenshotfigure[1\textwidth]{a-figures/5-Guidelines/guidelines-pagination.png}{Guidelines Management — Guideline Pagination}
+
+% ============ 5.2 Creating / Editing a Guideline %
+\subsection{Creating or Editing a Guideline}
+
+Click the \textbf{``Add Guideline''} button on the Guidelines page (or the edit icon on an existing guideline) to open the guideline form.
+
+\screenshotfigure[0.75\textwidth]{a-figures/5-Guidelines/guidelines-create.png}{Guidelines Management — Create Guideline Form}
+
+\screenshotfigure[0.75\textwidth]{a-figures/5-Guidelines/guidelines-edit.png}{Guidelines Management — Edit Guideline Form}
+
+\screenshotfigure[0.75\textwidth]{a-figures/5-Guidelines/guidelines-discard-changes.png}{Guidelines Management — Discard Changes Window}
+
+\subsubsection{Guideline Fields}
+
+\begin{fieldtable}
+  \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty. Briefly describe the guideline (e.g.\ ``Gender and Technology'').}
+  \fieldrow{Description}{No}{100\,000 chars}{A long-form text area for the guideline content. This supports detailed, multi-paragraph content. If provided, must be at least 10 characters long.}
+\end{fieldtable}
+
+\subsubsection{Form Validation and Submission}
+
+\begin{itemize}
+  \item \textbf{Required fields:} All fields marked with an asterisk (*) are required. You cannot submit the form without filling them in.
+  \item \textbf{Character limits:} Fields with character limits will not accept input beyond the maximum.
+  \item \textbf{Discard changes confirmation:} If you have unsaved changes and close the form or navigate away, a modal will ask if you want to discard your changes. Click ``Keep Editing'' to stay in the form, or ``Discard'' to leave without saving.
+  \item \textbf{Submission status:} While the form is submitting, the submit button shows ``Creating...'' or ``Saving...'' and becomes disabled. Do not close the page or refresh while submitting.
+  \item \textbf{Success feedback:} After a successful submission, you will see a green success notification confirming that the guideline was created or updated. The page then returns to the guidelines list.
+  \item \textbf{Error handling:} If an error occurs (e.g.\ network failure), an error message will appear in the form. Read the message to understand what went wrong, fix the issue, and try again.
+\end{itemize}
+
+\subsubsection{Tips for Guideline Creation}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Use clear, descriptive titles. Titles should convey the topic at a glance (e.g.\ ``Gender and Technology: Bridging the Digital Divide'' instead of just ``Guidelines'').
+  \item Write comprehensive content. Use the description field to provide detailed, well-structured information. Break up long text with clear sections and bullet points for readability.
+  \item Review for accuracy. Before publishing, carefully review your content for typos, factual errors, and clarity. Poor documentation creates confusion.
+  \item Update regularly. If guidelines become outdated, edit them promptly. Users rely on current information.
+\end{itemize}
+
+
+% ════════════════════════════════════════════════════════════════════════════
+%  6. SURVEYS MANAGEMENT
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+% ════════════════════════════════════════════════════════════════════════════
+%  6. SURVEYS MANAGEMENT
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Surveys Management}
+
+The \textbf{Surveys Management} page lets you create post-event feedback forms, view responses, edit surveys, and analyze results. You can search, filter, sort, and manage survey data for all linked events.
+
+\screenshotfigure[1\textwidth]{a-figures/6-Surveys/surveys-list-view.png}{Surveys Management — List View}
+
+\subsection{Toolbar and Controls}
+
+At the top of the Surveys page, you will find several controls for searching, sorting, filtering, and creating surveys:
+
+\screenshotfigure[1\textwidth]{a-figures/6-Surveys/surveys-toolbar.png}{Surveys Management — Toolbar}
+
+\subsubsection{Search Bar}
+
+Type a keyword to search surveys by title, description, or linked event. Results filter in real-time as you type.
+
+\begin{fieldtable}
+  \fieldrow{Search query}{No}{---}{Type to filter by survey title, description, or event name. Searches are case-insensitive. Clearing the search box shows all surveys again.}
+\end{fieldtable}
+
+\screenshotfigure[1\textwidth]{a-figures/6-Surveys/surveys-search.png}{Surveys Management — Search}
+
+\subsubsection{Sort Dropdown}
+
+Click the \textbf{Sort} button (with an up/down arrow icon) to open the sort menu. You can sort surveys by:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Title} — Alphabetically by survey name, ascending or descending.
+  \item \textbf{Status} — By status (Upcoming, Open, Closed).
+  \item \textbf{Date} — By open date, ascending or descending (default).
+\end{itemize}
+
+Click the same sort option again to reverse the sort direction (ascending ↑ or descending ↓). The current sort field and direction are displayed on the button. You can also click ``Reset sort'' in the menu to return to the default sort (Date, descending).
+
+\screenshotfigure[0.4\textwidth]{a-figures/6-Surveys/surveys-sort-options.png}{Surveys Management — Sort Options}
+
+\subsubsection{Filter Dropdown}
+
+Click the \textbf{Filter} button (with a sliders icon) to open the filter panel. The filter button displays a badge showing the number of active filters (e.g.\ ``Filter 1'' if one filter is selected).
+
+You can filter surveys by:
+
+\paragraph{Status}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Upcoming} — Surveys that have not yet opened.
+  \item \textbf{Open} — Surveys currently accepting responses.
+  \item \textbf{Closed} — Surveys that have closed to responses.
+\end{itemize}
+
+You can select multiple statuses. For example, selecting both ``Open'' and ``Closed'' shows all surveys that are no longer accepting new responses.
+
+\screenshotfigure[0.3\textwidth]{a-figures/6-Surveys/surveys-filter-options.png}{Surveys Management — Filter Options}
+
+\paragraph{Active Filter Chips}
+
+Once you apply filters, they appear as coloured \textbf{chips} below the toolbar. Each chip shows the filter name and an ``×'' button to remove it. You can also click ``Clear all filters'' in the filter dropdown to remove all active filters at once.
+
+\screenshotfigure[1\textwidth]{a-figures/6-Surveys/surveys-filter-chips.png}{Surveys Management — Active Filter Chips}
+
+\subsubsection{Add Survey Button}
+
+Click the \textbf{Add Survey} button to create a new survey. This opens the survey creation form (see Creating or Editing a Survey below).
+
+\screenshotfigure[0.4\textwidth]{a-figures/6-Surveys/surveys-add-button.png}{Surveys Management — Add Survey Button}
+
+\subsection{Viewing and Interacting with Surveys}
+
+Surveys are displayed in a table with the following columns:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Title} — Survey name (truncated if too long; hover to see full title).
+  \item \textbf{Status} — Colour-coded status badge (Upcoming, Open, or Closed).
+  \item \textbf{Opens} — Survey opening date.
+  \item \textbf{Closes} — Survey closing date.
+  \item \textbf{Actions} — View Analytics, Edit, and Delete buttons.
+\end{itemize}
+
+\subsubsection{Viewing Survey Details and Analytics}
+
+Click anywhere on a survey row, or click the \textbf{Analytics} (chart) icon to open the \textbf{Survey Analytics Modal}. This modal displays:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Full survey title and linked event name.
+  \item Survey open and close dates.
+  \item Complete question-by-question analytics.
+    \begin{itemize}
+      \item Multiple-choice questions: Horizontal bar charts showing response counts and percentages.
+      \item Yes/No questions: Pie charts showing the split between ``Yes'' and ``No''.
+      \item Likert Scale questions: Stacked bar charts with statistics (Average, Median, Standard Deviation).
+      \item Open-ended text questions: Paginated cards displaying respondent feedback.
+    \end{itemize}
+\end{itemize}
+
+\screenshotfigure[0.55\textwidth]{a-figures/6-Surveys/surveys-detail-view.png}{Surveys Management — Survey Analytics Modal}
+
+\paragraph{Survey Analytics Details}
+ 
+Each question in the analytics view displays results in a format tailored to the question type:
+ 
+\begin{longtable}{|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}p{5cm}|}
+\hline
+\rowcolor{lightgray}
+\textbf{Survey Analytic} & \textbf{What It Displays} & \textbf{What the Data Means}\\
+\hline
+Multiple Choice & Horizontal Bar Charts & Shows total count and percentage of users who selected each option \\
+\hline
+Yes / No & Donut Pie Chart & Shows the absolute count and percentage split between the ``Yes'' and ``No'' option \\
+\hline
+Likert Scale & Stacked Horizontal Bar Chart with a Statistics Grid & Shows distribution of answers from ``Strongly Agree'' to ``Strongly Disagree''. Also includes overall sentiment score (Average), exact middle rating (Median), and overall consensus (Standard Deviation) \\
+\hline
+Open-ended Text & Paginated list of text cards & Text-based feedback from each respondent, displayed one response per card for easy review \\
+\hline
+\end{longtable}
+ 
+\screenshotfigure[1\textwidth]{a-figures/6-Surveys/surveys-question-analytics.png}{Surveys Management — Survey Analytics Examples}
+
+\subsubsection{Edit a Survey}
+
+Click the \textbf{Edit} (pencil) icon in the Actions column. This opens the survey form in edit mode. Make your changes and click ``Save Changes'' to update the survey. See \textit{Creating or Editing a Survey} below for field details.
+
+\subsubsection{Delete a Survey}
+
+Click the \textbf{Delete} (trash) icon in the Actions column to delete a survey. A confirmation modal will appear.
+
+\screenshotfigure[0.3\textwidth]{a-figures/6-Surveys/surveys-action-buttons.png}{Surveys Management — Actions (View, Edit, and Delete Icons)}
+
+\paragraph{Delete Confirmation}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item The modal shows the survey title you are about to delete.
+  \item You must enter your password to confirm. This is a security measure to prevent accidental deletions.
+  \item \textbf{Warning:} Deleting a survey will permanently remove all survey responses and linked data. This action \textbf{cannot be undone}.
+\end{itemize}
+
+After confirming your password, the survey and all associated responses will be deleted, and you will see a success notification.
+
+\screenshotfigure[0.75\textwidth]{a-figures/6-Surveys/surveys-delete-confirmation.png}{Surveys Management — Delete Confirmation Window}
+
+\subsubsection{Pagination}
+
+If you have more than one page of surveys, pagination controls appear at the bottom of the table. Use the navigation buttons to move between pages. The display shows which surveys are currently shown (e.g.\ ``Showing 1–10 of 34 surveys'').
+
+\screenshotfigure[1\textwidth]{a-figures/6-Surveys/surveys-pagination.png}{Surveys Management — Survey Pagination}
+
+% ============ 6.2 Creating / Editing a Survey %
+\subsection{Creating or Editing a Survey}
+
+Click the \textbf{``Add Survey''} button on the Surveys page (or the edit icon on an existing survey) to open the survey form. The form is organized into three sections: \textit{Survey Details}, \textit{Availability}, and \textit{Questions}.
+
+\screenshotfigure[0.6\textwidth]{a-figures/6-Surveys/surveys-create.png}{Surveys Management — Create Survey Form}
+
+\screenshotfigure[0.6\textwidth]{a-figures/6-Surveys/surveys-edit-1.png}{Surveys Management — Edit Survey Form}
+\screenshotfigure[0.6\textwidth]{a-figures/6-Surveys/surveys-edit-2.png}{Surveys Management — Edit Survey Form (Scrolled  )}
+
+\screenshotfigure[0.75\textwidth]{a-figures/6-Surveys/surveys-discard-changes.png}{Surveys Management — Discard Changes Window}
+
+\subsubsection{Survey Details Fields}
+
+\begin{fieldtable}
+  \fieldrow{Title *}{Yes}{500 chars}{Cannot be empty (e.g.\ ``Post-Event Feedback Form''). Briefly describe the survey.}
+  \fieldrow{Description}{No}{3\,000 chars}{If provided, must be at least 5 characters long. Provide context or instructions for respondents.}
+  \fieldrow{Linked Event *}{Yes}{Dropdown}{Select the event this survey is for. The placeholder ``Select linked event'' is disabled once a choice is made. You cannot change the linked event after creation.}
+  \fieldrow{Status}{Auto}{---}{Automatically calculated from the open and close dates. Display only. Possible values: \textit{Upcoming}, \textit{Open}, or \textit{Closed}.}
+\end{fieldtable}
+
+\subsubsection{Availability Fields}
+
+\begin{fieldtable}
+  \fieldrow{Opens At *}{Yes}{Date-time picker}{When the survey becomes available to respondents. Must be in the future for new surveys. Minimum selectable date is the linked event's end date. Click the field to open a calendar and time picker.}
+  \fieldrow{Closes At *}{Yes}{Date-time picker}{When the survey stops accepting responses. Must be after the Opens At date. The calendar automatically prevents selecting dates before the open date.}
+\end{fieldtable}
+
+\subsubsection{Date Validation Rules}
+
+The system enforces strict date validation to ensure your survey schedule is logically sound:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Open date must be after the linked event ends.} Surveys cannot open before the event is complete.
+  \item \textbf{Close date must be after open date.} The survey window must span at least a few minutes.
+  \item \textbf{Open date must be in the future.} You cannot create a survey that is already open.
+\end{itemize}
+
+If any rule is violated, a red error message will appear below the relevant date field. Fix the date and try again.
+
+\screenshotfigure[0.75\textwidth]{a-figures/6-Surveys/surveys-date-validation-error.png}{Surveys Management — Date Validation Error}
+
+\subsubsection{Questions Section}
+
+You can add up to \textbf{50 questions} per survey. Each question has the following fields:
+
+\begin{fieldtable}
+  \fieldrow{Question Text *}{Yes}{500 chars}{The question you want to ask (e.g.\ ``How would you rate this event?'').}
+  \fieldrow{Question Type *}{Yes}{Dropdown}{Choose one: \textit{Text (open-ended)}, \textit{Multiple Choice}, \textit{Likert Scale (1--5)}, or \textit{Yes / No}.}
+  \fieldrow{Choices}{Cond.}{Up to 10 choices}{Only shown for Multiple Choice questions. At least 2 non-empty choices are required. Duplicate choices are not allowed.}
+  \fieldrow{Required toggle}{No}{Checkbox}{If checked, respondents must answer this question before submitting the survey.}
+\end{fieldtable}
+
+\screenshotfigure[0.75\textwidth]{a-figures/6-Surveys/surveys-questions.png}{Surveys Management — Questions Section}
+
+\screenshotfigure[0.75\textwidth]{a-figures/6-Surveys/surveys-question-selection.png}{Surveys Management — Question Type Selection}
+
+\subsubsection{Form Validation and Submission}
+
+\begin{itemize}
+  \item \textbf{Required fields:} All fields marked with an asterisk (*) are required. You cannot submit the form without filling them in.
+  \item \textbf{Question requirements:} At least one question is required. Multiple-choice questions must have at least 2 non-empty, non-duplicate choices.
+  \item \textbf{Character limits:} Fields with character limits will not accept input beyond the maximum.
+  \item \textbf{Discard changes confirmation:} If you have unsaved changes and close the form or navigate away, a modal will ask if you want to discard your changes. Click ``Keep Editing'' to stay in the form, or ``Discard'' to leave without saving.
+  \item \textbf{Submission status:} While the form is submitting, the submit button shows ``Creating...'' or ``Saving...'' and becomes disabled. Do not close the page or refresh while submitting.
+  \item \textbf{Success feedback:} After a successful submission, you will see a green success notification confirming that the survey was created or updated. The page then returns to the surveys list.
+  \item \textbf{Error handling:} If an error occurs (e.g.\ network failure, invalid event), an error message will appear in the form. Read the message to understand what went wrong, fix the issue, and try again.
+\end{itemize}
+
+\subsubsection{Tips for Survey Creation}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Plan opening windows strategically. Open the survey immediately after an event ends or the next day. Close it 1–2 weeks later to capture maximum feedback while the event is fresh in respondents' minds.
+  \item Keep surveys short. Aim for 5–10 questions. Longer surveys have lower completion rates.
+  \item Use clear, unbiased wording. Avoid leading questions (e.g., ``Did you love this event?'') and instead use neutral language (e.g., ``How did you feel about this event?'').
+  \item Balance question types. Mix yes/no, multiple choice, and open-ended questions to get both quantitative and qualitative feedback.
+  \item Make critical questions required. Mark questions that capture key metrics (e.g., overall satisfaction) as required so you don't get incomplete data.
+  \item Test before publishing. If possible, preview the survey in a test mode to ensure questions and choices display correctly and make sense.
+  \item Analyze results promptly. Review survey responses while they are still relevant. Use insights to improve future events.
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  7. PROFILE PAGE
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Profile Page}
+
+Your \textbf{Profile} page lets you view and update your own personal information. It is organized into three tabs: \textit{Personal}, \textit{Professional}, and \textit{Identity}.
+
+\screenshotfigure[0.75\textwidth]{a-figures/7-Profile/profile-personal.png}{Admin Profile Page — Personal Tab}
+
+\subsection{Personal Tab}
+
+\begin{fieldtable}
+  \fieldrow{Full Name}{Yes}{64 chars}{Only letters, spaces, and basic punctuation. Cannot be empty.}
+  \fieldrow{Display Name}{No}{32 chars}{Only letters, spaces, and basic punctuation.}
+  \fieldrow{Pronouns}{No}{Dropdown}{Options: he/him, she/her, they/them, he/they, she/they, any/all, or Prefer not to say.}
+  \fieldrow{Contact Number}{No}{11 digits}{Only digits (e.g.\ ``09171234567''). Must be exactly 11 digits if provided.}
+  \fieldrow{Address}{No}{100 chars}{Free-text field.}
+\end{fieldtable}
+
+\subsection{Professional Tab}
+
+\begin{fieldtable}
+  \fieldrow{Office / Unit}{No}{64 chars}{Your office or unit within the university (e.g.\ ``Office of the Chancellor'').}
+\end{fieldtable}
+
+\screenshotfigure[0.75\textwidth]{a-figures/7-Profile/profile-professional.png}{Admin Profile Page — Professional Tab}
+
+\subsection{Identity Tab}
+
+\begin{fieldtable}
+  \fieldrow{Sex at Birth}{No}{Dropdown}{Options: Male, Female, Intersex, or Prefer not to say.}
+  \fieldrow{Gender Identity}{No}{Dropdown}{Options: Man, Woman, Non-binary, Genderqueer, Genderfluid, or Prefer not to say.}
+\end{fieldtable}
+
+\textbf{Privacy Note:} The identity information is kept strictly private and is used only for institutional reporting. You are not required to fill this out.
+
+\screenshotfigure[0.75\textwidth]{a-figures/7-Profile/profile-identity.png}{Admin Profile Page — Identity Tab}
+
+\subsection{Profile Card}
+
+On the left side of the profile page, you will see a summary card showing:
+\begin{itemize}[leftmargin=1.5em]
+  \item Your name and display name.
+  \item Your role badge (``Administrator'') and office.
+  \item Progress bars for session attendance (GSO, ASHO, Forums, Research, Training, Workshops).
+\end{itemize}
+
+\screenshotfigure[0.55\textwidth]{a-figures/7-Profile/profile-summary.png}{Admin Profile Page — Sidebar Summary Card}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  8. SETTINGS PAGE
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Settings Page}
+
+The \textbf{Settings} page lets you update your login credentials. It has two sections: \textit{Change Email Address} and \textit{Change Password}.
+
+\screenshotfigure[1\textwidth]{a-figures/8-Settings/settings-page.png}{Settings Page}
+
+\subsection{Change Email Address}
+
+\begin{fieldtable}
+  \fieldrow{Current Email}{Read-only}{---}{Your current email is shown but cannot be edited directly.}
+  \fieldrow{New Email *}{Yes}{No explicit limit}{Must be a valid email address. After submitting, verification links will be sent to both your old and new email addresses. You must confirm from both inboxes.}
+\end{fieldtable}
+
+\subsection{Change Password}
+
+\textbf{Note:} This section is only available if you signed up with an email and password. If you use Google Sign-In, a message will explain that password management is handled through your Google account.
+
+\begin{fieldtable}
+  \fieldrow{Current Password *}{Yes}{16 chars}{Your existing password. The system verifies it before allowing a change.}
+  \fieldrow{New Password *}{Yes}{16 chars}{Must be at least 8 characters long.}
+  \fieldrow{Confirm Password *}{Yes}{16 chars}{Must match the New Password exactly.}
+\end{fieldtable}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  9. TIPS AND TROUBLESHOOTING
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Tips and Troubleshooting}
+
+\subsection{Common Validation Errors}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{5cm}|>{\raggedright\arraybackslash}p{8cm}|}
+\hline
+\rowcolor{lightgray}
+\textbf{Error Message} & \textbf{What To Do} \\
+\hline
+``Full name is required.'' & Make sure the Full Name field is not blank. \\
+\hline
+``Full name can only contain letters, spaces, and basic punctuation.'' & Remove any numbers or special characters (e.g.\ \texttt{\#}, \texttt{\&}) from the name. \\
+\hline
+``Email must end with @gmail.com or @up.edu.ph.'' & Only these two email domains are accepted. \\
+\hline
+``Password must be at least 8 characters long.'' & Use a longer password with at least 8 characters. \\
+\hline
+``Contact number must be 11 digits.'' & Enter exactly 11 digits with no spaces or dashes. \\
+\hline
+``Student number must be exactly 9 digits.'' & Enter the full 9-digit student number. \\
+\hline
+``End date must be after the start date.'' & Adjust your event dates so the end comes after the start. \\
+\hline
+``Registration close must be after open.'' & Make sure the registration closing date/time is later than the opening date/time. \\
+\hline
+``At least one question is required.'' & Add at least one question to your survey before submitting. \\
+\hline
+``Question X needs at least 2 non-empty choices.'' & Multiple-choice questions need at least 2 answer options that are not blank. \\
+\hline
+\end{longtable}
+
+\subsection{General Tips}
+\begin{itemize}[leftmargin=1.5em]
+  \item Save often. Changes are only saved when you click the Save or Submit button.
+  \item Check for red error messages. They appear directly below the field that has a problem.
+  \item Dropdown placeholders are disabled. Once you pick an option from a dropdown (e.g.\ ``Select category''), you cannot go back to the placeholder. Pick a valid option instead.
+  \item Use the search bar. It is the fastest way to find any event, user, guideline, or survey.
+  \item Date pickers enforce minimum dates. For example, the End Date picker will not let you pick a date before the Start Date.
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  10. GLOSSARY
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Glossary}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}p{9cm}|}
+\hline
+\rowcolor{lightgray}
+\textbf{Term} & \textbf{Definition} \\
+\hline
+GAD & Gender and Development — the university office focused on gender equity programs. \\
+\hline
+GSO & Gender Sensitivity Orientation — a mandatory orientation session. \\
+\hline
+ASHO & Anti-Sexual Harassment Orientation — a mandatory orientation session. \\
+\hline
+Onboarding & The initial setup process a new user completes after their first login (selecting college, program, identity info, etc.). \\
+\hline
+Likert Scale & A 1-to-5 rating scale commonly used in surveys (1 = Strongly Disagree, 5 = Strongly Agree). \\
+\hline
+Banner Image & The cover photo shown at the top of an event's detail view. \\
+\hline
+Modal & A Pop-up window that appears over the current page to show details, form, or messages  \\
+\hline
+Chars & Singular characters including letters (a-z/A-Z), numbers (0-9), and special symbols (\texttt{! ? @ \# \$ \% \& * ( ) - + = \_ [ ] \{ \} ; : ' `` , . / < > | \textbackslash{} \textasciitilde{} \textasciicircum{}}). \\
+\hline
+\end{longtable}
+
+\end{document}

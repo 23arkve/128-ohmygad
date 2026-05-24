@@ -1,0 +1,1973 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2026.2.24)  24 MAY 2026 06:46
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**admin.tex
+(./admin.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-11-06>
+(/usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2025/texmf-dist/tex/latex/base/size12.clo
+File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count275
+\c@section=\count276
+\c@subsection=\count277
+\c@subsubsection=\count278
+\c@paragraph=\count279
+\c@subparagraph=\count280
+\c@figure=\count281
+\c@table=\count282
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen148
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2024/02/08 v1.3d Input encoding file
+\inpenc@prehook=\toks17
+\inpenc@posthook=\toks18
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2025/07/18 v2.1d Standard LaTeX package
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/lm/lmodern.sty
+Package: lmodern 2015/05/01 v1.6.1 Latin Modern Fonts
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/lmr/m/n on input line 22.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/lmm/m/it on input line 23.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> OMS/lmsy/m/n on input line 24.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/lmex/m/n on input line 25.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 26.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/lmm/b/it on input line 27.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> OMS/lmsy/b/n on input line 28.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/lmex/m/n on input line 29.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 31.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> OT1/lmss/m/n on input line 32.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/lmr/m/it on input line 33.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 34.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 35.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> OT1/lmss/bx/n on input line 36.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/lmr/bx/it on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks19
+) (/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+ (/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+))
+\Gm@cnth=\count283
+\Gm@cntv=\count284
+\c@Gm@tempcnt=\count285
+\Gm@bindingoffset=\dimen149
+\Gm@wd@mp=\dimen150
+\Gm@odd@mp=\dimen151
+\Gm@even@mp=\dimen152
+\Gm@layoutwidth=\dimen153
+\Gm@layoutheight=\dimen154
+\Gm@layouthoffset=\dimen155
+\Gm@layoutvoffset=\dimen156
+\Gm@dimlist=\toks20
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 106.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen157
+\Gin@req@width=\dimen158
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 274.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
+Package xcolor Info: Model `RGB' extended on input line 1365.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/colortbl/colortbl.sty
+Package: colortbl 2024/10/29 v1.0k Color table columns (DPC)
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/tools/array.sty
+Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
+\col@sep=\dimen159
+\ar@mcellbox=\box53
+\extrarowheight=\dimen160
+\NC@list=\toks21
+\extratabsurround=\skip51
+\backup@length=\skip52
+\ar@cellbox=\box54
+)
+\everycr=\toks22
+\minrowclearance=\skip53
+\rownum=\count286
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2025-07-12 v7.01o Hypertext links for LaTeX
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+) (/usr/local/texlive/2025/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+) (/usr/local/texlive/2025/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+ (/usr/local/texlive/2025/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+) (/usr/local/texlive/2025/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO)
+ (/usr/local/texlive/2025/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)) (/usr/local/texlive/2025/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2025-06-21 v2.57 Cross-referencing by name of section
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+))
+\c@section@level=\count287
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count288
+) (/usr/local/texlive/2025/texmf-dist/tex/generic/stringenc/stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
+)
+\@linkdim=\dimen161
+\Hy@linkcounter=\count289
+\Hy@pagecounter=\count290
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2025-07-12 v7.01o Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+) (/usr/local/texlive/2025/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count291
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2025-07-12 v7.01o Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Hyper figures OFF on input line 4195.
+Package hyperref Info: Link nesting OFF on input line 4200.
+Package hyperref Info: Hyper index ON on input line 4203.
+Package hyperref Info: Plain pages OFF on input line 4210.
+Package hyperref Info: Backreferencing OFF on input line 4215.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4462.
+\c@Hy@tempcnt=\count292
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip17
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4801.
+\XeTeXLinkMargin=\dimen162
+ (/usr/local/texlive/2025/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+ (/usr/local/texlive/2025/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
+))
+\Fld@menulength=\count293
+\Field@Width=\dimen163
+\Fld@charsize=\dimen164
+Package hyperref Info: Hyper figures OFF on input line 6078.
+Package hyperref Info: Link nesting OFF on input line 6083.
+Package hyperref Info: Hyper index ON on input line 6086.
+Package hyperref Info: backreferencing OFF on input line 6093.
+Package hyperref Info: Link coloring OFF on input line 6098.
+Package hyperref Info: Link coloring with OCG OFF on input line 6103.
+Package hyperref Info: PDF/A mode OFF on input line 6108.
+\Hy@abspage=\count294
+\c@Item=\count295
+\c@Hfootnote=\count296
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2025-07-12 v7.01o Hyperref driver for pdfTeX
+\Fld@listcount=\count297
+\c@bookmark@seq@number=\count298
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
+ (/usr/local/texlive/2025/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 284.
+)
+\Hy@SectionHShift=\skip54
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen165
+\lightrulewidth=\dimen166
+\cmidrulewidth=\dimen167
+\belowrulesep=\dimen168
+\belowbottomsep=\dimen169
+\aboverulesep=\dimen170
+\abovetopsep=\dimen171
+\cmidrulesep=\dimen172
+\cmidrulekern=\dimen173
+\defaultaddspace=\dimen174
+\@cmidla=\count299
+\@cmidlb=\count300
+\@aboverulesep=\dimen175
+\@belowrulesep=\dimen176
+\@thisruleclass=\count301
+\@lastruleclass=\count302
+\@thisrulewidth=\dimen177
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/longtable.sty
+Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
+\LTleft=\skip55
+\LTright=\skip56
+\LTpre=\skip57
+\LTpost=\skip58
+\LTchunksize=\count303
+\LTcapwidth=\dimen178
+\LT@head=\box55
+\LT@firsthead=\box56
+\LT@foot=\box57
+\LT@lastfoot=\box58
+\LT@gbox=\box59
+\LT@cols=\count304
+\LT@rows=\count305
+\c@LT@tables=\count306
+\c@LT@chunks=\count307
+\LT@p@ftn=\toks23
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/enumitem/enumitem.sty
+Package: enumitem 2025/02/06 v3.11 Customized lists
+\labelindent=\skip59
+\enit@outerparindent=\dimen179
+\enit@toks=\toks24
+\enit@inbox=\box60
+\enit@count@id=\count308
+\enitdp@description=\count309
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
+\f@nch@headwidth=\skip60
+\f@nch@offset@elh=\skip61
+\f@nch@offset@erh=\skip62
+\f@nch@offset@olh=\skip63
+\f@nch@offset@orh=\skip64
+\f@nch@offset@elf=\skip65
+\f@nch@offset@erf=\skip66
+\f@nch@offset@olf=\skip67
+\f@nch@offset@orf=\skip68
+\f@nch@height=\skip69
+\f@nch@footalignment=\skip70
+\f@nch@widthL=\skip71
+\f@nch@widthC=\skip72
+\f@nch@widthR=\skip73
+\@temptokenb=\toks25
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/titlesec/titlesec.sty
+Package: titlesec 2025/01/04 v2.17 Sectioning titles
+\ttl@box=\box61
+\beforetitleunit=\skip74
+\aftertitleunit=\skip75
+\ttl@plus=\dimen180
+\ttl@minus=\dimen181
+\ttl@toksa=\toks26
+\titlewidth=\dimen182
+\titlewidthlast=\dimen183
+\titlewidthfirst=\dimen184
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/tocloft/tocloft.sty
+Package: tocloft 2017/08/31 v2.3i parameterised ToC, etc., typesetting
+Package tocloft Info: The document has section divisions on input line 51.
+\cftparskip=\skip76
+\cftbeforetoctitleskip=\skip77
+\cftaftertoctitleskip=\skip78
+\cftbeforepartskip=\skip79
+\cftpartnumwidth=\skip80
+\cftpartindent=\skip81
+\cftbeforesecskip=\skip82
+\cftsecindent=\skip83
+\cftsecnumwidth=\skip84
+\cftbeforesubsecskip=\skip85
+\cftsubsecindent=\skip86
+\cftsubsecnumwidth=\skip87
+\cftbeforesubsubsecskip=\skip88
+\cftsubsubsecindent=\skip89
+\cftsubsubsecnumwidth=\skip90
+\cftbeforeparaskip=\skip91
+\cftparaindent=\skip92
+\cftparanumwidth=\skip93
+\cftbeforesubparaskip=\skip94
+\cftsubparaindent=\skip95
+\cftsubparanumwidth=\skip96
+\cftbeforeloftitleskip=\skip97
+\cftafterloftitleskip=\skip98
+\cftbeforefigskip=\skip99
+\cftfigindent=\skip100
+\cftfignumwidth=\skip101
+\c@lofdepth=\count310
+\c@lotdepth=\count311
+\cftbeforelottitleskip=\skip102
+\cftafterlottitleskip=\skip103
+\cftbeforetabskip=\skip104
+\cfttabindent=\skip105
+\cfttabnumwidth=\skip106
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count312
+\float@exts=\toks27
+\float@box=\box62
+\@float@everytoks=\toks28
+\@floatcapt=\box63
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2023/08/05 v3.6o Customizing captions (AR)
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
+\caption@tempdima=\dimen185
+\captionmargin=\dimen186
+\caption@leftmargin=\dimen187
+\caption@rightmargin=\dimen188
+\caption@width=\dimen189
+\caption@indent=\dimen190
+\caption@parindent=\dimen191
+\caption@hangindent=\dimen192
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count313
+\c@continuedfloat=\count314
+Package caption Info: float package is loaded.
+Package caption Info: hyperref package is loaded.
+Package caption Info: longtable package is loaded.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/caption/ltcaption.sty
+Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
+)) (/usr/local/texlive/2025/texmf-dist/tex/latex/parskip/parskip.sty
+Package: parskip 2021-03-14 v2.0h non-zero parskip adjustments
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
+\TX@col@width=\dimen193
+\TX@old@table=\dimen194
+\TX@old@col=\dimen195
+\TX@target=\dimen196
+\TX@delta=\dimen197
+\TX@cols=\count315
+\TX@ftn=\toks29
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2025/07/09 v3.2b Micro-typographical refinements (RS)
+\MT@toks=\toks30
+\MT@tempbox=\box64
+\MT@count=\count316
+LaTeX Info: Redefining \noprotrusionifhmode on input line 1087.
+LaTeX Info: Redefining \leftprotrusion on input line 1088.
+\MT@prot@toks=\toks31
+LaTeX Info: Redefining \rightprotrusion on input line 1107.
+LaTeX Info: Redefining \textls on input line 1449.
+\MT@outer@kern=\dimen198
+LaTeX Info: Redefining \microtypecontext on input line 2053.
+LaTeX Info: Redefining \textmicrotypecontext on input line 2070.
+\MT@listname@count=\count317
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/microtype-pdftex.def
+File: microtype-pdftex.def 2025/07/09 v3.2b Definitions specific to pdftex (RS)
+LaTeX Info: Redefining \lsstyle on input line 944.
+LaTeX Info: Redefining \lslig on input line 944.
+\MT@outer@space=\skip107
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/microtype.cfg
+File: microtype.cfg 2025/07/09 v3.2b microtype main configuration file (RS)
+)
+LaTeX Info: Redefining \microtypesetup on input line 3065.
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 45.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 107.
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/lm/t1lmr.fd
+File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count318
+) (./admin.aux)
+\openout1 = `admin.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 107.
+LaTeX Font Info:    ... okay on input line 107.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 452.9679pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 700.50687pt, 72.26999pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=452.9679pt
+* \textheight=700.50687pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=12.0pt
+* \footskip=30.0pt
+* \marginparwidth=35.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+(/usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count319
+\scratchdimen=\dimen199
+\scratchbox=\box65
+\nofMPsegments=\count320
+\nofMParguments=\count321
+\everyMPshowfont=\toks32
+\MPscratchCnt=\count322
+\MPscratchDim=\dimen256
+\MPnumerator=\count323
+\makeMPintoPDFobject=\count324
+\everyMPtoPDFconversion=\toks33
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
+))
+Package hyperref Info: Link coloring ON on input line 107.
+ (./admin.out) (./admin.out)
+\@outlinefile=\write3
+\openout3 = `admin.out'.
+
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Info: Redefining \microtypecontext on input line 107.
+Package microtype Info: Applying patch `item' on input line 107.
+Package microtype Info: Applying patch `toc' on input line 107.
+Package microtype Info: Applying patch `eqnum' on input line 107.
+Package microtype Info: Applying patch `footnote' on input line 107.
+Package microtype Info: Applying patch `verbatim' on input line 107.
+LaTeX Info: Redefining \microtypesetup on input line 107.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: Automatic font expansion enabled (level 2),
+(microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
+Package microtype Info: Using default expansion set `alltext-nott'.
+Package microtype Info: Patching command `\showhyphens'.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (RS)
+) [1
+
+{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}] (./admin.toc
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/lm/ot1lmr.fd
+File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/lm/omllmm.fd
+File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 1.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/lm/omslmsy.fd
+File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 1.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/lm/omxlmex.fd
+File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <12> on input line 1.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <8> on input line 1.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 1.
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.63 \contentsline {subsubsection}{\numberline {3.3.5}Form Validation and Submission}{32}{subsubsection.3.3.5}
+                                                                                                              % [1]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[2])
+\tf@toc=\write4
+\openout4 = `admin.toc'.
+
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[3]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 148.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 157.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `lmtt' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+<a-figures/1-Introduction/login.png, id=598, 1859.94875pt x 874.26625pt>
+File: a-figures/1-Introduction/login.png Graphic file (type png)
+<use a-figures/1-Introduction/login.png>
+Package pdftex.def Info: a-figures/1-Introduction/login.png  used on input line 162.
+(pdftex.def)             Requested size: 339.72592pt x 159.68233pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[4{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc} <./a-figures/1-Introduction/login.png (PNG copy)>]
+<a-figures/2-Dashboard/dashboard-overview-1.png, id=610, 1927.2pt x 903.375pt>
+File: a-figures/2-Dashboard/dashboard-overview-1.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-overview-1.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-overview-1.png  used on input line 171.
+(pdftex.def)             Requested size: 452.9679pt x 212.32072pt.
+<a-figures/2-Dashboard/dashboard-overview-2.png, id=612, 1927.2pt x 903.375pt>
+File: a-figures/2-Dashboard/dashboard-overview-2.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-overview-2.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-overview-2.png  used on input line 172.
+(pdftex.def)             Requested size: 452.9679pt x 212.32072pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[5 <./a-figures/2-Dashboard/dashboard-overview-1.png> <./a-figures/2-Dashboard/dashboard-overview-2.png>]
+<a-figures/2-Dashboard/dashboard-kpi.png, id=621, 1382.16376pt x 130.4875pt>
+File: a-figures/2-Dashboard/dashboard-kpi.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-kpi.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-kpi.png  used on input line 185.
+(pdftex.def)             Requested size: 452.9679pt x 42.76233pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 191--191
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 191--191
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+<a-figures/2-Dashboard/dashboard-search-filter.png, id=622, 1375.1375pt x 135.50626pt>
+File: a-figures/2-Dashboard/dashboard-search-filter.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-search-filter.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-search-filter.png  used on input line 195.
+(pdftex.def)             Requested size: 452.9679pt x 44.63448pt.
+<a-figures/2-Dashboard/dashboard-globalsearch.png, id=623, 1373.13pt x 628.3475pt>
+File: a-figures/2-Dashboard/dashboard-globalsearch.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-globalsearch.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-globalsearch.png  used on input line 196.
+(pdftex.def)             Requested size: 452.9679pt x 207.27861pt.
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[6 <./a-figures/2-Dashboard/dashboard-kpi.png> <./a-figures/2-Dashboard/dashboard-search-filter.png> <./a-figures/2-Dashboard/dashboard-globalsearch.png>]
+<a-figures/2-Dashboard/dashboard-filter-options.png, id=636, 770.88pt x 703.62875pt>
+File: a-figures/2-Dashboard/dashboard-filter-options.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-filter-options.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-filter-options.png  used on input line 216.
+(pdftex.def)             Requested size: 339.72592pt x 310.08075pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[7 <./a-figures/2-Dashboard/dashboard-filter-options.png>]
+<a-figures/2-Dashboard/dashboard-selectedfilter.png, id=647, 111.41624pt x 49.18375pt>
+File: a-figures/2-Dashboard/dashboard-selectedfilter.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-selectedfilter.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-selectedfilter.png  used on input line 221.
+(pdftex.def)             Requested size: 135.89174pt x 59.9928pt.
+<a-figures/2-Dashboard/dashboard-activefilterchips.png, id=648, 372.39125pt x 64.24pt>
+File: a-figures/2-Dashboard/dashboard-activefilterchips.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-activefilterchips.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-activefilterchips.png  used on input line 222.
+(pdftex.def)             Requested size: 339.72592pt x 58.60649pt.
+<a-figures/2-Dashboard/dashboard-activefilterbutton.png, id=649, 128.48pt x 57.21375pt>
+File: a-figures/2-Dashboard/dashboard-activefilterbutton.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-activefilterbutton.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-activefilterbutton.png  used on input line 223.
+(pdftex.def)             Requested size: 135.89174pt x 60.5188pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[8 <./a-figures/2-Dashboard/dashboard-selectedfilter.png> <./a-figures/2-Dashboard/dashboard-activefilterchips.png> <./a-figures/2-Dashboard/dashboard-activefilterbutton.png>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[9]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[10]
+<a-figures/2-Dashboard/dashboard-emptykpi.png, id=670, 715.67375pt x 118.4425pt>
+File: a-figures/2-Dashboard/dashboard-emptykpi.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-emptykpi.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-emptykpi.png  used on input line 367.
+(pdftex.def)             Requested size: 452.9679pt x 74.96616pt.
+<a-figures/2-Dashboard/dashboard-emptyuserdata.png, id=671, 1432.35126pt x 319.1925pt>
+File: a-figures/2-Dashboard/dashboard-emptyuserdata.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-emptyuserdata.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-emptyuserdata.png  used on input line 368.
+(pdftex.def)             Requested size: 452.9679pt x 100.94067pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[11 <./a-figures/2-Dashboard/dashboard-emptykpi.png>]
+<a-figures/2-Dashboard/dashboard-attendanceovertime.png, id=678, 1157.32375pt x 313.17pt>
+File: a-figures/2-Dashboard/dashboard-attendanceovertime.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-attendanceovertime.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-attendanceovertime.png  used on input line 391.
+(pdftex.def)             Requested size: 452.9679pt x 122.57065pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[12 <./a-figures/2-Dashboard/dashboard-emptyuserdata.png>]
+<a-figures/2-Dashboard/dashboard-quick-actions.png, id=686, 273.02pt x 316.18124pt>
+File: a-figures/2-Dashboard/dashboard-quick-actions.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-quick-actions.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-quick-actions.png  used on input line 404.
+(pdftex.def)             Requested size: 181.18439pt x 209.82849pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[13 <./a-figures/2-Dashboard/dashboard-attendanceovertime.png> <./a-figures/2-Dashboard/dashboard-quick-actions.png>]
+<a-figures/2-Dashboard/dashboard-users-per-college.png, id=695, 470.75874pt x 332.24126pt>
+File: a-figures/2-Dashboard/dashboard-users-per-college.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-users-per-college.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-users-per-college.png  used on input line 414.
+(pdftex.def)             Requested size: 339.72592pt x 239.7661pt.
+<a-figures/2-Dashboard/dashboard-users-per-college-hovered.png, id=696, 473.77pt x 338.26375pt>
+File: a-figures/2-Dashboard/dashboard-users-per-college-hovered.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-users-per-college-hovered.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-users-per-college-hovered.png  used on input line 415.
+(pdftex.def)             Requested size: 339.72592pt x 242.56386pt.
+<a-figures/2-Dashboard/dashboard-users-sex-at-birth.png, id=697, 472.76625pt x 330.23375pt>
+File: a-figures/2-Dashboard/dashboard-users-sex-at-birth.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-users-sex-at-birth.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-users-sex-at-birth.png  used on input line 421.
+(pdftex.def)             Requested size: 339.72592pt x 237.30956pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[14 <./a-figures/2-Dashboard/dashboard-users-per-college.png> <./a-figures/2-Dashboard/dashboard-users-per-college-hovered.png>]
+<a-figures/2-Dashboard/dashboard-users-sex-at-birth-hovered.png, id=706, 475.7775pt x 336.25626pt>
+File: a-figures/2-Dashboard/dashboard-users-sex-at-birth-hovered.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-users-sex-at-birth-hovered.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-users-sex-at-birth-hovered.png  used on input line 422.
+(pdftex.def)             Requested size: 339.72592pt x 240.11354pt.
+<a-figures/2-Dashboard/dashboard-users-gender-identity.png, id=707, 472.76625pt x 333.245pt>
+File: a-figures/2-Dashboard/dashboard-users-gender-identity.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-users-gender-identity.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-users-gender-identity.png  used on input line 428.
+(pdftex.def)             Requested size: 339.72592pt x 239.47348pt.
+<a-figures/2-Dashboard/dashboard-users-gender-identity-hovered.png, id=708, 472.76625pt x 330.23375pt>
+File: a-figures/2-Dashboard/dashboard-users-gender-identity-hovered.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-users-gender-identity-hovered.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-users-gender-identity-hovered.png  used on input line 429.
+(pdftex.def)             Requested size: 339.72592pt x 237.30956pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[15 <./a-figures/2-Dashboard/dashboard-users-sex-at-birth.png> <./a-figures/2-Dashboard/dashboard-users-sex-at-birth-hovered.png>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[16 <./a-figures/2-Dashboard/dashboard-users-gender-identity.png> <./a-figures/2-Dashboard/dashboard-users-gender-identity-hovered.png>]
+<a-figures/2-Dashboard/dashboard-response-rate-by-survey.png, id=725, 1425.325pt x 453.695pt>
+File: a-figures/2-Dashboard/dashboard-response-rate-by-survey.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-response-rate-by-survey.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-response-rate-by-survey.png  used on input line 442.
+(pdftex.def)             Requested size: 339.72592pt x 108.13443pt.
+<a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover.png, id=726, 1053.9375pt x 458.46281pt>
+File: a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover.png  used on input line 443.
+(pdftex.def)             Requested size: 339.72592pt x 147.78142pt.
+<a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover2.png, id=727, 1157.32375pt x 623.32875pt>
+File: a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover2.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover2.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover2.png  used on input line 444.
+(pdftex.def)             Requested size: 339.72592pt x 182.9673pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[17 <./a-figures/2-Dashboard/dashboard-response-rate-by-survey.png> <./a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover.png> <./a-figures/2-Dashboard/dashboard-response-rate-by-survey-hover2.png (PNG copy)>]
+<a-figures/2-Dashboard/dashboard-mini-calendar.png, id=737, 263.48438pt x 332.74312pt>
+File: a-figures/2-Dashboard/dashboard-mini-calendar.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-mini-calendar.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-mini-calendar.png  used on input line 457.
+(pdftex.def)             Requested size: 181.18439pt x 228.82124pt.
+<a-figures/2-Dashboard/dashboard-mini-calendar-selected.png, id=738, 456.95718pt x 231.11343pt>
+File: a-figures/2-Dashboard/dashboard-mini-calendar-selected.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-mini-calendar-selected.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-mini-calendar-selected.png  used on input line 459.
+(pdftex.def)             Requested size: 339.72592pt x 171.8253pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[18 <./a-figures/2-Dashboard/dashboard-mini-calendar.png> <./a-figures/2-Dashboard/dashboard-mini-calendar-selected.png>]
+<a-figures/2-Dashboard/dashboard-timeline.png, id=748, 292.09125pt x 387.4475pt>
+File: a-figures/2-Dashboard/dashboard-timeline.png Graphic file (type png)
+<use a-figures/2-Dashboard/dashboard-timeline.png>
+Package pdftex.def Info: a-figures/2-Dashboard/dashboard-timeline.png  used on input line 471.
+(pdftex.def)             Requested size: 181.18439pt x 240.33911pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[19 <./a-figures/2-Dashboard/dashboard-timeline.png>]
+<a-figures/3-Events/events-list.png, id=755, 1859.94875pt x 874.26625pt>
+File: a-figures/3-Events/events-list.png Graphic file (type png)
+<use a-figures/3-Events/events-list.png>
+Package pdftex.def Info: a-figures/3-Events/events-list.png  used on input line 480.
+(pdftex.def)             Requested size: 452.9679pt x 212.90977pt.
+<a-figures/3-Events/events-toolbar.png, id=756, 1669.23625pt x 130.4875pt>
+File: a-figures/3-Events/events-toolbar.png Graphic file (type png)
+<use a-figures/3-Events/events-toolbar.png>
+Package pdftex.def Info: a-figures/3-Events/events-toolbar.png  used on input line 485.
+(pdftex.def)             Requested size: 452.9679pt x 35.40929pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 490--490
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 490--490
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+<a-figures/3-Events/events-search.png, id=757, 1127.21124pt x 64.24pt>
+File: a-figures/3-Events/events-search.png Graphic file (type png)
+<use a-figures/3-Events/events-search.png>
+Package pdftex.def Info: a-figures/3-Events/events-search.png  used on input line 494.
+(pdftex.def)             Requested size: 452.9679pt x 25.81512pt.
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[20 <./a-figures/3-Events/events-list.png (PNG copy)> <./a-figures/3-Events/events-toolbar.png>]
+<a-figures/3-Events/events-sort-options.png, id=766, 190.7125pt x 285.065pt>
+File: a-figures/3-Events/events-sort-options.png Graphic file (type png)
+<use a-figures/3-Events/events-sort-options.png>
+Package pdftex.def Info: a-figures/3-Events/events-sort-options.png  used on input line 509.
+(pdftex.def)             Requested size: 181.18439pt x 270.83195pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[21 <./a-figures/3-Events/events-search.png> <./a-figures/3-Events/events-sort-options.png>]
+<a-figures/3-Events/events-filter-options.png, id=775, 189.70876pt x 538.01pt>
+File: a-figures/3-Events/events-filter-options.png Graphic file (type png)
+<use a-figures/3-Events/events-filter-options.png>
+Package pdftex.def Info: a-figures/3-Events/events-filter-options.png  used on input line 536.
+(pdftex.def)             Requested size: 90.5922pt x 256.92015pt.
+<a-figures/3-Events/events-filter-chips.png, id=776, 638.385pt x 58.2175pt>
+File: a-figures/3-Events/events-filter-chips.png Graphic file (type png)
+<use a-figures/3-Events/events-filter-chips.png>
+Package pdftex.def Info: a-figures/3-Events/events-filter-chips.png  used on input line 542.
+(pdftex.def)             Requested size: 452.9679pt x 41.30804pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[22 <./a-figures/3-Events/events-filter-options.png>]
+<a-figures/3-Events/events-export-csv.png, id=783, 152.57pt x 58.2175pt>
+File: a-figures/3-Events/events-export-csv.png Graphic file (type png)
+<use a-figures/3-Events/events-export-csv.png>
+Package pdftex.def Info: a-figures/3-Events/events-export-csv.png  used on input line 563.
+(pdftex.def)             Requested size: 181.18439pt x 69.13931pt.
+<a-figures/3-Events/events-add-event-button.png, id=784, 147.55125pt x 63.23625pt>
+File: a-figures/3-Events/events-add-event-button.png Graphic file (type png)
+<use a-figures/3-Events/events-add-event-button.png>
+Package pdftex.def Info: a-figures/3-Events/events-add-event-button.png  used on input line 569.
+(pdftex.def)             Requested size: 181.18439pt x 77.65178pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[23 <./a-figures/3-Events/events-filter-chips.png> <./a-figures/3-Events/events-export-csv.png> <./a-figures/3-Events/events-add-event-button.png>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[24]
+<a-figures/3-Events/events-detail-view.png, id=801, 1022.82124pt x 896.34875pt>
+File: a-figures/3-Events/events-detail-view.png Graphic file (type png)
+<use a-figures/3-Events/events-detail-view.png>
+Package pdftex.def Info: a-figures/3-Events/events-detail-view.png  used on input line 649.
+(pdftex.def)             Requested size: 339.72592pt x 297.7108pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[25]
+<a-figures/3-Events/events-actions-button.png, id=806, 137.51375pt x 98.3675pt>
+File: a-figures/3-Events/events-actions-button.png Graphic file (type png)
+<use a-figures/3-Events/events-actions-button.png>
+Package pdftex.def Info: a-figures/3-Events/events-actions-button.png  used on input line 659.
+(pdftex.def)             Requested size: 135.89174pt x 97.21599pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[26 <./a-figures/3-Events/events-detail-view.png> <./a-figures/3-Events/events-actions-button.png>]
+<a-figures/3-Events/events-delete.png, id=815, 413.29407pt x 338.76563pt>
+File: a-figures/3-Events/events-delete.png Graphic file (type png)
+<use a-figures/3-Events/events-delete.png>
+Package pdftex.def Info: a-figures/3-Events/events-delete.png  used on input line 672.
+(pdftex.def)             Requested size: 339.72592pt x 278.46675pt.
+<a-figures/3-Events/events-pagination.png, id=816, 1534.73375pt x 62.2325pt>
+File: a-figures/3-Events/events-pagination.png Graphic file (type png)
+<use a-figures/3-Events/events-pagination.png>
+Package pdftex.def Info: a-figures/3-Events/events-pagination.png  used on input line 678.
+(pdftex.def)             Requested size: 452.9679pt x 18.36697pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[27 <./a-figures/3-Events/events-delete.png> <./a-figures/3-Events/events-pagination.png (PNG copy)>]
+<a-figures/3-Events/events-create-event.png, id=827, 928.46875pt x 833.1125pt>
+File: a-figures/3-Events/events-create-event.png Graphic file (type png)
+<use a-figures/3-Events/events-create-event.png>
+Package pdftex.def Info: a-figures/3-Events/events-create-event.png  used on input line 703.
+(pdftex.def)             Requested size: 339.72592pt x 304.83992pt.
+<a-figures/3-Events/events-edit.png, id=828, 767.86874pt x 658.71094pt>
+File: a-figures/3-Events/events-edit.png Graphic file (type png)
+<use a-figures/3-Events/events-edit.png>
+Package pdftex.def Info: a-figures/3-Events/events-edit.png  used on input line 705.
+(pdftex.def)             Requested size: 339.72592pt x 291.43182pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[28 <./a-figures/3-Events/events-create-event.png (PNG copy)>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[29 <./a-figures/3-Events/events-edit.png>]
+<a-figures/3-Events/events-discard-changes.png, id=846, 409.53pt x 237.13594pt>
+File: a-figures/3-Events/events-discard-changes.png Graphic file (type png)
+<use a-figures/3-Events/events-discard-changes.png>
+Package pdftex.def Info: a-figures/3-Events/events-discard-changes.png  used on input line 741.
+(pdftex.def)             Requested size: 339.72592pt x 196.72868pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 745--745
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 745--745
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+ignored error: Infinite glue shrinkage found in box being split
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[30 <./a-figures/3-Events/events-discard-changes.png>]
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 757--757
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 757--757
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[31]
+<a-figures/3-Events/events-data-validation-error.png, id=860, 428.60126pt x 445.665pt>
+File: a-figures/3-Events/events-data-validation-error.png Graphic file (type png)
+<use a-figures/3-Events/events-data-validation-error.png>
+Package pdftex.def Info: a-figures/3-Events/events-data-validation-error.png  used on input line 777.
+(pdftex.def)             Requested size: 226.48395pt x 235.50089pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[32 <./a-figures/3-Events/events-data-validation-error.png (PNG copy)>]
+<a-figures/3-Events/events-registrations-tab.png, id=866, 465.74pt x 390.45876pt>
+File: a-figures/3-Events/events-registrations-tab.png Graphic file (type png)
+<use a-figures/3-Events/events-registrations-tab.png>
+Package pdftex.def Info: a-figures/3-Events/events-registrations-tab.png  used on input line 809.
+(pdftex.def)             Requested size: 249.13371pt x 208.8606pt.
+<a-figures/3-Events/events-attendance-tab.png, id=867, 458.71375pt x 295.1025pt>
+File: a-figures/3-Events/events-attendance-tab.png Graphic file (type png)
+<use a-figures/3-Events/events-attendance-tab.png>
+Package pdftex.def Info: a-figures/3-Events/events-attendance-tab.png  used on input line 810.
+(pdftex.def)             Requested size: 249.13371pt x 160.27606pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[33 <./a-figures/3-Events/events-registrations-tab.png>]
+<a-figures/3-Events/events-attendance-counts.png, id=874, 221.82875pt x 49.18375pt>
+File: a-figures/3-Events/events-attendance-counts.png Graphic file (type png)
+<use a-figures/3-Events/events-attendance-counts.png>
+Package pdftex.def Info: a-figures/3-Events/events-attendance-counts.png  used on input line 829.
+(pdftex.def)             Requested size: 339.72592pt x 75.3289pt.
+<a-figures/3-Events/events-registered-search.png, id=875, 453.695pt x 118.4425pt>
+File: a-figures/3-Events/events-registered-search.png Graphic file (type png)
+<use a-figures/3-Events/events-registered-search.png>
+Package pdftex.def Info: a-figures/3-Events/events-registered-search.png  used on input line 842.
+(pdftex.def)             Requested size: 339.72592pt x 88.69067pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[34 <./a-figures/3-Events/events-attendance-tab.png> <./a-figures/3-Events/events-attendance-counts.png>]
+<a-figures/3-Events/events-attendance-marking-1.png, id=888, 449.68pt x 97.36375pt>
+File: a-figures/3-Events/events-attendance-marking-1.png Graphic file (type png)
+<use a-figures/3-Events/events-attendance-marking-1.png>
+Package pdftex.def Info: a-figures/3-Events/events-attendance-marking-1.png  used on input line 858.
+(pdftex.def)             Requested size: 249.13371pt x 53.94243pt.
+<a-figures/3-Events/events-attendance-marking-2.png, id=889, 454.69875pt x 85.31876pt>
+File: a-figures/3-Events/events-attendance-marking-2.png Graphic file (type png)
+<use a-figures/3-Events/events-attendance-marking-2.png>
+Package pdftex.def Info: a-figures/3-Events/events-attendance-marking-2.png  used on input line 859.
+(pdftex.def)             Requested size: 249.13371pt x 46.74709pt.
+<a-figures/3-Events/events-registered-users-table.png, id=890, 450.68375pt x 216.81pt>
+File: a-figures/3-Events/events-registered-users-table.png Graphic file (type png)
+<use a-figures/3-Events/events-registered-users-table.png>
+Package pdftex.def Info: a-figures/3-Events/events-registered-users-table.png  used on input line 871.
+(pdftex.def)             Requested size: 249.13371pt x 119.85127pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[35 <./a-figures/3-Events/events-registered-search.png> <./a-figures/3-Events/events-attendance-marking-1.png> <./a-figures/3-Events/events-attendance-marking-2.png>]
+<a-figures/3-Events/events-attended-users-table.png, id=908, 450.68375pt x 165.61874pt>
+File: a-figures/3-Events/events-attended-users-table.png Graphic file (type png)
+<use a-figures/3-Events/events-attended-users-table.png>
+Package pdftex.def Info: a-figures/3-Events/events-attended-users-table.png  used on input line 884.
+(pdftex.def)             Requested size: 249.13371pt x 91.55304pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[36 <./a-figures/3-Events/events-registered-users-table.png> <./a-figures/3-Events/events-attended-users-table.png>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[37]
+<a-figures/4-Users/users-list-view.png, id=935, 1859.94875pt x 874.26625pt>
+File: a-figures/4-Users/users-list-view.png Graphic file (type png)
+<use a-figures/4-Users/users-list-view.png>
+Package pdftex.def Info: a-figures/4-Users/users-list-view.png  used on input line 938.
+(pdftex.def)             Requested size: 452.9679pt x 212.90977pt.
+<a-figures/4-Users/users-toolbar.png, id=936, 1664.2175pt x 127.47626pt>
+File: a-figures/4-Users/users-toolbar.png Graphic file (type png)
+<use a-figures/4-Users/users-toolbar.png>
+Package pdftex.def Info: a-figures/4-Users/users-toolbar.png  used on input line 944.
+(pdftex.def)             Requested size: 452.9679pt x 34.69525pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 950--950
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 950--950
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+<a-figures/4-Users/users-search.png, id=937, 1249.66875pt x 56.21pt>
+File: a-figures/4-Users/users-search.png Graphic file (type png)
+<use a-figures/4-Users/users-search.png>
+Package pdftex.def Info: a-figures/4-Users/users-search.png  used on input line 954.
+(pdftex.def)             Requested size: 452.9679pt x 20.37453pt.
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[38 <./a-figures/4-Users/users-list-view.png (PNG copy)> <./a-figures/4-Users/users-toolbar.png> <./a-figures/4-Users/users-search.png>]
+<a-figures/4-Users/users-sort-options.png, id=948, 208.78pt x 261.97874pt>
+File: a-figures/4-Users/users-sort-options.png Graphic file (type png)
+<use a-figures/4-Users/users-sort-options.png>
+Package pdftex.def Info: a-figures/4-Users/users-sort-options.png  used on input line 968.
+(pdftex.def)             Requested size: 181.18439pt x 227.36401pt.
+<a-figures/4-Users/users-filter-options.png, id=949, 204.765pt x 333.245pt>
+File: a-figures/4-Users/users-filter-options.png Graphic file (type png)
+<use a-figures/4-Users/users-filter-options.png>
+Package pdftex.def Info: a-figures/4-Users/users-filter-options.png  used on input line 986.
+(pdftex.def)             Requested size: 135.89174pt x 221.16783pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[39 <./a-figures/4-Users/users-sort-options.png>]
+<a-figures/4-Users/users-filter-chips.png, id=956, 537.00626pt x 41.15375pt>
+File: a-figures/4-Users/users-filter-chips.png Graphic file (type png)
+<use a-figures/4-Users/users-filter-chips.png>
+Package pdftex.def Info: a-figures/4-Users/users-filter-chips.png  used on input line 992.
+(pdftex.def)             Requested size: 452.9679pt x 34.71333pt.
+<a-figures/4-Users/users-add-button.png, id=957, 133.49875pt x 56.21pt>
+File: a-figures/4-Users/users-add-button.png Graphic file (type png)
+<use a-figures/4-Users/users-add-button.png>
+Package pdftex.def Info: a-figures/4-Users/users-add-button.png  used on input line 998.
+(pdftex.def)             Requested size: 181.18439pt x 76.29533pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[40 <./a-figures/4-Users/users-filter-options.png> <./a-figures/4-Users/users-filter-chips.png> <./a-figures/4-Users/users-add-button.png>]
+<a-figures/4-Users/users-detailed-view.png, id=968, 711.65875pt x 801.99625pt>
+File: a-figures/4-Users/users-detailed-view.png Graphic file (type png)
+<use a-figures/4-Users/users-detailed-view.png>
+Package pdftex.def Info: a-figures/4-Users/users-detailed-view.png  used on input line 1031.
+(pdftex.def)             Requested size: 249.13371pt x 280.75183pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[41 <./a-figures/4-Users/users-detailed-view.png (PNG copy)>]
+<a-figures/4-Users/users-actions-button.png, id=974, 110.4125pt x 90.3375pt>
+File: a-figures/4-Users/users-actions-button.png Graphic file (type png)
+<use a-figures/4-Users/users-actions-button.png>
+Package pdftex.def Info: a-figures/4-Users/users-actions-button.png  used on input line 1041.
+(pdftex.def)             Requested size: 135.89174pt x 111.18887pt.
+<a-figures/4-Users/users-delete.png, id=975, 491.8375pt x 395.4775pt>
+File: a-figures/4-Users/users-delete.png Graphic file (type png)
+<use a-figures/4-Users/users-delete.png>
+Package pdftex.def Info: a-figures/4-Users/users-delete.png  used on input line 1053.
+(pdftex.def)             Requested size: 339.72592pt x 273.17546pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[42 <./a-figures/4-Users/users-actions-button.png>]
+<a-figures/4-Users/users-pagination.png, id=983, 1661.20625pt x 48.18pt>
+File: a-figures/4-Users/users-pagination.png Graphic file (type png)
+<use a-figures/4-Users/users-pagination.png>
+Package pdftex.def Info: a-figures/4-Users/users-pagination.png  used on input line 1059.
+(pdftex.def)             Requested size: 452.9679pt x 13.13742pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[43 <./a-figures/4-Users/users-delete.png> <./a-figures/4-Users/users-pagination.png>]
+<a-figures/4-Users/users-create.png, id=997, 494.84875pt x 883.3pt>
+File: a-figures/4-Users/users-create.png Graphic file (type png)
+<use a-figures/4-Users/users-create.png>
+Package pdftex.def Info: a-figures/4-Users/users-create.png  used on input line 1078.
+(pdftex.def)             Requested size: 249.13371pt x 444.69496pt.
+<a-figures/4-Users/users-edit.png, id=998, 496.85625pt x 880.28876pt>
+File: a-figures/4-Users/users-edit.png Graphic file (type png)
+<use a-figures/4-Users/users-edit.png>
+Package pdftex.def Info: a-figures/4-Users/users-edit.png  used on input line 1080.
+(pdftex.def)             Requested size: 249.13371pt x 441.39249pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[44 <./a-figures/4-Users/users-create.png>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[45 <./a-figures/4-Users/users-edit.png>]
+<a-figures/4-Users/users-discard-changes.png, id=1012, 503.8825pt x 291.0875pt>
+File: a-figures/4-Users/users-discard-changes.png Graphic file (type png)
+<use a-figures/4-Users/users-discard-changes.png>
+Package pdftex.def Info: a-figures/4-Users/users-discard-changes.png  used on input line 1117.
+(pdftex.def)             Requested size: 339.72592pt x 196.25793pt.
+<a-figures/4-Users/users-confirm-role-change.png, id=1013, 501.875pt x 308.15125pt>
+File: a-figures/4-Users/users-confirm-role-change.png Graphic file (type png)
+<use a-figures/4-Users/users-confirm-role-change.png>
+Package pdftex.def Info: a-figures/4-Users/users-confirm-role-change.png  used on input line 1119.
+(pdftex.def)             Requested size: 339.72592pt x 208.59966pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[46 <./a-figures/4-Users/users-discard-changes.png>]
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1123--1123
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1123--1123
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1132--1132
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1132--1132
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+ignored error: Infinite glue shrinkage found in box being split
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[47 <./a-figures/4-Users/users-confirm-role-change.png>]
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1144--1144
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1144--1144
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1153--1153
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1153--1153
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1160--1160
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1160--1160
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[48]
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1166--1166
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1166--1166
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1176--1176
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1176--1176
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1187--1187
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1187--1187
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[49]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[50]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[51]
+<a-figures/5-Guidelines/guidelines-view.png, id=1051, 1428.83812pt x 682.80093pt>
+File: a-figures/5-Guidelines/guidelines-view.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-view.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-view.png  used on input line 1225.
+(pdftex.def)             Requested size: 452.9679pt x 216.4587pt.
+<a-figures/5-Guidelines/guidelines-toolbar.png, id=1052, 1667.22874pt x 128.48pt>
+File: a-figures/5-Guidelines/guidelines-toolbar.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-toolbar.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-toolbar.png  used on input line 1231.
+(pdftex.def)             Requested size: 452.9679pt x 34.9057pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1237--1237
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1237--1237
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+<a-figures/5-Guidelines/guidelines-search.png, id=1053, 1314.9125pt x 60.225pt>
+File: a-figures/5-Guidelines/guidelines-search.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-search.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-search.png  used on input line 1241.
+(pdftex.def)             Requested size: 452.9679pt x 20.74638pt.
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[52 <./a-figures/5-Guidelines/guidelines-view.png> <./a-figures/5-Guidelines/guidelines-toolbar.png> <./a-figures/5-Guidelines/guidelines-search.png>]
+<a-figures/5-Guidelines/guidelines-sort-options.png, id=1066, 168.63pt x 61.22874pt>
+File: a-figures/5-Guidelines/guidelines-sort-options.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-sort-options.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-sort-options.png  used on input line 1253.
+(pdftex.def)             Requested size: 181.18439pt x 65.78876pt.
+<a-figures/5-Guidelines/guidelines-add-guideline-button.png, id=1067, 171.64125pt x 58.2175pt>
+File: a-figures/5-Guidelines/guidelines-add-guideline-button.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-add-guideline-button.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-add-guideline-button.png  used on input line 1259.
+(pdftex.def)             Requested size: 181.18439pt x 61.4544pt.
+<a-figures/5-Guidelines/guidelines-detail-view.png, id=1068, 1379.1525pt x 658.46pt>
+File: a-figures/5-Guidelines/guidelines-detail-view.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-detail-view.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-detail-view.png  used on input line 1281.
+(pdftex.def)             Requested size: 339.72592pt x 162.1932pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[53 <./a-figures/5-Guidelines/guidelines-sort-options.png> <./a-figures/5-Guidelines/guidelines-add-guideline-button.png>]
+<a-figures/5-Guidelines/guidelines-actions-button.png, id=1077, 126.4725pt x 98.3675pt>
+File: a-figures/5-Guidelines/guidelines-actions-button.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-actions-button.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-actions-button.png  used on input line 1291.
+(pdftex.def)             Requested size: 135.89174pt x 105.69493pt.
+<a-figures/5-Guidelines/guidelines-delete-confirmation.png, id=1078, 498.86375pt x 380.42125pt>
+File: a-figures/5-Guidelines/guidelines-delete-confirmation.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-delete-confirmation.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-delete-confirmation.png  used on input line 1303.
+(pdftex.def)             Requested size: 249.13371pt x 189.98376pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[54 <./a-figures/5-Guidelines/guidelines-detail-view.png> <./a-figures/5-Guidelines/guidelines-actions-button.png>]
+<a-figures/5-Guidelines/guidelines-pagination.png, id=1088, 1652.1725pt x 52.195pt>
+File: a-figures/5-Guidelines/guidelines-pagination.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-pagination.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-pagination.png  used on input line 1309.
+(pdftex.def)             Requested size: 452.9679pt x 14.30946pt.
+<a-figures/5-Guidelines/guidelines-create.png, id=1089, 882.29625pt x 812.03375pt>
+File: a-figures/5-Guidelines/guidelines-create.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-create.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-create.png  used on input line 1316.
+(pdftex.def)             Requested size: 339.72592pt x 312.66493pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[55 <./a-figures/5-Guidelines/guidelines-delete-confirmation.png> <./a-figures/5-Guidelines/guidelines-pagination.png>]
+<a-figures/5-Guidelines/guidelines-edit.png, id=1098, 886.31125pt x 841.1425pt>
+File: a-figures/5-Guidelines/guidelines-edit.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-edit.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-edit.png  used on input line 1318.
+(pdftex.def)             Requested size: 339.72592pt x 322.42262pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[56 <./a-figures/5-Guidelines/guidelines-create.png>]
+<a-figures/5-Guidelines/guidelines-discard-changes.png, id=1105, 498.86375pt x 292.09125pt>
+File: a-figures/5-Guidelines/guidelines-discard-changes.png Graphic file (type png)
+<use a-figures/5-Guidelines/guidelines-discard-changes.png>
+Package pdftex.def Info: a-figures/5-Guidelines/guidelines-discard-changes.png  used on input line 1320.
+(pdftex.def)             Requested size: 339.72592pt x 198.91801pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1324--1324
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1324--1324
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[57 <./a-figures/5-Guidelines/guidelines-edit.png> <./a-figures/5-Guidelines/guidelines-discard-changes.png>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[58]
+<a-figures/6-Surveys/surveys-list-view.png, id=1119, 1431.09656pt x 678.28406pt>
+File: a-figures/6-Surveys/surveys-list-view.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-list-view.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-list-view.png  used on input line 1362.
+(pdftex.def)             Requested size: 452.9679pt x 214.68523pt.
+<a-figures/6-Surveys/surveys-toolbar.png, id=1120, 1661.20625pt x 122.4575pt>
+File: a-figures/6-Surveys/surveys-toolbar.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-toolbar.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-toolbar.png  used on input line 1368.
+(pdftex.def)             Requested size: 452.9679pt x 33.39095pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1374--1374
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1374--1374
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+<a-figures/6-Surveys/surveys-search.png, id=1121, 1266.7325pt x 59.22125pt>
+File: a-figures/6-Surveys/surveys-search.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-search.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-search.png  used on input line 1378.
+(pdftex.def)             Requested size: 452.9679pt x 21.17685pt.
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[59 <./a-figures/6-Surveys/surveys-list-view.png> <./a-figures/6-Surveys/surveys-toolbar.png> <./a-figures/6-Surveys/surveys-search.png>]
+<a-figures/6-Surveys/surveys-sort-options.png, id=1133, 213.79875pt x 269.005pt>
+File: a-figures/6-Surveys/surveys-sort-options.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-sort-options.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-sort-options.png  used on input line 1392.
+(pdftex.def)             Requested size: 181.18439pt x 227.96983pt.
+<a-figures/6-Surveys/surveys-filter-options.png, id=1134, 205.76875pt x 302.12875pt>
+File: a-figures/6-Surveys/surveys-filter-options.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-filter-options.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-filter-options.png  used on input line 1409.
+(pdftex.def)             Requested size: 135.89174pt x 199.53006pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[60 <./a-figures/6-Surveys/surveys-sort-options.png>]
+<a-figures/6-Surveys/surveys-filter-chips.png, id=1142, 470.75874pt x 48.18pt>
+File: a-figures/6-Surveys/surveys-filter-chips.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-filter-chips.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-filter-chips.png  used on input line 1415.
+(pdftex.def)             Requested size: 452.9679pt x 46.35957pt.
+<a-figures/6-Surveys/surveys-add-button.png, id=1143, 152.57pt x 58.2175pt>
+File: a-figures/6-Surveys/surveys-add-button.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-add-button.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-add-button.png  used on input line 1421.
+(pdftex.def)             Requested size: 181.18439pt x 69.13931pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[61 <./a-figures/6-Surveys/surveys-filter-options.png> <./a-figures/6-Surveys/surveys-filter-chips.png> <./a-figures/6-Surveys/surveys-add-button.png>]
+<a-figures/6-Surveys/surveys-detail-view.png, id=1154, 881.2925pt x 878.28125pt>
+File: a-figures/6-Surveys/surveys-detail-view.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-detail-view.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-detail-view.png  used on input line 1451.
+(pdftex.def)             Requested size: 249.13371pt x 248.27573pt.
+
+ignored error: Infinite glue shrinkage found in box being split
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[62 <./a-figures/6-Surveys/surveys-detail-view.png>]
+<a-figures/6-Surveys/surveys-question-analytics.png, id=1162, 2017.5375pt x 768.8725pt>
+File: a-figures/6-Surveys/surveys-question-analytics.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-question-analytics.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-question-analytics.png  used on input line 1472.
+(pdftex.def)             Requested size: 452.9679pt x 172.61342pt.
+<a-figures/6-Surveys/surveys-action-buttons.png, id=1163, 132.495pt x 96.36pt>
+File: a-figures/6-Surveys/surveys-action-buttons.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-action-buttons.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-action-buttons.png  used on input line 1482.
+(pdftex.def)             Requested size: 135.89174pt x 98.83725pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[63 <./a-figures/6-Surveys/surveys-question-analytics.png (PNG copy)>]
+<a-figures/6-Surveys/surveys-delete-confirmation.png, id=1169, 494.84875pt x 393.47pt>
+File: a-figures/6-Surveys/surveys-delete-confirmation.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-delete-confirmation.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-delete-confirmation.png  used on input line 1494.
+(pdftex.def)             Requested size: 339.72592pt x 270.1257pt.
+<a-figures/6-Surveys/surveys-pagination.png, id=1170, 1664.2175pt x 45.16875pt>
+File: a-figures/6-Surveys/surveys-pagination.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-pagination.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-pagination.png  used on input line 1500.
+(pdftex.def)             Requested size: 452.9679pt x 12.29358pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[64 <./a-figures/6-Surveys/surveys-action-buttons.png> <./a-figures/6-Surveys/surveys-delete-confirmation.png>]
+<a-figures/6-Surveys/surveys-create.png, id=1179, 798.985pt x 879.285pt>
+File: a-figures/6-Surveys/surveys-create.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-create.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-create.png  used on input line 1507.
+(pdftex.def)             Requested size: 271.7835pt x 299.10052pt.
+<a-figures/6-Surveys/surveys-edit-1.png, id=1180, 798.985pt x 877.2775pt>
+File: a-figures/6-Surveys/surveys-edit-1.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-edit-1.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-edit-1.png  used on input line 1509.
+(pdftex.def)             Requested size: 271.7835pt x 298.41765pt.
+<a-figures/6-Surveys/surveys-edit-2.png, id=1181, 795.97375pt x 876.27374pt>
+File: a-figures/6-Surveys/surveys-edit-2.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-edit-2.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-edit-2.png  used on input line 1510.
+(pdftex.def)             Requested size: 271.7835pt x 299.19936pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[65 <./a-figures/6-Surveys/surveys-pagination.png> <./a-figures/6-Surveys/surveys-create.png>]
+<a-figures/6-Surveys/surveys-discard-changes.png, id=1190, 494.84875pt x 286.06876pt>
+File: a-figures/6-Surveys/surveys-discard-changes.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-discard-changes.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-discard-changes.png  used on input line 1512.
+(pdftex.def)             Requested size: 339.72592pt x 196.39241pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[66 <./a-figures/6-Surveys/surveys-edit-1.png> <./a-figures/6-Surveys/surveys-edit-2.png>]
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1516--1516
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1516--1516
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1525--1525
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1525--1525
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+ignored error: Infinite glue shrinkage found in box being split
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[67 <./a-figures/6-Surveys/surveys-discard-changes.png>]
+<a-figures/6-Surveys/surveys-date-validation-error.png, id=1209, 729.72626pt x 293.095pt>
+File: a-figures/6-Surveys/surveys-date-validation-error.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-date-validation-error.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-date-validation-error.png  used on input line 1542.
+(pdftex.def)             Requested size: 339.72592pt x 136.44876pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1548--1548
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1548--1548
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+ignored error: Infinite glue shrinkage found in box being split
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[68 <./a-figures/6-Surveys/surveys-date-validation-error.png>]
+<a-figures/6-Surveys/surveys-questions.png, id=1217, 860.21375pt x 418.56375pt>
+File: a-figures/6-Surveys/surveys-questions.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-questions.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-questions.png  used on input line 1555.
+(pdftex.def)             Requested size: 339.72592pt x 165.3085pt.
+<a-figures/6-Surveys/surveys-question-selection.png, id=1218, 580.41844pt x 356.83313pt>
+File: a-figures/6-Surveys/surveys-question-selection.png Graphic file (type png)
+<use a-figures/6-Surveys/surveys-question-selection.png>
+Package pdftex.def Info: a-figures/6-Surveys/surveys-question-selection.png  used on input line 1557.
+(pdftex.def)             Requested size: 339.72592pt x 208.85815pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[69 <./a-figures/6-Surveys/surveys-questions.png (PNG copy)> <./a-figures/6-Surveys/surveys-question-selection.png>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[70]
+<a-figures/7-Profile/profile-personal.png, id=1230, 969.6225pt x 538.01pt>
+File: a-figures/7-Profile/profile-personal.png Graphic file (type png)
+<use a-figures/7-Profile/profile-personal.png>
+Package pdftex.def Info: a-figures/7-Profile/profile-personal.png  used on input line 1591.
+(pdftex.def)             Requested size: 339.72592pt x 188.50334pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1595--1595
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1595--1595
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1605--1605
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1605--1605
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+<a-figures/7-Profile/profile-professional.png, id=1231, 1018.80624pt x 268.00125pt>
+File: a-figures/7-Profile/profile-professional.png Graphic file (type png)
+<use a-figures/7-Profile/profile-professional.png>
+Package pdftex.def Info: a-figures/7-Profile/profile-professional.png  used on input line 1609.
+(pdftex.def)             Requested size: 339.72592pt x 89.36487pt.
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[71 <./a-figures/7-Profile/profile-personal.png (PNG copy)>]
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1613--1613
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1613--1613
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+<a-figures/7-Profile/profile-identity.png, id=1239, 970.62625pt x 448.67625pt>
+File: a-figures/7-Profile/profile-identity.png Graphic file (type png)
+<use a-figures/7-Profile/profile-identity.png>
+Package pdftex.def Info: a-figures/7-Profile/profile-identity.png  used on input line 1620.
+(pdftex.def)             Requested size: 339.72592pt x 157.03903pt.
+<a-figures/7-Profile/profile-summary.png, id=1240, 539.01375pt x 587.19376pt>
+File: a-figures/7-Profile/profile-summary.png Graphic file (type png)
+<use a-figures/7-Profile/profile-summary.png>
+Package pdftex.def Info: a-figures/7-Profile/profile-summary.png  used on input line 1631.
+(pdftex.def)             Requested size: 249.13371pt x 271.40262pt.
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[72 <./a-figures/7-Profile/profile-professional.png (PNG copy)> <./a-figures/7-Profile/profile-identity.png (PNG copy)>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[73 <./a-figures/7-Profile/profile-summary.png (PNG copy)>]
+<a-figures/8-Settings/settings-page.png, id=1254, 1859.94875pt x 874.26625pt>
+File: a-figures/8-Settings/settings-page.png Graphic file (type png)
+<use a-figures/8-Settings/settings-page.png>
+Package pdftex.def Info: a-figures/8-Settings/settings-page.png  used on input line 1641.
+(pdftex.def)             Requested size: 452.9679pt x 212.90977pt.
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1645--1645
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1645--1645
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1654--1654
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Overfull \hbox (1.48837pt too wide) in paragraph at lines 1654--1654
+ []|\T1/lmr/bx/n/12 (-20) Required| 
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[74 <./a-figures/8-Settings/settings-page.png (PNG copy)>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[75]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[76] (./admin.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-11-06>
+ ***********
+Package rerunfilecheck Info: File `admin.out' has not changed.
+(rerunfilecheck)             Checksum: AD41215F877A50D99AB5C62F2230F0C9;19168.
+ ) 
+Here is how much of TeX's memory you used:
+ 16255 strings out of 467538
+ 287323 string characters out of 5419552
+ 724790 words of memory out of 8000000
+ 44391 multiletter control sequences out of 15000+600000
+ 685300 words of font info for 176 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 75i,13n,83p,1194b,796s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/lm/lmri12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
+Output written on admin.pdf (77 pages, 6309117 bytes).
+PDF statistics:
+ 1385 PDF objects out of 1440 (max. 8388607)
+ 1095 compressed objects within 11 object streams
+ 365 named destinations out of 1000 (max. 500000)
+ 32650 words of extra memory for PDF output out of 35830 (max. 10000000)
+
