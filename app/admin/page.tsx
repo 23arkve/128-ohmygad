@@ -88,7 +88,7 @@ const GENDER_COLORS: Record<string, string> = {
 	Man: "#B8B5E8",
 	Woman: "#F4A7B9",
 	"Non-binary": "#6DC5A0",
-	Genderqueer: "#F4C97A",
+	"Transgender woman": "#F4C97A",
 	"Transgender man": "#f4a97a",
 	"Prefer not to say": "#9B9BB4",
 };
@@ -337,7 +337,7 @@ export default function DashboardPage() {
 						"Man",
 						"Woman",
 						"Non-binary",
-						"Genderqueer",
+						"Transgender woman",
 						"Transgender man",
 						"Prefer not to say",
 					].some((g) => label.includes(g));

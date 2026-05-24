@@ -200,7 +200,7 @@ const STATIC_OPTIONS: FilterOptions = {
 		"Man",
 		"Woman",
 		"Non-binary",
-		"Genderqueer",
+		"Transgender woman",
 		"Transgender man",
 		"Prefer not to say",
 	],
