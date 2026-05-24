@@ -201,7 +201,7 @@ const STATIC_OPTIONS: FilterOptions = {
 		"Woman",
 		"Non-binary",
 		"Genderqueer",
-		"Genderfluid",
+		"Transgender man",
 		"Prefer not to say",
 	],
 	yearLevel: ["1st Year", "2nd Year", "3rd Year", "4th Year", "Extendee"],
