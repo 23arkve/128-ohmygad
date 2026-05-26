@@ -186,8 +186,71 @@ export default function EventsPage() {
 		if (match) openDetail(match);
 	}, [autoOpenId, isLoading, events, openDetail]);
 
-	const handleExportEvents = useCallback(async () => {
-		if (!events || events.length === 0) return;
+    
+	// debounce the search input by 200ms so filtering wont run on every keystroke
+	useEffect(() => {
+        const timer = setTimeout(() => setSearch(searchInput), 200);
+		return () => clearTimeout(timer);
+	}, [searchInput]);
+    
+	// filter / sort derived via useMemo so no extra state or effect is needed
+	const filtered = useMemo(() => {
+        const q = search.toLowerCase();
+		let result = events.filter((e) =>
+			`${e.title} ${e.category || ""} ${e.location || ""}`
+        .toLowerCase()
+        .includes(q),
+    );
+    
+    // category filter
+    if (categoryFilters.size > 0) {
+        result = result.filter((e) =>
+				categoryFilters.has(e.category ?? ""),
+			);
+		}
+        
+		// status filter
+		if (statusFilters.size > 0) {
+            result = result.filter((e) =>
+				statusFilters.has(
+                    deriveStatus(e.start_date ?? "", e.end_date ?? ""),
+				),
+			);
+		}
+        
+		// sorting
+		return result.sort((a, b) => {
+            let aVal: any = a[sort.field as keyof EventFormData];
+			let bVal: any = b[sort.field as keyof EventFormData];
+            
+			if (aVal == null && bVal == null) return 0;
+			if (aVal == null) return sort.direction === "asc" ? 1 : -1;
+			if (bVal == null) return sort.direction === "asc" ? -1 : 1;
+            
+			if (sort.field === "start_date") {
+                aVal = new Date(aVal).getTime();
+				bVal = new Date(bVal).getTime();
+			}
+            
+			if (typeof aVal === "string" && typeof bVal === "string") {
+                aVal = aVal.toLowerCase();
+				bVal = bVal.toLowerCase();
+			}
+            
+			if (aVal < bVal) return sort.direction === "asc" ? -1 : 1;
+			if (aVal > bVal) return sort.direction === "asc" ? 1 : -1;
+			return 0;
+		});
+	}, [search, events, sort, categoryFilters, statusFilters]);
+    
+	// reset to page 1 whenever the filtered result set changes
+	useEffect(() => {
+        setPage(1);
+	}, [filtered]);
+    
+    // export current filtered events to csv, including registration and attendance counts
+    const handleExportEvents = useCallback(async () => {
+		if (!filtered || filtered.length === 0) return;
 
 		const supabase = createClient();
 
@@ -197,7 +260,7 @@ export default function EventsPage() {
 			.select("event_id, attended")
 			.in(
 				"event_id",
-				events.map((e) => e.id),
+				filtered.map((e) => e.id),
 			);
 
 		const regCountMap = new Map<string, number>();
@@ -246,7 +309,7 @@ export default function EventsPage() {
 		const eventListRows = [
 			["EVENTS LIST"],
 			header,
-			...events.map((e) => [
+			...filtered.map((e) => [
 				e.title,
 				e.category ?? "—",
 				regCountMap.get(e.id ?? "") ?? 0,
@@ -273,70 +336,9 @@ export default function EventsPage() {
 		a.download = `events_list_${new Date().toISOString().slice(0, 10).replace(/-/g, "_")}.csv`;
 		a.click();
 		URL.revokeObjectURL(url);
-	}, [events]);
-
-	// debounce the search input by 200ms so filtering wont run on every keystroke
-	useEffect(() => {
-		const timer = setTimeout(() => setSearch(searchInput), 200);
-		return () => clearTimeout(timer);
-	}, [searchInput]);
-
-	// filter / sort derived via useMemo so no extra state or effect is needed
-	const filtered = useMemo(() => {
-		const q = search.toLowerCase();
-		let result = events.filter((e) =>
-			`${e.title} ${e.category || ""} ${e.location || ""}`
-				.toLowerCase()
-				.includes(q),
-		);
-
-		// category filter
-		if (categoryFilters.size > 0) {
-			result = result.filter((e) =>
-				categoryFilters.has(e.category ?? ""),
-			);
-		}
-
-		// status filter
-		if (statusFilters.size > 0) {
-			result = result.filter((e) =>
-				statusFilters.has(
-					deriveStatus(e.start_date ?? "", e.end_date ?? ""),
-				),
-			);
-		}
-
-		// sorting
-		return result.sort((a, b) => {
-			let aVal: any = a[sort.field as keyof EventFormData];
-			let bVal: any = b[sort.field as keyof EventFormData];
-
-			if (aVal == null && bVal == null) return 0;
-			if (aVal == null) return sort.direction === "asc" ? 1 : -1;
-			if (bVal == null) return sort.direction === "asc" ? -1 : 1;
-
-			if (sort.field === "start_date") {
-				aVal = new Date(aVal).getTime();
-				bVal = new Date(bVal).getTime();
-			}
-
-			if (typeof aVal === "string" && typeof bVal === "string") {
-				aVal = aVal.toLowerCase();
-				bVal = bVal.toLowerCase();
-			}
-
-			if (aVal < bVal) return sort.direction === "asc" ? -1 : 1;
-			if (aVal > bVal) return sort.direction === "asc" ? 1 : -1;
-			return 0;
-		});
-	}, [search, events, sort, categoryFilters, statusFilters]);
-
-	// reset to page 1 whenever the filtered result set changes
-	useEffect(() => {
-		setPage(1);
 	}, [filtered]);
-
-	const toggleStatus = useCallback((s: string) => {
+	
+    const toggleStatus = useCallback((s: string) => {
 		setStatusFilters((prev) => {
 			const next = new Set(prev);
 			next.has(s) ? next.delete(s) : next.add(s);
@@ -816,8 +818,13 @@ export default function EventsPage() {
 						variant="ghost"
 						onClick={handleExportEvents}
 						title="Export all events to CSV"
+						disabled={filtered.length === 0}
 					>
-						<Upload size={15} /> Export CSV
+						<Upload size={15} />
+						Export CSV
+						{hasActiveFilters || search
+							? ` (${filtered.length})`
+							: ""}
 					</Button>
 
 					<Button
