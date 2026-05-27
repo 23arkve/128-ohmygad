@@ -267,6 +267,12 @@ export default function GuidelinesPage() {
 				</div>
 			)}
 
+			{!isLoading && filteredAndSorted.length > 0 && (
+				<p className="caption">
+					Showing {filteredAndSorted.length} of {guidelines.length} guidelines
+				</p>
+			)}
+
 			{/* Detail Modal */}
 			<Modal
 				open={!!detailGuideline}
