@@ -99,7 +99,7 @@ export default function GuidelineForm({ initialData, mode, onSuccess, onCancel, 
             <div className="flex flex-col gap-4">
               <Input
                 label="Title *"
-                placeholder="e.g. Gender and Technology"
+                placeholder="e.g. UP Gender Guidelines"
                 required
                 prefixIcon={<Type size={15} />}
                 value={title}
