@@ -102,11 +102,21 @@ export default function EventForm({
 
 	// Live Validation Errors
 	const titleError = !title ? "Title is required." : undefined;
-	const descriptionError = !description
-		? "Description is required."
-		: undefined;
+	const descriptionError =
+		description && description.trim().length > 0 && description.trim().length < 10
+			? "Description must be at least 10 characters if provided."
+			: undefined;
 	const locationError = !location ? "Location is required." : undefined;
 	const categoryError = !category ? "Category is required." : undefined;
+	
+	const capacityError =
+		capacity === null
+			? "Capacity is required."
+			: capacity <= 0
+				? "Capacity must be greater than 0."
+				: !Number.isInteger(capacity)
+					? "Capacity must be a whole number."
+					: undefined;
 
 	// Date Validation (Event)
 	const startDateError = !start_date ? "Start date is required." : undefined;
@@ -134,18 +144,27 @@ export default function EventForm({
 			? "Registration close must be after open."
 			: undefined;
 
+	const regBeforeEventEndError =
+		registration_open &&
+		(end_date || start_date) &&
+		new Date(registration_open) >= (end_date ? new Date(end_date) : new Date(start_date))
+			? "Registration must open before the event ends."
+			: undefined;
+
 	const hasFieldErrors = !!(
 		titleError ||
 		descriptionError ||
 		locationError ||
 		categoryError ||
+		capacityError ||
 		startDateError ||
 		startFutureError ||
 		endDateError ||
 		eventSequenceError ||
 		regOpenError ||
 		regCloseError ||
-		regSequenceError
+		regSequenceError ||
+		regBeforeEventEndError
 	);
 
 	// for banner images
@@ -202,6 +221,24 @@ export default function EventForm({
 	// submit handler
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+
+		// Trigger all field validations visually on submit attempt
+		setTouched({
+			title: true,
+			description: true,
+			location: true,
+			capacity: true,
+			category: true,
+			start_date: true,
+			end_date: true,
+			registration_open: true,
+			registration_close: true,
+		});
+
+		if (hasFieldErrors) {
+			return;
+		}
+
 		setIsLoading(true);
 		setError(null);
 
@@ -383,14 +420,23 @@ export default function EventForm({
 										placeholder="Describe the event..."
 										rows={4}
 										value={description}
-										onChange={(e) =>
-											setDescription(e.target.value)
-										}
+										onChange={(e) => {
+											setDescription(e.target.value);
+											markTouched("description");
+										}}
+										onBlur={() => markTouched("description")}
 										className="input pl-[42px] py-3 resize-y"
 										minLength={10}
 										maxLength={5000}
 									/>
 								</div>
+								{touched.description && descriptionError && (
+									<Toast
+										variant="error"
+										title="Invalid description"
+										message={descriptionError}
+									/>
+								)}
 							</div>
 
 							<div className="flex flex-col gap-1">
@@ -460,32 +506,42 @@ export default function EventForm({
 							</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-								<Input
-									label="Capacity *"
-									type="number"
-									min="1"
-									max="500"
-									placeholder="e.g. 30"
-									required
-									prefixIcon={<Users size={15} />}
-									value={capacity ?? ""}
-									onChange={(e) => {
-										const val = e.target.value;
-										if (val === "") {
-											setCapacity(null);
-										} else {
-											const num = Number(val);
-											setCapacity(
-												Math.min(500, Math.max(1, num)),
-											);
-										}
-									}}
-									onKeyDown={(e) => {
-										if (e.key === "-") {
-											e.preventDefault();
-										}
-									}}
-								/>
+								<div className="flex flex-col gap-1">
+									<Input
+										label="Capacity *"
+										type="number"
+										min="1"
+										max="500"
+										placeholder="e.g. 30"
+										required
+										prefixIcon={<Users size={15} />}
+										value={capacity ?? ""}
+										onChange={(e) => {
+											const val = e.target.value;
+											if (val === "") {
+												setCapacity(null);
+											} else {
+												const num = Number(val);
+												setCapacity(
+													Math.min(500, Math.max(1, num)),
+												);
+											}
+											markTouched("capacity");
+										}}
+										onKeyDown={(e) => {
+											if (e.key === "-") {
+												e.preventDefault();
+											}
+										}}
+									/>
+									{touched.capacity && capacityError && (
+										<Toast
+											variant="error"
+											title="Invalid capacity"
+											message={capacityError}
+										/>
+									)}
+								</div>
 
 								<div className="flex flex-col gap-1">
 									<Select
@@ -614,11 +670,11 @@ export default function EventForm({
 										markTouched("registration_open");
 									}}
 								/>
-								{touched.registration_open && regOpenError && (
+								{touched.registration_open && (regOpenError || regBeforeEventEndError) && (
 									<Toast
 										variant="error"
-										title="Required"
-										message={regOpenError}
+										title="Registration Error"
+										message={regOpenError || regBeforeEventEndError}
 									/>
 								)}
 							</div>
@@ -682,7 +738,8 @@ export default function EventForm({
 								disabled={
 									isLoading ||
 									uploadingBanner ||
-									(mode === "edit" && !hasChanges)
+									(mode === "edit" && !hasChanges) ||
+									hasFieldErrors
 								}
 								className="px-8"
 							>
