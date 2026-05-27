@@ -108,9 +108,9 @@ function MobileNav() {
 									height={50}
 								/>
 								<div className="flex flex-col justify-center">
-									<span className="body-dark">UP BAGUIO</span>
-									<span className="heading-md-dark uppercase">
-										Kasarian
+									<span className="caption-dark">UP BAGUIO KASARIAN</span>
+									<span className="heading-md-dark">
+										OhMyGAD!
 									</span>
 								</div>
 							</div>

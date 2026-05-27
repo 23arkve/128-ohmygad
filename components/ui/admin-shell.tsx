@@ -116,7 +116,7 @@ function AdminSidebarPanel() {
 						</div>
 						{open && (
 							<div className="flex flex-col justify-center overflow-hidden gap-1">
-								<span className="body-dark whitespace-nowrap leading-none">
+								<span className="caption-dark whitespace-nowrap leading-none">
 									UP BAGUIO KASARIAN
 								</span>
 								<span className="heading-md-dark whitespace-nowrap leading-none">

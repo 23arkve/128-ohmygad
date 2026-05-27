@@ -1666,7 +1666,7 @@ header {
 }
 
 .table td {
-  padding: 10px 12px;
+  padding: 8px 12px;
   color: var(--primary-dark);
   border-bottom: 1px solid rgba(45, 42, 74, 0.05);
   vertical-align: middle;

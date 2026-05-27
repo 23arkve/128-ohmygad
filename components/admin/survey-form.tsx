@@ -621,7 +621,7 @@ export default function SurveyForm({
 						{questions.length === 0 && (
 							<div className="flex flex-col items-center justify-center gap-2 py-8 border-2 border-dashed border-[rgba(45,42,74,0.12)] rounded-[var(--radius-md)]">
 								<p className="caption">
-									No questions yet. Click `&quot`Add Question`&quot` to
+									No questions yet. Click &quot;Add Question&quot; to
 									get started.
 								</p>
 							</div>

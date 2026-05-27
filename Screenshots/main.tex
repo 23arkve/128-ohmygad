@@ -1,0 +1,684 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[table]{xcolor}
+\usepackage{fancyhdr}
+
+\definecolor{upindigo}{HTML}{2D2A4A}
+\definecolor{textgray}{HTML}{4A4A4A}
+\definecolor{lightbg}{HTML}{FBFBFC}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=upindigo,
+    pdftitle={System Architecture Document},
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\headwidth=\textwidth
+\fancyhead[L]{\small\color{textgray}\textit{OhMyGAD - System Architecture Document}}
+\fancyhead[R]{\small\color{textgray}\thepage}
+
+\titleformat{\section}{\large\bfseries\color{upindigo}}{\thesection}{1em}{}
+\titleformat{\subsection}{\nopagebreak\normalfont\bfseries\color{upindigo}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\nopagebreak\normalfont\itshape\color{textgray}}{\thesubsubsection}{1em}{}
+
+\setlist[description]{style=nextline, font=\small\bfseries\color{upindigo}}
+
+\author{\textbf{Project Architecture Team}}
+\date{\small\color{textgray}\today}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+
+  {\Huge\bfseries\textcolor{upindigo}{OhMyGAD!}}\\[0.4cm]
+  
+  {\LARGE\textcolor{upindigo}{System Architecture Document}}\\[1.5cm]
+
+  {\large Kasarian Gender Studies Program}\\[0.5cm]
+  {\large University of the Philippines Baguio}\\[2cm]
+
+  \textcolor{textgray}{\today}\\[0.5cm]
+  \textcolor{textgray}{Version 1.0}
+
+  \vfill
+  {\small CMSC 128: Software Engineering}\\
+  {\small by 128 Sheeps}\\
+  {\small Abiva, Shaun Julius; De Guzman, Duncan Red Benedict; Novesteras, Jessica Bea; Solis, Arielle Mae}
+\end{titlepage}
+
+\newpage
+\section*{Revision History}
+
+\begin{table}[h!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.5} 
+\setlength{\tabcolsep}{8pt}      
+\begin{tabular}{|p{1.5cm}|p{9.5cm}|p{2.5cm}|}
+\hline
+\textbf{Version} & \textbf{Description of Versions / Changes} & \textbf{Date} \\ \hline
+1.0 & \textbf{Prototype 1} \newline
+      - Initialization of database and tables & \\ \hline
+2.0 & \textbf{Prototype 2} \newline
+      - Improvement of existing user interface & \\ \hline
+3.0 & \textbf{Prototype 3} \newline
+      - Improvement of existing user interface & \\ \hline
+4.0 & \textbf{Final Prototype} \newline
+      - Finalize and uniformize changes & \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\thispagestyle{empty}
+\vspace{2em}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction}
+\label{sec:introduction}
+
+This document provides an in-depth description of the OhMyGAD! (Gender and Development) Event Management Platform and describes its software architecture and design.
+
+The document outlines the architecture's objectives, the use cases that the web application supports, architectural styles, and the functionalities that have been requested. From the initial conceptualization through the final outcome, the document explains the reasoning behind the architectural and design choices.
+
+
+\subsection{Purpose}
+
+The Software Architecture Document (SAD) provides a comprehensive architectural overview of the OhMyGAD! Event Management Platform. It presents several different architectural views to depict the different aspects of the system.
+
+In this paper, the use case and deployment view models are used to discuss the system architecture from two separate points of view. This paper describes the system's static and dynamic behavior and contains all the necessary diagrams and descriptions.
+
+It is feasible to create a system from the end user's point of view by utilizing the use case view model. It demonstrates specifically how various user types---Admin, Staff, Faculty, and Student---interact with the system to address their respective needs. On the other hand, using the Deployment view model demonstrates how processing is distributed over a number of system nodes, including how the client application communicates with the Supabase backend-as-a-service and how the application is deployed via Vercel.
+
+
+\subsection{Scope}
+
+The OhMyGAD! platform is a web-based Event Management System developed for the Kasarian Gender Studies Program of the University of the Philippines Baguio. The system facilitates:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Event Management} -- Creation, editing, deletion, and browsing of GAD-related events (GSO, ASHO, Forum, Research, Training, Workshop).
+  \item \textbf{User Management} -- Registration, onboarding, role-based access control, and profile management for Admin, Staff, Faculty, and Student users.
+  \item \textbf{Survey Management} -- Creation and distribution of surveys linked to events, with analytics and response tracking.
+  \item \textbf{Guidelines Management} -- Publishing and browsing of GAD guidelines and educational materials.
+  \item \textbf{Dashboard Analytics} -- Real-time statistics on user demographics (sex at birth, gender identity, college distribution), event attendance trends, and survey completion rates.
+  \item \textbf{Global Search} -- Cross-entity search across events, guidelines, and surveys.
+\end{itemize}
+
+The system is built as a full-stack Next.js application using Supabase as the backend-as-a-service, deployed on Vercel. Authentication is handled via Google OAuth through Supabase Auth.
+
+
+\subsection{Definitions, Acronyms, and Abbreviations}
+
+\begin{table}[h!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|p{3.5cm}|p{9.5cm}|}
+\hline
+\textbf{Term} & \textbf{Definition} \\ \hline
+GAD & Gender and Development \\ \hline
+SAD & Software Architecture Document \\ \hline
+GSO & Gender Sensitivity Orientation \\ \hline
+ASHO & Anti-Sexual Harassment Orientation \\ \hline
+UPB & University of the Philippines Baguio \\ \hline
+BaaS & Backend-as-a-Service \\ \hline
+RLS & Row-Level Security (Supabase database policy mechanism) \\ \hline
+OAuth & Open Authorization (authentication protocol) \\ \hline
+SSR & Server-Side Rendering \\ \hline
+API & Application Programming Interface \\ \hline
+CRUD & Create, Read, Update, Delete \\ \hline
+RBAC & Role-Based Access Control \\ \hline
+ORM & Object-Relational Mapping \\ \hline
+CS & College of Science \\ \hline
+CAC & College of Arts and Communication \\ \hline
+CSS & College of Social Sciences \\ \hline
+\end{tabular}
+\end{table}
+
+
+\subsection{References}
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item Next.js Documentation -- \url{https://nextjs.org/docs}
+  \item Supabase Documentation -- \url{https://supabase.com/docs}
+  \item Supabase Auth (OAuth with Google) -- \url{https://supabase.com/docs/guides/auth}
+  \item Vercel Deployment Platform -- \url{https://vercel.com/docs}
+  \item Tailwind CSS Documentation -- \url{https://tailwindcss.com/docs}
+  \item shadcn/ui Component Library -- \url{https://ui.shadcn.com}
+  \item Recharts Charting Library -- \url{https://recharts.org}
+  \item React Documentation -- \url{https://react.dev}
+\end{enumerate}
+
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Architectural Goals and Constraints}
+\label{sec:goals_constraints}
+
+The following architectural goals and constraints have guided the design of the OhMyGAD! platform:
+
+\begin{description}
+  \item[Role-Based Access Control (RBAC)]
+    The system enforces strict role-based access at both the middleware (proxy) and database (Row-Level Security) layers. Four roles are supported: \texttt{admin}, \texttt{staff}, \texttt{faculty}, and \texttt{student}. Each role is confined to its own URL prefix (\texttt{/admin}, \texttt{/staff}, \texttt{/faculty}, \texttt{/student}) and can only access data permitted by its privilege level. The middleware intercepts every protected route request, validates the user's session and role, and redirects unauthorized users accordingly.
+
+  \item[Separation of Concerns]
+    The application follows a layered architecture separating presentation (React components and pages), business logic (server actions and API routes), and data access (Supabase client wrappers). Server-side logic uses Next.js Server Actions and API Route Handlers, while client-side state management uses React hooks and context providers.
+
+  \item[Backend-as-a-Service (Supabase)]
+    The project uses Supabase as its BaaS provider, which bundles PostgreSQL, authentication (with Google OAuth), real-time subscriptions, file storage, and Row-Level Security policies into a single managed service. This eliminates the need for a custom backend server and simplifies deployment.
+
+  \item[Server-Side Rendering with Next.js App Router]
+    The application leverages Next.js App Router for file-system-based routing, server components for initial data fetching, and client components for interactive UI. This hybrid rendering approach optimizes both performance and user experience.
+
+  \item[Responsive and Accessible Design]
+    The UI is built with Tailwind CSS and shadcn/ui components, ensuring a responsive layout that works across desktop and mobile devices. The design follows the UPB Kasarian branding with a consistent color palette (indigo, periwinkle, soft pink, and muted grays).
+
+  \item[Security Constraints]
+    Authentication is exclusively handled through Google OAuth via Supabase Auth. Sensitive operations (e.g., user creation, event deletion with cascading survey cleanup) use the Supabase admin client with the service role key, which bypasses RLS. The service role key is never exposed to the client.
+
+  \item[Deployment Constraint]
+    The application is deployed on Vercel with environment variables for Supabase credentials. The Supabase project is hosted on Supabase Cloud with a PostgreSQL database accessible over HTTPS.
+\end{description}
+
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Use Case View}
+\label{sec:use_case_view}
+
+\subsection{Use Case Realizations}
+
+This section describes the primary use cases of the OhMyGAD! platform, organized by actor.
+
+\subsubsection{Actors}
+
+\begin{description}
+  \item[Admin] Has full access to all system features including dashboard analytics, event management, user management, survey management, guideline management, and system settings.
+  \item[Staff] Has similar access to Admin for event and content management but with limited administrative privileges.
+  \item[Faculty] Can browse and register for events, view guidelines, respond to surveys, and manage their profile.
+  \item[Student] Can browse and register for events, view guidelines (``I've GAD to Know''), respond to surveys, and manage their profile.
+  \item[Unauthenticated User] Can only access the login and sign-up pages. Must authenticate via Google OAuth before accessing any protected content.
+\end{description}
+
+
+\subsubsection{Use Case Descriptions}
+
+\paragraph{UC-1: User Authentication}
+\begin{description}
+  \item[Primary Actor] All users
+  \item[Precondition] User has a valid Google account.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item User navigates to the login page (\texttt{/auth/login}).
+      \item User clicks ``Sign in with Google.''
+      \item System redirects to Google OAuth consent screen via Supabase Auth.
+      \item Upon successful authentication, the callback handler (\texttt{/auth/callback}) exchanges the authorization code for a session.
+      \item The system checks if a profile exists in the \texttt{profile} table.
+      \item If no profile exists, the user is redirected to the onboarding page (\texttt{/auth/onboarding}).
+      \item If a valid profile exists, the user is redirected to their role-specific dashboard.
+    \end{enumerate}
+  \item[Alternative Flow] If the user's role is invalid or missing, they are redirected to the onboarding page.
+  \item[Postcondition] User is authenticated and redirected to the appropriate dashboard.
+\end{description}
+
+\paragraph{UC-2: User Onboarding}
+\begin{description}
+  \item[Primary Actor] Newly registered user
+  \item[Precondition] User has authenticated via Google OAuth but does not yet have a profile.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item System presents the onboarding form.
+      \item User provides: full name, display name (optional), sex at birth, gender identity, pronouns, college, program, year level (for students), contact number, and address.
+      \item System validates all inputs (name format, student number length, contact number format, etc.).
+      \item Upon submission, a profile record is created in the \texttt{profile} table.
+      \item User is redirected to their role-specific dashboard.
+    \end{enumerate}
+  \item[Postcondition] A complete user profile exists in the database.
+\end{description}
+
+\paragraph{UC-3: Event Management (Admin/Staff)}
+\begin{description}
+  \item[Primary Actor] Admin, Staff
+  \item[Precondition] User is authenticated with Admin or Staff role.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item Admin navigates to the Events section or uses the ``New Event'' quick action on the dashboard.
+      \item Admin fills in the event form: title, description, location, start/end dates, capacity, registration window, category (GSO, ASHO, Forum, Research, Training, Workshop), and optional banner image.
+      \item System saves the event to the \texttt{event} table in Supabase.
+      \item The event appears in the events list and on the calendar.
+    \end{enumerate}
+  \item[Extensions]
+    \begin{itemize}[leftmargin=1.5em]
+      \item \textbf{Edit Event:} Admin can modify any event field and save changes.
+      \item \textbf{Delete Event:} Admin can delete an event. The system cascades the deletion to linked surveys, survey questions, and survey responses.
+    \end{itemize}
+  \item[Postcondition] Event is created/updated/deleted in the database.
+\end{description}
+
+\paragraph{UC-4: Event Discovery and Registration (Faculty/Student)}
+\begin{description}
+  \item[Primary Actor] Faculty, Student
+  \item[Precondition] User is authenticated with Faculty or Student role.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item User navigates to ``Discover Events'' page.
+      \item User browses upcoming, ongoing, and past events.
+      \item User can search and filter events by category, status, and date range.
+      \item User selects an event to view its details (description, location, schedule, capacity).
+      \item If registration is open and capacity allows, user registers for the event.
+    \end{enumerate}
+  \item[Postcondition] User is registered for the selected event.
+\end{description}
+
+\paragraph{UC-5: Survey Management (Admin)}
+\begin{description}
+  \item[Primary Actor] Admin
+  \item[Precondition] User is authenticated with Admin role.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item Admin navigates to the Surveys section or uses the ``New Survey'' quick action.
+      \item Admin creates a survey with a title and links it to an existing event.
+      \item Admin adds questions of various types: text (open-ended), multiple choice, Likert scale (1--5), or Yes/No.
+      \item Admin sets the survey status (upcoming, open, closed).
+      \item System saves the survey, questions, and configuration to the \texttt{survey}, \texttt{survey\_questions} tables.
+    \end{enumerate}
+  \item[Extensions]
+    \begin{itemize}[leftmargin=1.5em]
+      \item \textbf{View Analytics:} Admin can view survey analytics including response counts, completion rates, and per-question breakdowns.
+    \end{itemize}
+  \item[Postcondition] Survey is created and available for respondents.
+\end{description}
+
+\paragraph{UC-6: Survey Response (Faculty/Student)}
+\begin{description}
+  \item[Primary Actor] Faculty, Student
+  \item[Precondition] User is authenticated; a survey with status ``open'' exists.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item User navigates to the Surveys page.
+      \item User selects an open survey.
+      \item User answers all required questions.
+      \item System saves responses to the \texttt{survey\_responses} table with a unique response token.
+    \end{enumerate}
+  \item[Postcondition] Survey responses are recorded in the database.
+\end{description}
+
+\paragraph{UC-7: User Management (Admin)}
+\begin{description}
+  \item[Primary Actor] Admin
+  \item[Precondition] User is authenticated with Admin role.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item Admin navigates to the Users management page.
+      \item Admin can view all registered users with filtering, sorting, and search capabilities.
+      \item Admin can create a new user by specifying email, role, and profile details via the \texttt{/api/admin/create-user} API endpoint.
+      \item Admin can edit an existing user's profile and role.
+    \end{enumerate}
+  \item[Postcondition] User records are created or updated in the database.
+\end{description}
+
+\paragraph{UC-8: Guidelines Management}
+\begin{description}
+  \item[Primary Actor] Admin (create/edit/delete), Faculty/Student (view)
+  \item[Precondition] User is authenticated.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item Admin creates a new guideline with title and content via the ``New Guideline'' quick action or the Guidelines section.
+      \item The guideline is saved and becomes viewable by all authenticated users.
+      \item Faculty and Student users access guidelines via the ``I've GAD to Know'' section in their sidebar.
+    \end{enumerate}
+  \item[Postcondition] Guideline is published and accessible to all users.
+\end{description}
+
+\paragraph{UC-9: Dashboard Analytics (Admin/Staff)}
+\begin{description}
+  \item[Primary Actor] Admin, Staff
+  \item[Precondition] User is authenticated with Admin or Staff role.
+  \item[Main Flow]
+    \begin{enumerate}[leftmargin=1.5em]
+      \item User views the dashboard which displays:
+        \begin{itemize}
+          \item Summary stat cards: Registered Users, Onboarded Users, Total Events, Active Surveys.
+          \item Attendance Over Time line chart with date range filtering.
+          \item Users per College bar chart (CS, CAC, CSS).
+          \item Sex at Birth pie chart.
+          \item Gender Identity pie chart.
+          \item Survey Completion Rates stacked bar chart with search and pagination.
+        \end{itemize}
+      \item User can apply filters (college, gender, sex, event category) via the Dashboard Filter panel.
+      \item A mini-calendar shows days with scheduled events; clicking a date shows events for that day.
+      \item Today's timeline shows events happening on the current day.
+    \end{enumerate}
+  \item[Postcondition] Dashboard is rendered with live data from the database.
+\end{description}
+
+
+\subsubsection{Relationships Among Use Cases}
+
+The main use cases share the following relationships:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item The \textbf{User Authentication} use case is \textit{included} in all other use cases, since the user must be authenticated before accessing any protected resource.
+  \item The \textbf{User Onboarding} use case \textit{extends} User Authentication---it is triggered only when a newly authenticated user lacks a profile.
+  \item The \textbf{Survey Management} use case \textit{extends} Event Management, since surveys are linked to specific events.
+  \item The \textbf{Event Deletion} use case \textit{includes} cascading deletion of linked surveys, survey questions, and survey responses.
+  \item The \textbf{Dashboard Analytics} use case \textit{aggregates} data from Events, Users, and Surveys to compute statistics and render charts.
+\end{itemize}
+
+
+\subsubsection{Related Use Cases}
+
+Since signing into the system via Google OAuth is necessary before accessing any protected content, the authentication use case is included in every other use case diagram. Additionally, the onboarding flow is conditionally triggered based on whether the user's profile exists after authentication.
+
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\subsection{Activity Diagrams}
+
+An activity diagram is an important behavioral diagram that describes dynamic aspects of the system. This section shows the activities that can be done given the various functionalities of the software. The diagrams make use of swim lanes to demonstrate the interaction mainly between the system and the users of the software.
+
+\subsubsection{Authentication and Onboarding}
+
+\paragraph{Login Flow}
+\begin{enumerate}[leftmargin=1.5em]
+  \item User navigates to \texttt{/auth/login}.
+  \item User clicks ``Sign in with Google.''
+  \item \textbf{[System]} Invokes \texttt{signInWithGoogle()} server action, which calls \texttt{supabase.auth.signInWithOAuth(\{provider: `google'\})}.
+  \item \textbf{[System]} Redirects user to Google's OAuth consent screen.
+  \item \textbf{[Google]} User grants consent; Google redirects to \texttt{/auth/callback} with an authorization code.
+  \item \textbf{[System]} The callback route handler exchanges the code for a session via \texttt{supabase.auth.exchangeCodeForSession()}.
+  \item \textbf{[System]} The root page (\texttt{/}) calls \texttt{getCurrentUserWithRole()}:
+    \begin{itemize}
+      \item Retrieves the authenticated user via \texttt{supabase.auth.getUser()}.
+      \item Queries the \texttt{profile} table for the user's role.
+      \item If no profile: redirects to \texttt{/auth/onboarding}.
+      \item If valid role: redirects to \texttt{/admin}, \texttt{/staff}, \texttt{/faculty}, or \texttt{/student}.
+    \end{itemize}
+\end{enumerate}
+
+\paragraph{Sign-Up Flow}
+\begin{enumerate}[leftmargin=1.5em]
+  \item User navigates to \texttt{/auth/sign-up}.
+  \item User clicks ``Sign up with Google.''
+  \item \textbf{[System]} Invokes \texttt{signUpWithGoogle()} server action with callback URL pointing to \texttt{/auth/callback?next=onboarding}.
+  \item \textbf{[System]} After successful Google OAuth, user is redirected to the onboarding form.
+  \item User fills in profile details (name, sex, gender, pronouns, college, program, year level, contact number).
+  \item \textbf{[System]} Validates all fields using centralized validation functions (\texttt{validateFullName}, \texttt{validateEmail}, \texttt{validateContactNum}, \texttt{validateStudentNum}, etc.).
+  \item \textbf{[System]} Creates profile in \texttt{profile} table and redirects to the appropriate dashboard.
+\end{enumerate}
+
+
+\subsubsection{Event Management}
+
+\paragraph{Creating a New Event}
+\begin{enumerate}[leftmargin=1.5em]
+  \item Admin clicks ``New Event'' from the Quick Actions panel or navigates to \texttt{/admin/events/create}.
+  \item \textbf{[System]} Renders the EventForm component.
+  \item Admin fills in: title, description, location, start date, end date, capacity, registration open/close dates, category, and optional banner image.
+  \item Admin submits the form.
+  \item \textbf{[System]} Validates inputs and inserts a new record into the \texttt{event} table via Supabase.
+  \item \textbf{[System]} Redirects to the events list; the new event appears in the calendar and event listings.
+\end{enumerate}
+
+\paragraph{Editing an Existing Event}
+\begin{enumerate}[leftmargin=1.5em]
+  \item Admin navigates to the event detail modal by clicking an event on the dashboard calendar or events page.
+  \item Admin clicks the ``Edit'' button.
+  \item \textbf{[System]} Renders the EventForm pre-filled with existing data.
+  \item Admin modifies the desired fields and submits.
+  \item \textbf{[System]} Updates the record in the \texttt{event} table.
+  \item \textbf{[System]} Refreshes the event detail modal with updated data.
+\end{enumerate}
+
+\paragraph{Deleting an Event}
+\begin{enumerate}[leftmargin=1.5em]
+  \item Admin clicks the ``Delete'' button on the event detail modal.
+  \item \textbf{[System]} Prompts for confirmation.
+  \item Admin confirms the deletion.
+  \item \textbf{[System]} The \texttt{deleteEventAndLinkedSurveys()} server action:
+    \begin{itemize}
+      \item Verifies the user is Admin or Staff via profile lookup.
+      \item Queries linked surveys from the \texttt{survey} table.
+      \item Deletes all \texttt{survey\_responses} for linked surveys.
+      \item Deletes all \texttt{survey\_questions} for linked surveys.
+      \item Deletes the linked \texttt{survey} records.
+      \item Deletes the \texttt{event} record.
+    \end{itemize}
+  \item \textbf{[System]} Refreshes the events list.
+\end{enumerate}
+
+
+\subsubsection{Survey Management}
+
+\paragraph{Creating a Survey}
+\begin{enumerate}[leftmargin=1.5em]
+  \item Admin clicks ``New Survey'' from the Quick Actions panel or navigates to \texttt{/admin/surveys/create}.
+  \item Admin fills in survey details: title, linked event, and adds questions.
+  \item For each question, Admin specifies: question text, type (text, multiple choice, Likert 1--5, Yes/No), options (for multiple choice), required flag, and display order.
+  \item Admin submits the survey.
+  \item \textbf{[System]} Saves the survey to the \texttt{survey} table and questions to the \texttt{survey\_questions} table.
+\end{enumerate}
+
+\paragraph{Viewing Survey Analytics}
+\begin{enumerate}[leftmargin=1.5em]
+  \item Admin navigates to a survey's detail page.
+  \item \textbf{[System]} The \texttt{getSurveyAnalytics()} server action:
+    \begin{itemize}
+      \item Verifies Admin role.
+      \item Fetches questions from \texttt{survey\_questions} ordered by \texttt{order\_index}.
+      \item Fetches responses from \texttt{survey\_responses} including \texttt{response\_token} for unique respondent tracking.
+    \end{itemize}
+  \item \textbf{[System]} Renders analytics including completion rates, per-question response breakdowns, and aggregate statistics.
+\end{enumerate}
+
+
+\subsubsection{Profile Management}
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item User navigates to their profile page (\texttt{/admin/profile}, \texttt{/faculty/profile}, or \texttt{/student/profile}).
+  \item \textbf{[System]} Loads current profile data from the \texttt{profile} table.
+  \item User edits their profile fields (display name, pronouns, contact number, address, office/department for faculty).
+  \item \textbf{[System]} Validates inputs using the centralized validation module.
+  \item User clicks ``Save.''
+  \item \textbf{[System]} Updates the profile record in the database.
+\end{enumerate}
+
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Deployment View}
+\label{sec:deployment_view}
+
+The OhMyGAD! platform follows a modern cloud-native deployment architecture with the following components:
+
+\begin{description}
+  \item[Client Layer (Browser)]
+    Users access the application through any modern web browser. The Next.js framework serves a combination of server-rendered HTML and client-side React components. The client communicates with the backend via HTTPS.
+
+  \item[Application Layer (Vercel)]
+    The Next.js application is deployed on Vercel's edge network. Vercel handles:
+    \begin{itemize}[leftmargin=1.5em]
+      \item Server-side rendering of pages
+      \item API route handling (\texttt{/api/*} endpoints)
+      \item Server Actions (form submissions, data mutations)
+      \item Static asset serving and CDN distribution
+      \item Middleware execution for authentication and route protection
+    \end{itemize}
+
+  \item[Backend-as-a-Service Layer (Supabase Cloud)]
+    Supabase provides the following services:
+    \begin{itemize}[leftmargin=1.5em]
+      \item \textbf{PostgreSQL Database:} Stores all application data across tables: \texttt{profile}, \texttt{event}, \texttt{survey}, \texttt{survey\_questions}, \texttt{survey\_responses}, and others.
+      \item \textbf{Authentication:} Manages user sessions and Google OAuth flows. Issues JWT tokens for session management.
+      \item \textbf{Row-Level Security (RLS):} Enforces data access policies at the database level, ensuring users can only access data appropriate for their role.
+      \item \textbf{Storage:} Hosts uploaded files such as event banner images, accessible via the Supabase CDN.
+      \item \textbf{REST API:} Auto-generated RESTful endpoints for all database tables, used by the Supabase client SDK.
+    \end{itemize}
+
+  \item[External Services]
+    \begin{itemize}[leftmargin=1.5em]
+      \item \textbf{Google OAuth:} Provides third-party authentication. Users authenticate with their Google accounts, and Supabase handles the OAuth token exchange.
+    \end{itemize}
+\end{description}
+
+\vspace{0.5em}
+\noindent The deployment specifics can be summarized as follows:
+
+\begin{table}[h!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|p{3.5cm}|p{9.5cm}|}
+\hline
+\textbf{Component} & \textbf{Details} \\ \hline
+Frontend Host & Vercel (Edge Network, global CDN) \\ \hline
+Backend & Supabase Cloud (PostgreSQL, Auth, Storage, REST API) \\ \hline
+Database & PostgreSQL (managed by Supabase) \\ \hline
+Authentication & Google OAuth 2.0 via Supabase Auth \\ \hline
+File Storage & Supabase Storage (CDN: \texttt{mctvkyblusfuxdjzhvzc.supabase.co}) \\ \hline
+Communication & HTTPS (TLS 1.3) \\ \hline
+Session Management & HTTP-only cookies managed by \texttt{@supabase/ssr} \\ \hline
+\end{tabular}
+\end{table}
+
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Size and Performance}
+\label{sec:size_performance}
+
+The chosen software architecture supports the key sizing and timing requirements:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item Multiple users may concurrently access the platform, as both Vercel's serverless functions and Supabase's managed PostgreSQL scale to handle concurrent connections.
+  \item Page load times target under 3 seconds for initial server-rendered pages, leveraging Next.js server components and Vercel's global CDN.
+  \item Dashboard analytics data (user statistics, event attendance, survey completion rates) are fetched via parallel API calls and rendered with loading states (pulsing loaders) to maintain perceived responsiveness.
+  \item The Supabase client library provides connection pooling and automatic retry logic to handle transient network errors.
+  \item Image assets (event banners) are served via Supabase's CDN with Next.js Image optimization for responsive loading.
+  \item The application requires Node.js $\geq$ 20 for the development and build environment.
+\end{enumerate}
+
+The selected architecture supports the sizing and timing requirements through the implementation of a serverless, cloud-native architecture. The client portion is rendered in the user's browser with server-side pre-rendering for optimal initial load performance. Components have been designed to ensure that minimal client-side JavaScript is shipped, using React Server Components where possible and Client Components only for interactive elements.
+
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Quality}
+\label{sec:quality}
+
+The software architecture supports the following quality requirements:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item The web-based user interface is \textbf{cross-platform compatible}, accessible from any modern browser on Windows, macOS, Linux, iOS, and Android devices.
+
+  \item The UI follows a \textbf{responsive design} approach using Tailwind CSS breakpoints, ensuring usability across desktop, tablet, and mobile screen sizes. The layout adapts with a collapsible sidebar for mobile viewports.
+
+  \item The user interface of OhMyGAD! is designed for \textbf{ease of use} and is appropriate for a computer-literate user community familiar with web applications. The onboarding process guides new users through profile setup. No additional training on the system should be required.
+
+  \item \textbf{Input validation} is applied consistently across all forms using a centralized validation module (\texttt{lib/validation.ts}). Validation covers full name format, email format, student number (9 digits), contact number (11 digits), password requirements (8--128 characters), session counts (0--5), and field length limits.
+
+  \item \textbf{Security} is enforced through multiple layers:
+    \begin{itemize}
+      \item Google OAuth for authentication (no password storage).
+      \item Supabase Row-Level Security for database access control.
+      \item Middleware-based route protection with role verification.
+      \item Admin-only operations use the Supabase service role client (server-side only).
+    \end{itemize}
+
+  \item The system provides \textbf{graceful error handling} with user-friendly error messages, loading states, and empty-state placeholders throughout the interface.
+
+  \item \textbf{Theme support} is provided via \texttt{next-themes}, with the default light theme featuring a consistent UPB Kasarian color palette. The architecture supports future dark mode implementation.
+
+  \item The application uses \textbf{Plus Jakarta Sans} from Google Fonts as the primary typeface, ensuring consistent typography across platforms.
+\end{itemize}
+
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Appendices}
+\label{sec:appendices}
+
+\subsection*{Appendix A -- Technology Stack}
+
+\begin{table}[h!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|p{3.5cm}|p{4cm}|p{5.5cm}|}
+\hline
+\textbf{Category} & \textbf{Technology} & \textbf{Purpose} \\ \hline
+Framework & Next.js (latest) & Full-stack React framework with App Router \\ \hline
+Language & TypeScript & Type-safe JavaScript \\ \hline
+UI Library & React 19 & Component-based UI \\ \hline
+Styling & Tailwind CSS 3.4 & Utility-first CSS framework \\ \hline
+Component Library & shadcn/ui & Accessible, customizable UI components \\ \hline
+Animation & Framer Motion & Declarative animations \\ \hline
+Charts & Recharts 3.7 & Data visualization (line, bar, pie charts) \\ \hline
+Backend & Supabase & BaaS (PostgreSQL, Auth, Storage) \\ \hline
+Auth & Supabase Auth + Google OAuth & Authentication and session management \\ \hline
+Icons & Lucide React & SVG icon library \\ \hline
+Deployment & Vercel & Serverless hosting and CDN \\ \hline
+\end{tabular}
+\end{table}
+
+
+\subsection*{Appendix B -- Database Tables}
+
+The following tables are used in the Supabase PostgreSQL database:
+
+\begin{description}
+  \item[\texttt{profile}] Stores user profile information: id, full name, display name, email, role (admin/staff/faculty/student), sex at birth, gender identity, pronouns, college, program, year level, student number, contact number, address, office, department, and onboarding status.
+
+  \item[\texttt{event}] Stores event records: id, title, description, location, start\_date, end\_date, capacity, registration\_open, registration\_close, category (GSO/ASHO/Forum/Research/Training/Workshop), banner\_url.
+
+  \item[\texttt{survey}] Stores surveys: id, title, event\_id (foreign key to \texttt{event}), status (upcoming/open/closed).
+
+  \item[\texttt{survey\_questions}] Stores survey questions: id, survey\_id, question\_text, question\_type (text/multiple\_choice/rating/yes\_no), options (JSON array for multiple choice), is\_required, order\_index.
+
+  \item[\texttt{survey\_responses}] Stores individual question responses: id, survey\_id, question\_id, response\_value, response\_token (groups responses by respondent).
+\end{description}
+
+
+\subsection*{Appendix C -- Route Structure}
+
+\begin{table}[h!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|p{4.5cm}|p{3cm}|p{5.5cm}|}
+\hline
+\textbf{Route} & \textbf{Access} & \textbf{Description} \\ \hline
+\texttt{/auth/login} & Public & Login page \\ \hline
+\texttt{/auth/sign-up} & Public & Sign-up page \\ \hline
+\texttt{/auth/onboarding} & Authenticated & Profile onboarding form \\ \hline
+\texttt{/auth/forgot-password} & Public & Password reset request \\ \hline
+\texttt{/admin} & Admin & Admin dashboard with analytics \\ \hline
+\texttt{/admin/events} & Admin & Event management \\ \hline
+\texttt{/admin/surveys} & Admin & Survey management \\ \hline
+\texttt{/admin/users} & Admin & User management \\ \hline
+\texttt{/admin/guidelines} & Admin & Guideline management \\ \hline
+\texttt{/admin/settings} & Admin & System settings \\ \hline
+\texttt{/staff} & Staff & Staff dashboard \\ \hline
+\texttt{/faculty} & Faculty & Faculty dashboard \\ \hline
+\texttt{/faculty/events} & Faculty & Event discovery \\ \hline
+\texttt{/faculty/surveys} & Faculty & Survey responses \\ \hline
+\texttt{/student} & Student & Student dashboard \\ \hline
+\texttt{/student/events} & Student & Event discovery \\ \hline
+\texttt{/student/surveys} & Student & Survey responses \\ \hline
+\texttt{/student/guidelines} & Student & ``I've GAD to Know'' \\ \hline
+\end{tabular}
+\end{table}
+
+
+\end{document}

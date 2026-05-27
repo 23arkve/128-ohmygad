@@ -376,7 +376,7 @@ export function LikertChart({ responses }: { responses: ResponseRow[] }) {
       <div className="grid grid-cols-3 gap-3">
         <StatBox label="Average" value={stats.avg.toFixed(2)} />
         <StatBox label="Median" value={stats.med.toFixed(1)} />
-        <StatBox label="Std Dev" value={stats.sd.toFixed(2)} />
+        <StatBox label="Standard Deviation" value={stats.sd.toFixed(2)} />
       </div>
     </div>
   );
