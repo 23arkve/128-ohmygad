@@ -10,6 +10,8 @@ import {
 	ArrowUpDown,
 	ClipboardList,
     Calendar,
+    Copy,
+    Check,
 } from "lucide-react";
 import {
 	deriveStatus,
@@ -93,15 +95,29 @@ export default function EventsPage() {
 
 	// --- detail modal ---
 	const [detailEvent, setDetailEvent] = useState<EventFormData | null>(null);
+	const [copiedLink, setCopiedLink] = useState(false);
+
+	const handleCopyLink = useCallback((eventId: string) => {
+		const link = `${window.location.origin}/auth/login?event=${eventId}`;
+		navigator.clipboard.writeText(link);
+		setCopiedLink(true);
+		setTimeout(() => setCopiedLink(false), 2000);
+	}, []);
+
+	const [notFoundToast, setNotFoundToast] = useState(false);
 
 	// open detail modal when ?event= param is present
 	useEffect(() => {
-		if (!events.length) return;
+		if (!events.length || isLoading) return;
 		const targetId = searchParams.get("event");
 		if (!targetId) return;
 		const match = events.find((e) => e.id === targetId);
-		if (match) setDetailEvent(match);
-	}, [events, searchParams]);
+		if (match) {
+			setDetailEvent(match);
+		} else {
+			setNotFoundToast(true);
+		}
+	}, [events, isLoading, searchParams]);
 
 	const isDetailRegistered = detailEvent
 		? registeredIds.has(detailEvent.id!)
@@ -473,7 +489,23 @@ export default function EventsPage() {
 								now < new Date(detailEvent.registration_open));
 
 						return (
-							<div className="px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-5 sm:pb-5 shrink-0">
+							<div className="px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-5 sm:pb-5 shrink-0 flex gap-2">
+								<Button
+									variant="soft"
+									onClick={() => handleCopyLink(detailEvent.id!)}
+									title="Copy shareable link to this event"
+									className="shrink-0"
+								>
+									{copiedLink ? (
+										<>
+											<Check size={15} /> Link Copied!
+										</>
+									) : (
+										<>
+											<Copy size={15} /> Share Link
+										</>
+									)}
+								</Button>
 								<Button
 									variant={
 										isDetailRegistered
@@ -482,7 +514,7 @@ export default function EventsPage() {
 												? "soft"
 												: "primary"
 									}
-									className="w-full"
+									className="flex-1"
 									disabled={
 										isDetailRegistering || !!detailRegClosed
 									}
@@ -526,29 +558,47 @@ export default function EventsPage() {
 							<h2 className="heading-md m-0">
 								{detailEvent.title}
 							</h2>
-							{/* -------------- category -------------- */}
-							<div className="flex gap-2 items-center">
-								<Badge variant="ghost">
-									{detailEvent.category ?? "Uncategorized"}
-								</Badge>
-								{(() => {
-									const detailStatus = deriveStatus(
-										detailEvent.start_date ?? "",
-										detailEvent.end_date ?? "",
-									);
-									return detailStatus ? (
-										<Badge
-											variant={
-												STATUS_VARIANT[detailStatus] ??
-												"dark"
-											}
-										>
-											<span className="capitalize">
-												{detailStatus}
-											</span>
-										</Badge>
-									) : null;
-								})()}
+							{/* -------------- category & share -------------- */}
+							<div className="flex gap-2 items-center flex-wrap justify-between">
+								<div className="flex gap-2 items-center">
+									<Badge variant="ghost">
+										{detailEvent.category ?? "Uncategorized"}
+									</Badge>
+									{(() => {
+										const detailStatus = deriveStatus(
+											detailEvent.start_date ?? "",
+											detailEvent.end_date ?? "",
+										);
+										return detailStatus ? (
+											<Badge
+												variant={
+													STATUS_VARIANT[detailStatus] ??
+													"dark"
+												}
+											>
+												<span className="capitalize">
+													{detailStatus}
+												</span>
+											</Badge>
+										) : null;
+									})()}
+								</div>
+								<Button
+									variant="soft"
+									size="sm"
+									onClick={() => handleCopyLink(detailEvent.id!)}
+									title="Copy shareable link to this event"
+								>
+									{copiedLink ? (
+										<>
+											<Check size={14} /> Link Copied!
+										</>
+									) : (
+										<>
+											<Copy size={14} /> Share Link
+										</>
+									)}
+								</Button>
 							</div>
 
 							<div className="flex flex-col gap-1.5">
@@ -713,6 +763,16 @@ export default function EventsPage() {
 						variant={toast.variant}
 						title={toast.title}
 						message={toast.message}
+					/>
+				</div>
+			)}
+
+			{notFoundToast && !toast && (
+				<div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-max max-w-[90vw]">
+					<Toast
+						variant="warning"
+						title="Event Unavailable"
+						message="The requested event is no longer available or may have been deleted."
 					/>
 				</div>
 			)}

@@ -1,51 +1,81 @@
-'use server'
+"use server";
 
 import { redirect } from "next/navigation";
+import { cookies, headers } from "next/headers";
 import { Provider } from "@supabase/supabase-js";
 import { createClientForServer } from "@/lib/supabase/server";
 
-const signInWith = (provider: Provider) => async () => {
-    const supabase = await createClientForServer();
-    const auth_callback_url = `${process.env.SITE_URL}/auth/callback`;
+const getSiteUrl = async () => {
+	try {
+		const headerList = await headers();
+		const host = headerList.get("host");
+		const proto =
+			headerList.get("x-forwarded-proto") ||
+			(host?.includes("localhost") || host?.includes("127.0.0.1") ? "http" : "https");
+		if (host) {
+			return `${proto}://${host}`;
+		}
+	} catch {
+		// fallback
+	}
+	const url = process.env.SITE_URL || "http://localhost:3000";
+	return url.trim().replace(/\/+$/, "");
+};
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-            redirectTo: auth_callback_url,
-        },
-    });
+const signInWith = (provider: Provider) => async (formData?: FormData) => {
+	const supabase = await createClientForServer();
+	const eventId = formData?.get("eventId") as string | undefined;
+	if (eventId) {
+		const cookieStore = await cookies();
+		cookieStore.set("event_redirect_id", eventId, { path: "/", maxAge: 600 });
+	}
+	const siteUrl = await getSiteUrl();
+	const auth_callback_url = `${siteUrl}/auth/callback`;
 
-    if (error) {
-        console.error(error);
-        return;
-    }
+	const { data, error } = await supabase.auth.signInWithOAuth({
+		provider,
+		options: {
+			redirectTo: auth_callback_url,
+		},
+	});
 
-    if (data.url) {
-        redirect(data.url);
-    }
-}
+	if (error) {
+		console.error(error);
+		return;
+	}
 
-const signUpWithGoogle = async () => {
-    const supabase = await createClientForServer();
-    const auth_callback_url = `${process.env.SITE_URL}/auth/callback?next=onboarding`;
+	if (data.url) {
+		redirect(data.url);
+	}
+};
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-            redirectTo: auth_callback_url,
-        },
-    });
+const signUpWithGoogle = async (formData?: FormData) => {
+	const supabase = await createClientForServer();
+	const eventId = formData?.get("eventId") as string | undefined;
+	if (eventId) {
+		const cookieStore = await cookies();
+		cookieStore.set("event_redirect_id", eventId, { path: "/", maxAge: 600 });
+	}
+	const siteUrl = await getSiteUrl();
+	const auth_callback_url = `${siteUrl}/auth/callback?next=onboarding`;
 
-    if (error) {
-        console.error(error);
-        return;
-    }
+	const { data, error } = await supabase.auth.signInWithOAuth({
+		provider: "google",
+		options: {
+			redirectTo: auth_callback_url,
+		},
+	});
 
-    if (data.url) {
-        redirect(data.url);
-    }
-}
+	if (error) {
+		console.error(error);
+		return;
+	}
 
-const signInWithGoogle = signInWith('google');
+	if (data.url) {
+		redirect(data.url);
+	}
+};
 
-export { signInWithGoogle, signUpWithGoogle }
+const signInWithGoogle = signInWith("google");
+
+export { signInWithGoogle, signUpWithGoogle };

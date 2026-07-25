@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { signUpWithGoogle } from "@/lib/supabase/actions";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { validateFullName, validatePassword } from "@/lib/validation";
-import { Input } from "./ui";
+import { Input, PulsingLoader } from "./ui";
 import { ERR } from "@/lib/user-error";
 
 export function SignUpForm({
@@ -25,6 +25,66 @@ export function SignUpForm({
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get("event");
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
+
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profile")
+          .select("role, is_onboarded")
+          .eq("id", user.id)
+          .single();
+
+        if (profile && profile.is_onboarded) {
+          const roleRoutes: Record<string, string> = {
+            admin: "/admin/events",
+            staff: "/staff/events",
+            faculty: "/faculty/events",
+            student: "/student/events",
+          };
+
+          const defaultRoleRoutes: Record<string, string> = {
+            admin: "/admin",
+            staff: "/staff",
+            faculty: "/faculty",
+            student: "/student",
+          };
+
+          const targetRoute = eventId
+            ? `${roleRoutes[profile.role] ?? "/student/events"}?event=${eventId}`
+            : (defaultRoleRoutes[profile.role] ?? "/");
+
+          router.push(targetRoute);
+          return;
+        }
+      }
+      setIsCheckingSession(false);
+    };
+
+    checkExistingSession();
+  }, [eventId, router]);
+
+  if (isCheckingSession) {
+    return (
+      <div
+        className={cn(
+          "auth-card max-w-md w-full mx-auto flex items-center justify-center p-12 min-h-[360px]",
+          className,
+        )}
+        {...props}
+      >
+        <PulsingLoader variant="breath" />
+      </div>
+    );
+  }
 
   const handleSignUp = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -89,6 +149,12 @@ export function SignUpForm({
         <h2 className="heading-lg m-1">Sign up</h2>
         <p className="caption">Create an account to get started.</p>
       </div>
+
+      {eventId && (
+        <div className="mb-4 p-3 rounded-lg bg-[var(--lavender)] text-[var(--primary-dark)] text-center text-sm font-semibold border border-[var(--soft-pink)]">
+          Please sign up to register for this event!
+        </div>
+      )}
 
       <form onSubmit={handleSignUp} className="flex flex-col gap-3">
 
@@ -201,7 +267,7 @@ export function SignUpForm({
           <p className="body">
             Already have an account?{" "}
             <Link
-              href="/auth/login"
+              href={eventId ? `/auth/login?event=${eventId}` : "/auth/login"}
               className="font-bold text-[var(--periwinkle)] hover:text-[var(--primary-dark)] transition-colors"
             >
               Login
@@ -213,6 +279,7 @@ export function SignUpForm({
       {/* Sign in With Google */}
         {/* https://developers.google.com/identity/branding-guidelines */}
         <form action={signUpWithGoogle} className="flex flex-col gap-4 pt-4 items-center">
+            {eventId && <input type="hidden" name="eventId" value={eventId} />}
             <hr className="w-full border-[var(--gray)] m-4" />
             <Button type="submit" variant="ghost" className="w-full">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlnsXlink="http://www.w3.org/1999/xlink" style={{ display: 'block', width: 20, height: 20, flexShrink: 0 }}>

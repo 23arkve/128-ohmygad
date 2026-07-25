@@ -10,10 +10,10 @@ import {
 	Clock,
 	Copy,
 	Check,
-	Loader2,
 	Pencil,
 	Upload,
 	ClipboardList,
+	Share2,
 } from "lucide-react";
 import {
 	Modal,
@@ -23,7 +23,7 @@ import {
 	Card,
 	Checkbox,
 	Tabs,
-    PulsingLoader,
+	PulsingLoader,
 } from "@/components/ui";
 import { deriveStatus } from "@/components/admin/event-form";
 import {
@@ -57,7 +57,10 @@ type RegisteredUser = {
 };
 
 const MODAL_STYLE = { maxWidth: 960, padding: 0 };
-const MODAL_CONTENT_STYLE = { display: "flex", flexDirection: "column" as const };
+const MODAL_CONTENT_STYLE = {
+	display: "flex",
+	flexDirection: "column" as const,
+};
 const SEARCHBAR_FULL_WIDTH = { width: "100%" };
 
 const UserRow = memo(function UserRow({
@@ -91,7 +94,9 @@ const UserRow = memo(function UserRow({
 					<Checkbox
 						label=""
 						checked={user.attended}
-						onChange={(newVal) => onToggle(user.registration_id, newVal)}
+						onChange={(newVal) =>
+							onToggle(user.registration_id, newVal)
+						}
 					/>
 				</div>
 			)}
@@ -105,16 +110,28 @@ interface EventDetailModalProps {
 	onEdit?: (event: EventDetailData) => void;
 }
 
-export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalProps) {
-	const [detailTab, setDetailTab] = useState<"registrations" | "attendance">("registrations");
+export function EventDetailModal({
+	event,
+	onClose,
+	onEdit,
+}: EventDetailModalProps) {
+	const [detailTab, setDetailTab] = useState<"registrations" | "attendance">(
+		"registrations",
+	);
 	const [registrations, setRegistrations] = useState<RegisteredUser[]>([]);
 	const [loadingRegs, setLoadingRegs] = useState(false);
 	const [copied, setCopied] = useState(false);
-	const [togglingId, setTogglingId] = useState<string | null>(null);
+	const [copiedLink, setCopiedLink] = useState(false);
+	const [
+		// togglingId,
+		setTogglingId,
+	] = useState<string | null>(null);
 	const [registrantSearch, setRegistrantSearch] = useState("");
 
 	const registrationsCache = useRef<Record<string, RegisteredUser[]>>({});
-	const syncTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+	const syncTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+		{},
+	);
 
 	const fetchRegistrations = useCallback(async (eventId: string) => {
 		if (registrationsCache.current[eventId]) {
@@ -125,7 +142,9 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 		const supabase = createClient();
 		const { data } = await supabase
 			.from("event_registration")
-			.select("id, user_id, registration_date, attended, profile:user_id ( display_name, full_name, email )")
+			.select(
+				"id, user_id, registration_date, attended, profile:user_id ( display_name, full_name, email )",
+			)
 			.eq("event_id", eventId);
 
 		if (data) {
@@ -160,7 +179,9 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 		async (registrationId: string, newValue: boolean) => {
 			setRegistrations((prev) =>
 				prev.map((r) =>
-					r.registration_id === registrationId ? { ...r, attended: newValue } : r,
+					r.registration_id === registrationId
+						? { ...r, attended: newValue }
+						: r,
 				),
 			);
 			setTogglingId(registrationId);
@@ -175,14 +196,19 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 				if (event?.id) delete registrationsCache.current[event.id];
 				const eventCategory = event?.category;
 				if (eventCategory) {
-					const reg = registrations.find((r) => r.registration_id === registrationId);
+					const reg = registrations.find(
+						(r) => r.registration_id === registrationId,
+					);
 					if (reg?.user_id) {
 						clearTimeout(syncTimers.current[reg.user_id]);
 						syncTimers.current[reg.user_id] = setTimeout(() => {
 							fetch("/api/admin/sync-session-count", {
 								method: "POST",
 								headers: { "Content-Type": "application/json" },
-								body: JSON.stringify({ userId: reg.user_id, category: eventCategory }),
+								body: JSON.stringify({
+									userId: reg.user_id,
+									category: eventCategory,
+								}),
 							});
 						}, 800);
 					}
@@ -190,20 +216,25 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 			} catch {
 				setRegistrations((prev) =>
 					prev.map((r) =>
-						r.registration_id === registrationId ? { ...r, attended: !newValue } : r,
+						r.registration_id === registrationId
+							? { ...r, attended: !newValue }
+							: r,
 					),
 				);
 			} finally {
 				setTogglingId(null);
 			}
 		},
-		[event, registrations],
+		[event, registrations, setTogglingId],
 	);
 
 	const handleCopyEmails = useCallback(
 		(targetUsers?: RegisteredUser[]) => {
 			const listToCopy = targetUsers || registrations;
-			const emails = listToCopy.map((r) => r.email).filter(Boolean).join(", ");
+			const emails = listToCopy
+				.map((r) => r.email)
+				.filter(Boolean)
+				.join(", ");
 			if (emails) {
 				navigator.clipboard.writeText(emails);
 				setCopied(true);
@@ -213,17 +244,34 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 		[registrations],
 	);
 
+	// handle copy link to event, which copies the link to the clipboard and shows a temporary message
+	const handleCopyLinktoEvent = useCallback(() => {
+		if (!event?.id) return;
+		const link = `${window.location.origin}/auth/login?event=${event.id}`;
+		navigator.clipboard.writeText(link);
+		setCopiedLink(true);
+		setTimeout(() => setCopiedLink(false), 2000);
+	}, [event?.id]);
+
 	const handleExportCSV = useCallback(() => {
 		if (!event) return;
 
 		const fmt = (d?: string | null) =>
-			d ? new Date(d).toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" }) : "—";
+			d
+				? new Date(d).toLocaleString("en-PH", {
+						dateStyle: "medium",
+						timeStyle: "short",
+					})
+				: "—";
 
 		const eventRows = [
 			["EVENT DETAILS"],
 			["Title", event.title],
 			["Category", event.category ?? "—"],
-			["Status", deriveStatus(event.start_date ?? "", event.end_date ?? "")],
+			[
+				"Status",
+				deriveStatus(event.start_date ?? "", event.end_date ?? ""),
+			],
 			["Location", event.location ?? "—"],
 			["Start Date", fmt(event.start_date)],
 			["End Date", fmt(event.end_date)],
@@ -249,9 +297,14 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 		const attended = registrations.filter((r) => r.attended);
 		const attendRows = [
 			["ATTENDANCE"],
-			[`${attended.length} attended out of ${registrations.length} registered`],
+			[
+				`${attended.length} attended out of ${registrations.length} registered`,
+			],
 			["Name", "Email"],
-			...attended.map((r) => [r.display_name || r.full_name || "—", r.email ?? "—"]),
+			...attended.map((r) => [
+				r.display_name || r.full_name || "—",
+				r.email ?? "—",
+			]),
 		];
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -283,19 +336,26 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 			registrations.filter(
 				(r) =>
 					!q ||
-					[r.display_name, r.full_name, r.email].some((v) => v?.toLowerCase().includes(q)),
+					[r.display_name, r.full_name, r.email].some((v) =>
+						v?.toLowerCase().includes(q),
+					),
 			),
 		[registrations, q],
 	);
 
-	const attendedUsers = useMemo(() => registrations.filter((r) => r.attended), [registrations]);
+	const attendedUsers = useMemo(
+		() => registrations.filter((r) => r.attended),
+		[registrations],
+	);
 
 	const filteredAttended = useMemo(
 		() =>
 			attendedUsers.filter(
 				(r) =>
 					!q ||
-					[r.display_name, r.full_name, r.email].some((v) => v?.toLowerCase().includes(q)),
+					[r.display_name, r.full_name, r.email].some((v) =>
+						v?.toLowerCase().includes(q),
+					),
 			),
 		[attendedUsers, q],
 	);
@@ -348,29 +408,31 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 						{/* left column */}
 						<div className="flex flex-col gap-4 flex-1 min-w-0">
 							<h2 className="heading-md">{event.title}</h2>
-							<div className="flex gap-2 items-center">
-								<Badge variant="ghost">
-									{event.category ?? "Uncategorized"}
-								</Badge>
-								{(() => {
-									const computedStatus = deriveStatus(
-										event.start_date ?? "",
-										event.end_date ?? "",
-									);
-									return computedStatus ? (
-										<Badge
-											variant={
-												EVENT_STATUS_VARIANT[
-													computedStatus
-												] ?? "dark"
-											}
-										>
-											<span className="capitalize">
-												{computedStatus}
-											</span>
-										</Badge>
-									) : null;
-								})()}
+							<div className="flex gap-2 items-center flex-wrap justify-between">
+								<div className="flex gap-2 items-center">
+									<Badge variant="ghost">
+										{event.category ?? "Uncategorized"}
+									</Badge>
+									{(() => {
+										const computedStatus = deriveStatus(
+											event.start_date ?? "",
+											event.end_date ?? "",
+										);
+										return computedStatus ? (
+											<Badge
+												variant={
+													EVENT_STATUS_VARIANT[
+														computedStatus
+													] ?? "dark"
+												}
+											>
+												<span className="capitalize">
+													{computedStatus}
+												</span>
+											</Badge>
+										) : null;
+									})()}
+								</div>
 							</div>
 
 							<div className="flex flex-col gap-3">
@@ -542,26 +604,44 @@ export function EventDetailModal({ event, onClose, onEdit }: EventDetailModalPro
 
 						{/* right column */}
 						<div className="flex flex-col gap-3 flex-1 min-w-0 pb-8">
-							<Tabs
-								tabs={["Registrations", "Attendance"]}
-								icons={[
-									<Users key="reg" size={14} />,
-									<ClipboardCheck key="att" size={14} />,
-								]}
-								defaultTab={
-									detailTab === "registrations"
-										? "Registrations"
-										: "Attendance"
-								}
-								onChange={(tab) =>
-									setDetailTab(
-										tab === "Registrations"
-											? "registrations"
-											: "attendance",
-									)
-								}
-								className="w-fit"
-							/>
+							<div className="flex items-center justify-between gap-3">
+								<Tabs
+									tabs={["Registrations", "Attendance"]}
+									icons={[
+										<Users key="reg" size={14} />,
+										<ClipboardCheck key="att" size={14} />,
+									]}
+									defaultTab={
+										detailTab === "registrations"
+											? "Registrations"
+											: "Attendance"
+									}
+									onChange={(tab) =>
+										setDetailTab(
+											tab === "Registrations"
+												? "registrations"
+												: "attendance",
+										)
+									}
+									className="w-fit"
+								/>
+								<Button
+									variant="soft"
+									size="sm"
+									onClick={handleCopyLinktoEvent}
+									title="Copy shareable link to this event"
+								>
+									{copiedLink ? (
+										<>
+											<Check size={14} /> Link Copied!
+										</>
+									) : (
+										<>
+											<Share2 size={14} /> Share Link
+										</>
+									)}
+								</Button>
+							</div>
 
 							<SearchBar
 								placeholder={
