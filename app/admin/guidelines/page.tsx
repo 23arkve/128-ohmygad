@@ -598,18 +598,12 @@ const confirmDelete = async () => {
 				}}
 				contentStyle={{ wordBreak: "break-word", hyphens: "auto" }}
 			>
-				<p
-					style={{
-						fontSize: 14,
-						lineHeight: 1.8,
-						color: "var(--primary-dark)",
-						whiteSpace: "pre-wrap",
-						overflowWrap: "break-word",
-						hyphens: "auto",
+				<div
+					className="prose-guideline text-sm leading-relaxed text-[var(--primary-dark)]"
+					dangerouslySetInnerHTML={{
+						__html: modalContent?.text || "No description provided.",
 					}}
-				>
-					{modalContent?.text || "No description provided."}
-				</p>
+				/>
 			</Modal>
 
 			{/* batch delete modal */}

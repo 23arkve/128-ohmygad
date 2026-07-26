@@ -45,44 +45,61 @@ import { Plus, Calendar } from "lucide-react";
 
 import React from "react";
 
-type ButtonVariant = "primary" | "pink" | "periwinkle" | "ghost" | "soft" | "icon" | "icon-sm" | "icon-dark" | "error";
-type ButtonSize    = "sm" | "md" | "lg";
+type ButtonVariant =
+	| "primary"
+	| "pink"
+	| "periwinkle"
+	| "ghost"
+	| "soft"
+	| "icon"
+	| "icon-sm"
+	| "icon-dark"
+	| "error"
+	| "icon-pink";
+type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  children: React.ReactNode;
+	variant?: ButtonVariant;
+	size?: ButtonSize;
+	children: React.ReactNode;
 }
 
 export function Button({
-  variant = "primary",
-  size = "md",
-  children,
-  className = "",
-  disabled,
-  ...props
+	variant = "primary",
+	size = "md",
+	children,
+	className = "",
+	disabled,
+	...props
 }: ButtonProps) {
-  const variantClass = variant === "icon-dark" ? "btn-icon-dark"
-                     : variant === "icon"      ? "btn-icon"
-                     : variant === "icon-sm"   ? "btn-icon-sm"
-                     : `btn-${variant}`;
+	const variantClass =
+		variant === "icon-dark"
+			? "btn-icon-dark"
+			: variant === "icon"
+				? "btn-icon"
+				: variant === "icon-sm"
+					? "btn-icon-sm"
+					: `btn-${variant}`;
 
-  const isIconVariant = variant === "icon" || variant === "icon-sm" || variant === "icon-dark";
-  const sizeClass = isIconVariant ? ""
-                  : size === "sm" ? "btn-sm"
-                  : size === "lg" ? "btn-lg"
-                  : "btn-md";
+	const isIconVariant =
+		variant === "icon" || variant === "icon-sm" || variant === "icon-dark";
+	const sizeClass = isIconVariant
+		? ""
+		: size === "sm"
+			? "btn-sm"
+			: size === "lg"
+				? "btn-lg"
+				: "btn-md";
 
-  const disabledClass = disabled ? "btn-disabled" : "";
+	const disabledClass = disabled ? "btn-disabled" : "";
 
-  return (
-    <button
-      className={`btn ${variantClass} ${sizeClass} ${disabledClass} ${className}`.trim()}
-      disabled={disabled}
-      {...props}
-    >
-      {children}
-    </button>
-  );
+	return (
+		<button
+			className={`btn ${variantClass} ${sizeClass} ${disabledClass} ${className}`.trim()}
+			disabled={disabled}
+			{...props}
+		>
+			{children}
+		</button>
+	);
 }
-
