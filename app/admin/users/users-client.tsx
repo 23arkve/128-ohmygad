@@ -484,7 +484,7 @@ export const UsersClient = ({
 		{
 			key: "full_name",
 			header: "User",
-			width: "20%",
+			width: "25%",
 			render: (p) => (
 				<span title={p.full_name ?? undefined}>
 					<div className="flex items-center gap-2">
@@ -498,7 +498,7 @@ export const UsersClient = ({
 		{
 			key: "email",
 			header: "Email",
-			width: "20%",
+			width: "35%",
 			render: (p) => (
 				<span title={p.email ?? undefined}>
 					<div className="flex items-center gap-2">
@@ -512,7 +512,7 @@ export const UsersClient = ({
 		{
 			key: "role",
 			header: "Role",
-			width: "13%",
+			width: "15%",
 			render: (p) => (
 				<Badge
 					variant={
@@ -536,7 +536,7 @@ export const UsersClient = ({
 		{
 			key: "actions",
 			header: <div className="text-center">Actions</div>,
-			width: "12%",
+			width: "10%",
 			render: (p) => (
 				<div className="text-center">
 					<Button

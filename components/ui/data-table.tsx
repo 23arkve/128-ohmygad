@@ -120,6 +120,7 @@ interface DataTableProps<T> {
 	selectedIds?: Set<string>;
 	onSelectRow?: (id: string, checked: boolean) => void;
 	onSelectAll?: (checked: boolean) => void;
+	selectColumnWidth?: string;
 }
 
 // DataTable
@@ -133,6 +134,7 @@ export function DataTable<T>({
 	selectedIds = new Set(),
 	onSelectRow,
 	onSelectAll,
+	selectColumnWidth = "36px",
 }: DataTableProps<T>) {
 	const padCount =
 		minRows && minRows > rows.length ? minRows - rows.length : 0;
@@ -160,16 +162,20 @@ export function DataTable<T>({
 						{selectable && (
 							<th
 								style={{
-									width: "48px",
+									width: selectColumnWidth,
+									minWidth: selectColumnWidth,
+									maxWidth: selectColumnWidth,
 									textAlign: "center",
-									paddingLeft: 12,
-									paddingRight: 12,
+									paddingLeft: 4,
+									paddingRight: 4,
 								}}
 							>
-								<Checkbox
-									checked={allVisibleSelected}
-									onChange={(checked) => onSelectAll?.(checked)}
-								/>
+								<div className="flex items-center justify-center">
+									<Checkbox
+										checked={allVisibleSelected}
+										onChange={(checked) => onSelectAll?.(checked)}
+									/>
+								</div>
 							</th>
 						)}
 						{columns.map((col) => (
@@ -206,19 +212,23 @@ export function DataTable<T>({
 								{selectable && (
 									<td
 										style={{
-											width: "48px",
+											width: selectColumnWidth,
+											minWidth: selectColumnWidth,
+											maxWidth: selectColumnWidth,
 											textAlign: "center",
-											paddingLeft: 12,
-											paddingRight: 12,
+											paddingLeft: 4,
+											paddingRight: 4,
 										}}
 										onClick={(e) => e.stopPropagation()}
 									>
-										<Checkbox
-											checked={isSelected}
-											onChange={(checked) =>
-												onSelectRow?.(rowKey, checked)
-											}
-										/>
+										<div className="flex items-center justify-center">
+											<Checkbox
+												checked={isSelected}
+												onChange={(checked) =>
+													onSelectRow?.(rowKey, checked)
+												}
+											/>
+										</div>
 									</td>
 								)}
 								{columns.map((col) => (
@@ -229,7 +239,7 @@ export function DataTable<T>({
 					})}
 					{Array.from({ length: padCount }).map((_, i) => (
 						<tr key={`__pad_${i}`} aria-hidden="true">
-							{selectable && <td>&nbsp;</td>}
+							{selectable && <td style={{ width: selectColumnWidth }}>&nbsp;</td>}
 							{columns.map((col) => (
 								<td key={col.key}>&nbsp;</td>
 							))}
