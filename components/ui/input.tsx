@@ -133,194 +133,258 @@ import React, { useState } from "react";
 
 // Input
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  hint?: string;
-  error?: string;
-  success?: boolean;
-  prefixIcon?: React.ReactNode;
+	label?: string;
+	hint?: string;
+	error?: string;
+	success?: boolean;
+	prefixIcon?: React.ReactNode;
 }
 
-export function Input({ label, hint, error, success, prefixIcon, className = "", ...props }: InputProps) {
-  const stateClass = error ? "input-error" : success ? "input-success" : "";
-  return (
-    <div className="input-wrap">
-      {label && <label className="label">{label}</label>}
-      {prefixIcon ? (
-        <div className="input-icon-wrap">
-          <span className="input-prefix-icon">{prefixIcon}</span>
-          <input className={`input ${stateClass} ${className}`.trim()} {...props} />
-        </div>
-      ) : (
-        <input className={`input ${stateClass} ${className}`.trim()} {...props} />
-      )}
-      {error && <span className="hint hint-error">{error}</span>}
-      {hint && !error && <span className="hint">{hint}</span>}
-    </div>
-  );
+export function Input({
+	label,
+	hint,
+	error,
+	success,
+	prefixIcon,
+	className = "",
+	...props
+}: InputProps) {
+	const stateClass = error ? "input-error" : success ? "input-success" : "";
+	return (
+		<div className="input-wrap">
+			{label && <label className="label">{label}</label>}
+			{prefixIcon ? (
+				<div className="input-icon-wrap">
+					<span className="input-prefix-icon">{prefixIcon}</span>
+					<input
+						className={`input ${stateClass} ${className}`.trim()}
+						{...props}
+					/>
+				</div>
+			) : (
+				<input
+					className={`input ${stateClass} ${className}`.trim()}
+					{...props}
+				/>
+			)}
+			{error && <span className="hint hint-error">{error}</span>}
+			{hint && !error && <span className="hint">{hint}</span>}
+		</div>
+	);
 }
 
 // Select
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
-  options: { value: string; label: string; disabled?: boolean }[];
+	label?: string;
+	options: { value: string; label: string; disabled?: boolean }[];
 }
 
-export function Select({ label, options, className = "", ...props }: SelectProps) {
-  return (
-    <div className="input-wrap">
-      {label && <label className="label">{label}</label>}
-      <select className={`select ${className}`.trim()} {...props}>
-        {options.map((o, idx) => (
-          <option 
-            key={o.value} 
-            value={o.value} 
-            disabled={o.disabled || (idx === 0 && o.value === "")}
-          >
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+export function Select({
+	label,
+	options,
+	className = "",
+	...props
+}: SelectProps) {
+	return (
+		<div className="input-wrap">
+			{label && <label className="label">{label}</label>}
+			<select className={`select ${className}`.trim()} {...props}>
+				{options.map((o, idx) => (
+					<option
+						key={o.value}
+						value={o.value}
+						disabled={o.disabled || (idx === 0 && o.value === "")}
+					>
+						{o.label}
+					</option>
+				))}
+			</select>
+		</div>
+	);
 }
 
 // ---------------------------- SearchBar ----------------------------
 import { Search, X } from "lucide-react";
 
 interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  containerStyle?: React.CSSProperties;
-  onClear?: () => void;
+	containerStyle?: React.CSSProperties;
+	onClear?: () => void;
 }
 
-export function SearchBar({ containerStyle, className = "", onClear, ...props }: SearchBarProps) {
-  return (
-    <div className="search-wrap" style={containerStyle}>
-      <span className="search-icon"><Search size={16} /></span>
-      <input className={`search-input ${className}`.trim()} {...props} />
-      {props.value && onClear && (
-        <button
-          type="button"
-          onClick={onClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray)] hover:text-[var(--primary-dark)] bg-transparent border-none cursor-pointer p-1 rounded-full hover:bg-[var(--lavender)] transition-all flex items-center justify-center"
-        >
-          <X size={15} />
-        </button>
-      )}
-    </div>
-  );
+export function SearchBar({
+	containerStyle,
+	className = "",
+	onClear,
+	...props
+}: SearchBarProps) {
+	return (
+		<div className="search-wrap" style={containerStyle}>
+			<span className="search-icon">
+				<Search size={16} />
+			</span>
+			<input className={`search-input ${className}`.trim()} {...props} />
+			{props.value && onClear && (
+				<button
+					type="button"
+					onClick={onClear}
+					className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray)] hover:text-[var(--primary-dark)] bg-transparent border-none cursor-pointer p-1 rounded-full hover:bg-[var(--lavender)] transition-all flex items-center justify-center"
+				>
+					<X size={15} />
+				</button>
+			)}
+		</div>
+	);
 }
 
 // Toggle
 interface ToggleProps {
-  label?: string;
-  defaultOn?: boolean;
-  onChange?: (on: boolean) => void;
+	label?: string;
+	defaultOn?: boolean;
+	onChange?: (on: boolean) => void;
 }
 
 export function Toggle({ label, defaultOn = false, onChange }: ToggleProps) {
-  const [on, setOn] = useState(defaultOn);
+	const [on, setOn] = useState(defaultOn);
 
-  function handleClick() {
-    const next = !on;
-    setOn(next);
-    onChange?.(next);
-  }
+	function handleClick() {
+		const next = !on;
+		setOn(next);
+		onChange?.(next);
+	}
 
-  return (
-    <label className="toggle-wrap" onClick={handleClick}>
-      <div className={`toggle-track${on ? " active" : ""}`}>
-        <div className="toggle-thumb" />
-      </div>
-      {label && (
-        <span style={{ fontSize: 14, color: "var(--primary-dark)", fontWeight: 500 }}>{label}</span>
-      )}
-    </label>
-  );
+	return (
+		<label className="toggle-wrap" onClick={handleClick}>
+			<div className={`toggle-track${on ? " active" : ""}`}>
+				<div className="toggle-thumb" />
+			</div>
+			{label && (
+				<span
+					style={{
+						fontSize: 14,
+						color: "var(--primary-dark)",
+						fontWeight: 500,
+					}}
+				>
+					{label}
+				</span>
+			)}
+		</label>
+	);
 }
 
 // Checkbox
 import { Check } from "lucide-react";
 
 interface CheckboxProps {
-  label: string;
-  checked?: boolean;
-  defaultChecked?: boolean;
-  onChange?: (checked: boolean) => void;
+	label?: string;
+	checked?: boolean;
+	defaultChecked?: boolean;
+	onChange?: (checked: boolean) => void;
+	disabled?: boolean;
 }
 
-export function Checkbox({ label, checked: controlledChecked, defaultChecked = false, onChange }: CheckboxProps) {
-  const [internalChecked, setInternalChecked] = useState(defaultChecked);
-  const isControlled = controlledChecked !== undefined;
-  const checked = isControlled ? controlledChecked : internalChecked;
+export function Checkbox({
+	label,
+	checked: controlledChecked,
+	defaultChecked = false,
+	onChange,
+}: CheckboxProps) {
+	const [internalChecked, setInternalChecked] = useState(defaultChecked);
+	const isControlled = controlledChecked !== undefined;
+	const checked = isControlled ? controlledChecked : internalChecked;
 
-  function handleClick() {
-    const next = !checked;
-    if (!isControlled) setInternalChecked(next);
-    onChange?.(next);
-  }
+	function handleClick(e: React.MouseEvent) {
+		e.stopPropagation();
+		const next = !checked;
+		if (!isControlled) setInternalChecked(next);
+		onChange?.(next);
+	}
 
-  return (
-    <div className="checkbox-wrap" onClick={handleClick}>
-      <div className={`checkbox${checked ? " checked" : ""}`}>
-        {checked && <Check size={12} color="white" />}
-      </div>
-      <span className="checkbox-label">{label}</span>
-    </div>
-  );
+	return (
+		<div className="checkbox-wrap" onClick={handleClick}>
+			<div className={`checkbox${checked ? " checked" : ""}`}>
+				{checked && <Check size={12} color="white" />}
+			</div>
+			{label && <span className="checkbox-label">{label}</span>}
+		</div>
+	);
 }
 
 // RadioGroup
 interface RadioOption {
-  value: string;
-  label: string;
+	value: string;
+	label: string;
 }
 
 interface RadioGroupProps {
-  options: RadioOption[];
-  defaultValue?: string;
-  onChange?: (value: string) => void;
+	options: RadioOption[];
+	defaultValue?: string;
+	onChange?: (value: string) => void;
 }
 
-export function RadioGroup({ options, defaultValue, onChange }: RadioGroupProps) {
-  const [val, setVal] = useState(defaultValue ?? options[0]?.value);
+export function RadioGroup({
+	options,
+	defaultValue,
+	onChange,
+}: RadioGroupProps) {
+	const [val, setVal] = useState(defaultValue ?? options[0]?.value);
 
-  function handleClick(value: string) {
-    setVal(value);
-    onChange?.(value);
-  }
+	function handleClick(value: string) {
+		setVal(value);
+		onChange?.(value);
+	}
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {options.map((opt) => (
-        <div key={opt.value} className="radio-wrap" onClick={() => handleClick(opt.value)}>
-          <div className={`radio${val === opt.value ? " checked" : ""}`}>
-            <div className="radio-dot" />
-          </div>
-          <span className="checkbox-label">{opt.label}</span>
-        </div>
-      ))}
-    </div>
-  );
+	return (
+		<div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+			{options.map((opt) => (
+				<div
+					key={opt.value}
+					className="radio-wrap"
+					onClick={() => handleClick(opt.value)}
+				>
+					<div
+						className={`radio${val === opt.value ? " checked" : ""}`}
+					>
+						<div className="radio-dot" />
+					</div>
+					<span className="checkbox-label">{opt.label}</span>
+				</div>
+			))}
+		</div>
+	);
 }
 
 // Slider
 interface SliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  minLabel?: string;
-  maxLabel?: string;
+	label?: string;
+	minLabel?: string;
+	maxLabel?: string;
 }
 
 export function Slider({ label, minLabel, maxLabel, ...props }: SliderProps) {
-  return (
-    <div>
-      {label && <label className="label" style={{ display: "block", marginBottom: 8 }}>{label}</label>}
-      <input type="range" className="slider" {...props} />
-      {(minLabel || maxLabel) && (
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-          <span className="caption">{minLabel}</span>
-          <span className="caption">{maxLabel}</span>
-        </div>
-      )}
-    </div>
-  );
+	return (
+		<div>
+			{label && (
+				<label
+					className="label"
+					style={{ display: "block", marginBottom: 8 }}
+				>
+					{label}
+				</label>
+			)}
+			<input type="range" className="slider" {...props} />
+			{(minLabel || maxLabel) && (
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "space-between",
+						marginTop: 4,
+					}}
+				>
+					<span className="caption">{minLabel}</span>
+					<span className="caption">{maxLabel}</span>
+				</div>
+			)}
+		</div>
+	);
 }

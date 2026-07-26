@@ -103,6 +103,13 @@ export default function SurveysPage() {
 	} | null>(null);
 	const [deletePassword, setDeletePassword] = useState("");
 
+	// Multi-selection state
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+	const [batchDeleteModalOpen, setBatchDeleteModalOpen] = useState(false);
+	const [batchDeletePassword, setBatchDeletePassword] = useState("");
+	const [batchDeleteError, setBatchDeleteError] = useState<string | null>(null);
+	const [isBatchDeleting, setIsBatchDeleting] = useState(false);
+
 	const [toast, setToast] = useState<{
 		variant: "success" | "error";
 		title: string;
@@ -304,6 +311,78 @@ export default function SurveysPage() {
 		setDeletingId(null);
 		setDeleteTarget(null);
 		setDeletePassword("");
+	};
+
+	const handleSelectRow = (id: string, checked: boolean) => {
+		setSelectedIds((prev) => {
+			const next = new Set(prev);
+			if (checked) next.add(id);
+			else next.delete(id);
+			return next;
+		});
+	};
+
+	const paginatedSurveys = paginate(filtered, page, PER_PAGE);
+
+	const handleSelectAll = (checked: boolean) => {
+		setSelectedIds((prev) => {
+			const next = new Set(prev);
+			paginatedSurveys.forEach((s) => {
+				if (s.id) {
+					if (checked) next.add(s.id);
+					else next.delete(s.id);
+				}
+			});
+			return next;
+		});
+	};
+
+	const confirmBatchDelete = async () => {
+		if (selectedIds.size === 0) return;
+		setIsBatchDeleting(true);
+		setBatchDeleteError(null);
+
+		const supabase = createClient();
+		const { data: userData } = await supabase.auth.getUser();
+
+		if (!userData.user || !userData.user.email) {
+			setBatchDeleteError("Unable to verify user");
+			setIsBatchDeleting(false);
+			return;
+		}
+
+		const { error: authError } = await supabase.auth.signInWithPassword({
+			email: userData.user.email,
+			password: batchDeletePassword,
+		});
+
+		if (authError) {
+			setBatchDeleteError("Invalid password");
+			setBatchDeletePassword("");
+			setIsBatchDeleting(false);
+			return;
+		}
+
+		const idsArray = Array.from(selectedIds);
+		const { error } = await supabase
+			.from("survey")
+			.delete()
+			.in("id", idsArray);
+
+		if (error) {
+			setBatchDeleteError("Failed to delete selected surveys. Please try again.");
+			showToast("error", "Failed to delete surveys. Please try again.");
+		} else {
+			setSurveys((prev) => prev.filter((s) => !s.id || !selectedIds.has(s.id)));
+			setSelectedIds(new Set());
+			setBatchDeleteModalOpen(false);
+			setBatchDeletePassword("");
+			showToast(
+				"success",
+				`Successfully deleted ${idsArray.length} selected survey${idsArray.length > 1 ? "s" : ""}.`,
+			);
+		}
+		setIsBatchDeleting(false);
 	};
 
 	const formatDate = (val?: string | null) =>
@@ -616,12 +695,42 @@ export default function SurveysPage() {
 					</div>
 				</Card>
 			) : (
-				<DataTable
-					columns={columns}
-					rows={paginate(filtered, page, PER_PAGE)}
-					keyExtractor={(survey) => survey.id!}
-					onRowClick={(survey) => setAnalyticsTarget(survey)}
-				/>
+				<div className="flex flex-col gap-3">
+					{selectedIds.size > 0 && (
+						<div className="flex items-center justify-between bg-[var(--lavender)] px-4 py-2.5 rounded-full border border-[rgba(107,70,193,0.15)]">
+							<span className="text-sm font-semibold text-[var(--primary-dark)]">
+								{selectedIds.size} survey{selectedIds.size > 1 ? "s" : ""} selected
+							</span>
+							<div className="flex items-center gap-2">
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => setSelectedIds(new Set())}
+								>
+									Deselect all
+								</Button>
+								<Button
+									variant="primary"
+									className="!bg-[var(--error)]"
+									size="sm"
+									onClick={() => setBatchDeleteModalOpen(true)}
+								>
+									<Trash2 size={14} /> Batch Delete ({selectedIds.size})
+								</Button>
+							</div>
+						</div>
+					)}
+					<DataTable
+						selectable
+						selectedIds={selectedIds}
+						onSelectRow={handleSelectRow}
+						onSelectAll={handleSelectAll}
+						columns={columns}
+						rows={paginatedSurveys}
+						keyExtractor={(survey) => survey.id!}
+						onRowClick={(survey) => setAnalyticsTarget(survey)}
+					/>
+				</div>
 			)}
 
 			{/* pagination */}
@@ -728,6 +837,67 @@ export default function SurveysPage() {
 					open={!!analyticsTarget}
 					onClose={() => setAnalyticsTarget(null)}
 				/>
+			)}
+
+			{/* batch delete modal */}
+			{batchDeleteModalOpen && (
+				<Modal
+					open={batchDeleteModalOpen}
+					onClose={() => {
+						if (!isBatchDeleting) {
+							setBatchDeleteModalOpen(false);
+							setBatchDeletePassword("");
+							setBatchDeleteError(null);
+						}
+					}}
+					title={`Delete ${selectedIds.size} Selected Surveys`}
+					subtitle="This action cannot be undone."
+					footer={
+						<div className="flex gap-3 w-full">
+							<Button
+								variant="ghost"
+								className="flex-1"
+								onClick={() => {
+									setBatchDeleteModalOpen(false);
+									setBatchDeletePassword("");
+									setBatchDeleteError(null);
+								}}
+								disabled={isBatchDeleting}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="primary"
+								className="flex-1 !bg-[var(--error)]"
+								onClick={confirmBatchDelete}
+								disabled={isBatchDeleting || !batchDeletePassword.trim()}
+							>
+								{isBatchDeleting ? (
+									<>
+										<Loader2 size={16} className="animate-spin" /> Deleting...
+									</>
+								) : (
+									`Delete ${selectedIds.size} Surveys`
+								)}
+							</Button>
+						</div>
+					}
+				>
+					<div className="space-y-4 justify-center">
+						<p className="text-sm text-[var(--error)] font-bold">
+							Are you sure you want to delete these {selectedIds.size} selected surveys?
+						</p>
+						<Input
+							label="Enter your password to confirm deletion"
+							type="password"
+							placeholder="Password"
+							value={batchDeletePassword}
+							onChange={(e) => setBatchDeletePassword(e.target.value)}
+							error={batchDeleteError || undefined}
+							disabled={isBatchDeleting}
+						/>
+					</div>
+				</Modal>
 			)}
 
 			{/* confirm delete modal */}

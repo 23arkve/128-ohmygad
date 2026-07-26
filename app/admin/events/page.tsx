@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { deleteEventAndLinkedSurveys } from "./actions";
+import {
+	deleteEventAndLinkedSurveys,
+	deleteMultipleEventsAndLinkedSurveys,
+} from "./actions";
 import {
 	Plus,
 	ArrowUpDown,
@@ -123,6 +126,15 @@ export default function EventsPage() {
 	} | null>(null);
 	const [deletePassword, setDeletePassword] = useState("");
 
+	// Multi-selection state
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+	const [batchDeleteModalOpen, setBatchDeleteModalOpen] = useState(false);
+	const [batchDeletePassword, setBatchDeletePassword] = useState("");
+	const [batchDeleteError, setBatchDeleteError] = useState<string | null>(
+		null,
+	);
+	const [isBatchDeleting, setIsBatchDeleting] = useState(false);
+
 	const [toast, setToast] = useState<{
 		variant: "success" | "error";
 		title: string;
@@ -186,70 +198,69 @@ export default function EventsPage() {
 		if (match) openDetail(match);
 	}, [autoOpenId, isLoading, events, openDetail]);
 
-    
 	// debounce the search input by 200ms so filtering wont run on every keystroke
 	useEffect(() => {
-        const timer = setTimeout(() => setSearch(searchInput), 200);
+		const timer = setTimeout(() => setSearch(searchInput), 200);
 		return () => clearTimeout(timer);
 	}, [searchInput]);
-    
+
 	// filter / sort derived via useMemo so no extra state or effect is needed
 	const filtered = useMemo(() => {
-        const q = search.toLowerCase();
+		const q = search.toLowerCase();
 		let result = events.filter((e) =>
 			`${e.title} ${e.category || ""} ${e.location || ""}`
-        .toLowerCase()
-        .includes(q),
-    );
-    
-    // category filter
-    if (categoryFilters.size > 0) {
-        result = result.filter((e) =>
+				.toLowerCase()
+				.includes(q),
+		);
+
+		// category filter
+		if (categoryFilters.size > 0) {
+			result = result.filter((e) =>
 				categoryFilters.has(e.category ?? ""),
 			);
 		}
-        
+
 		// status filter
 		if (statusFilters.size > 0) {
-            result = result.filter((e) =>
+			result = result.filter((e) =>
 				statusFilters.has(
-                    deriveStatus(e.start_date ?? "", e.end_date ?? ""),
+					deriveStatus(e.start_date ?? "", e.end_date ?? ""),
 				),
 			);
 		}
-        
+
 		// sorting
 		return result.sort((a, b) => {
-            let aVal: any = a[sort.field as keyof EventFormData];
+			let aVal: any = a[sort.field as keyof EventFormData];
 			let bVal: any = b[sort.field as keyof EventFormData];
-            
+
 			if (aVal == null && bVal == null) return 0;
 			if (aVal == null) return sort.direction === "asc" ? 1 : -1;
 			if (bVal == null) return sort.direction === "asc" ? -1 : 1;
-            
+
 			if (sort.field === "start_date") {
-                aVal = new Date(aVal).getTime();
+				aVal = new Date(aVal).getTime();
 				bVal = new Date(bVal).getTime();
 			}
-            
+
 			if (typeof aVal === "string" && typeof bVal === "string") {
-                aVal = aVal.toLowerCase();
+				aVal = aVal.toLowerCase();
 				bVal = bVal.toLowerCase();
 			}
-            
+
 			if (aVal < bVal) return sort.direction === "asc" ? -1 : 1;
 			if (aVal > bVal) return sort.direction === "asc" ? 1 : -1;
 			return 0;
 		});
 	}, [search, events, sort, categoryFilters, statusFilters]);
-    
+
 	// reset to page 1 whenever the filtered result set changes
 	useEffect(() => {
-        setPage(1);
+		setPage(1);
 	}, [filtered]);
-    
-    // export current filtered events to csv, including registration and attendance counts
-    const handleExportEvents = useCallback(async () => {
+
+	// export current filtered events to csv, including registration and attendance counts
+	const handleExportEvents = useCallback(async () => {
 		if (!filtered || filtered.length === 0) return;
 
 		const supabase = createClient();
@@ -337,8 +348,8 @@ export default function EventsPage() {
 		a.click();
 		URL.revokeObjectURL(url);
 	}, [filtered]);
-	
-    const toggleStatus = useCallback((s: string) => {
+
+	const toggleStatus = useCallback((s: string) => {
 		setStatusFilters((prev) => {
 			const next = new Set(prev);
 			next.has(s) ? next.delete(s) : next.add(s);
@@ -425,6 +436,87 @@ export default function EventsPage() {
 
 		setDeletingId(null);
 	}, [deleteTarget, deletePassword, showToast]);
+
+	const handleSelectRow = useCallback((id: string, checked: boolean) => {
+		setSelectedIds((prev) => {
+			const next = new Set(prev);
+			if (checked) next.add(id);
+			else next.delete(id);
+			return next;
+		});
+	}, []);
+
+	const paginatedEvents = useMemo(
+		() => paginate(filtered, page, PER_PAGE),
+		[filtered, page],
+	);
+
+	const handleSelectAll = useCallback(
+		(checked: boolean) => {
+			setSelectedIds((prev) => {
+				const next = new Set(prev);
+				paginatedEvents.forEach((e) => {
+					if (e.id) {
+						if (checked) next.add(e.id);
+						else next.delete(e.id);
+					}
+				});
+				return next;
+			});
+		},
+		[paginatedEvents],
+	);
+
+	const confirmBatchDelete = useCallback(async () => {
+		if (selectedIds.size === 0) return;
+		setIsBatchDeleting(true);
+		setBatchDeleteError(null);
+
+		const supabase = createClient();
+		const { data: userData } = await supabase.auth.getUser();
+
+		if (!userData.user || !userData.user.email) {
+			setBatchDeleteError("Unable to verify user.");
+			setIsBatchDeleting(false);
+			return;
+		}
+
+		const { error: authError } = await supabase.auth.signInWithPassword({
+			email: userData.user.email,
+			password: batchDeletePassword,
+		});
+
+		if (authError) {
+			setBatchDeleteError("Invalid password. Please try again.");
+			setBatchDeletePassword("");
+			setIsBatchDeleting(false);
+			return;
+		}
+
+		const idsArray = Array.from(selectedIds);
+		const result = await deleteMultipleEventsAndLinkedSurveys(idsArray);
+
+		if (!result.success) {
+			setBatchDeleteError(result.error || "Failed to delete events.");
+			showToast(
+				"error",
+				"Failed to delete events",
+				result.error || "Unknown error",
+			);
+		} else {
+			setEvents((prev) =>
+				prev.filter((e) => !e.id || !selectedIds.has(e.id)),
+			);
+			setSelectedIds(new Set());
+			setBatchDeleteModalOpen(false);
+			setBatchDeletePassword("");
+			showToast(
+				"success",
+				`Successfully deleted ${idsArray.length} selected event${idsArray.length > 1 ? "s" : ""}.`,
+			);
+		}
+		setIsBatchDeleting(false);
+	}, [selectedIds, batchDeletePassword, showToast]);
 
 	const requestClose = (closeFn: () => void, isDirty: boolean) => {
 		if (isDirty) {
@@ -937,12 +1029,46 @@ export default function EventsPage() {
 					</div>
 				</Card>
 			) : (
-				<DataTable
-					columns={columns}
-					rows={paginate(filtered, page, PER_PAGE)}
-					keyExtractor={(event) => event.id!}
-					onRowClick={(event) => openDetail(event)}
-				/>
+				<div className="flex flex-col gap-3">
+					{selectedIds.size > 0 && (
+						<div className="flex items-center justify-between bg-[var(--lavender)] px-4 py-2.5 rounded-full border border-[rgba(107,70,193,0.15)]">
+							<span className="text-sm font-semibold text-[var(--primary-dark)]">
+								{selectedIds.size} event
+								{selectedIds.size > 1 ? "s" : ""} selected
+							</span>
+							<div className="flex items-center gap-2">
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => setSelectedIds(new Set())}
+								>
+									Deselect all
+								</Button>
+								<Button
+									variant="primary"
+									className="!bg-[var(--error)]"
+									size="sm"
+									onClick={() =>
+										setBatchDeleteModalOpen(true)
+									}
+								>
+									<Trash2 size={14} /> Batch Delete (
+									{selectedIds.size})
+								</Button>
+							</div>
+						</div>
+					)}
+					<DataTable
+						selectable
+						selectedIds={selectedIds}
+						onSelectRow={handleSelectRow}
+						onSelectAll={handleSelectAll}
+						columns={columns}
+						rows={paginatedEvents}
+						keyExtractor={(event) => event.id!}
+						onRowClick={(event) => openDetail(event)}
+					/>
+				</div>
 			)}
 
 			{/* pagination */}
@@ -1008,6 +1134,77 @@ export default function EventsPage() {
 					setEditTarget(formData);
 				}}
 			/>
+
+			{/* batch delete modal */}
+			{batchDeleteModalOpen && (
+				<Modal
+					open={batchDeleteModalOpen}
+					onClose={() => {
+						if (!isBatchDeleting) {
+							setBatchDeleteModalOpen(false);
+							setBatchDeletePassword("");
+							setBatchDeleteError(null);
+						}
+					}}
+					title={`Delete ${selectedIds.size} Selected Events`}
+					subtitle="This action cannot be undone. All linked surveys and data tied to these events will be permanently removed."
+					footer={
+						<div className="flex gap-3 w-full">
+							<Button
+								variant="ghost"
+								style={{ flex: 1 }}
+								onClick={() => {
+									setBatchDeleteModalOpen(false);
+									setBatchDeletePassword("");
+									setBatchDeleteError(null);
+								}}
+								disabled={isBatchDeleting}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="primary"
+								className="!bg-[var(--error)] flex-1"
+								onClick={confirmBatchDelete}
+								disabled={
+									isBatchDeleting ||
+									!batchDeletePassword.trim()
+								}
+							>
+								{isBatchDeleting ? (
+									<>
+										<Loader2
+											size={16}
+											className="animate-spin"
+										/>{" "}
+										Deleting...
+									</>
+								) : (
+									`Delete ${selectedIds.size} Events`
+								)}
+							</Button>
+						</div>
+					}
+				>
+					<div className="space-y-4 justify-center">
+						<p className="text-sm text-[var(--error)] font-bold">
+							Are you sure you want to delete these{" "}
+							{selectedIds.size} selected events?
+						</p>
+						<Input
+							label="Enter your password to confirm deletion"
+							type="password"
+							placeholder="Password"
+							value={batchDeletePassword}
+							onChange={(e) =>
+								setBatchDeletePassword(e.target.value)
+							}
+							error={batchDeleteError || undefined}
+							disabled={isBatchDeleting}
+						/>
+					</div>
+				</Modal>
+			)}
 
 			{/* confirm delete modal */}
 			<Modal

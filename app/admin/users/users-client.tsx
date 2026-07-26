@@ -2,10 +2,18 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowUpDown, UserPlus, Pencil, Trash2, Loader2, SlidersHorizontal, Users } from "lucide-react";
+import {
+	ArrowUpDown,
+	UserPlus,
+	Pencil,
+	Trash2,
+	Loader2,
+	SlidersHorizontal,
+	Users,
+} from "lucide-react";
 import type { Profile, SortState } from "./profile.types";
 import { sortProfiles, paginate, totalPages } from "./profile.utils";
-import { deleteUser } from "./action";
+import { deleteUser, deleteUsers } from "./action";
 import { PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
 import UserForm from "@/components/admin/user-form";
@@ -13,429 +21,559 @@ import { createClient } from "@/lib/supabase/client";
 import { PulsingLoader } from "@/components/ui";
 
 import {
-  Input,
-  Button,
-  Badge,
-  SearchBar,
-  Card,
-  DataTable,
-  type Column,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-  Modal,
-  Toast,
-  Checkbox,
-  UserCard,
+	Input,
+	Button,
+	Badge,
+	SearchBar,
+	Card,
+	DataTable,
+	type Column,
+	Dropdown,
+	DropdownItem,
+	DropdownDivider,
+	Modal,
+	Toast,
+	Checkbox,
+	UserCard,
 } from "@/components/ui";
 
 interface UsersClientProps {
-  initialProfiles: Profile[];
-  fetchError: string | null;
+	initialProfiles: Profile[];
+	fetchError: string | null;
 }
 
-const ROLE_VARIANT: Record<string, "pink-light" | "periwinkle" | "success" | "warning"> = {
-  admin: "success",
-  staff: "warning",
-  faculty: "periwinkle",
-  student: "pink-light",
+const ROLE_VARIANT: Record<
+	string,
+	"pink-light" | "periwinkle" | "success" | "warning"
+> = {
+	admin: "success",
+	staff: "warning",
+	faculty: "periwinkle",
+	student: "pink-light",
 };
 
 const GSO_VARIANT: Record<string, "warning" | "success"> = {
-  attended: "success",
-  pending: "warning",
+	attended: "success",
+	pending: "warning",
 };
 
 const ROLES = ["student", "staff", "faculty", "admin"];
 
+export const UsersClient = ({
+	initialProfiles,
+	fetchError,
+}: UsersClientProps) => {
+	const router = useRouter();
+	const searchParams = useSearchParams();
 
-export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+	const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
+	const [page, setPage] = useState(1);
+	const [search, setSearch] = useState(searchParams.get("search") || "");
+	const [prevUrlSearch, setPrevUrlSearch] = useState(
+		searchParams.get("search") || "",
+	);
+	const [sort, setSort] = useState<SortState>({
+		field: "full_name",
+		direction: "asc",
+	});
 
-  const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [prevUrlSearch, setPrevUrlSearch] = useState(searchParams.get("search") || "");
-  const [sort, setSort] = useState<SortState>({ field: "full_name", direction: "asc" });
+	// Role change confirmation state
+	const [pendingRole, setPendingRole] = useState<string | null>(null);
+	const [showRoleConfirm, setShowRoleConfirm] = useState(false);
 
-  // Role change confirmation state
-  const [pendingRole, setPendingRole] = useState<string | null>(null);
-  const [showRoleConfirm, setShowRoleConfirm] = useState(false);
+	// discard changes confirm state
+	const [showUnsavedConfirm, setShowUnsavedConfirm] = useState(false);
+	const [pendingClose, setPendingClose] = useState<(() => void) | null>(null);
+	const [isFormDirty, setIsFormDirty] = useState(false);
+	const requestClose = (closeFn: () => void) => {
+		if (isFormDirty) {
+			setPendingClose(() => closeFn);
+			setShowUnsavedConfirm(true);
+		} else {
+			closeFn();
+		}
+	};
 
-  // discard changes confirm state
-  const [showUnsavedConfirm, setShowUnsavedConfirm] = useState(false);
-  const [pendingClose, setPendingClose] = useState<(() => void) | null>(null);
-  const [isFormDirty, setIsFormDirty] = useState(false);
-  const requestClose = (closeFn: () => void) => {
-        if (isFormDirty) {
-            setPendingClose(() => closeFn);
-            setShowUnsavedConfirm(true);
-        } else {
-            closeFn();
-        }
-    };
-
-  const confirmDiscard = () => {
+	const confirmDiscard = () => {
 		setShowUnsavedConfirm(false);
 		pendingClose?.();
 		setPendingClose(null);
-  };
+	};
 
-  const cancelDiscard = () => {
+	const cancelDiscard = () => {
 		setShowUnsavedConfirm(false);
 		setPendingClose(null);
-  };
+	};
 
-  const cancelRoleChange = () => {
-    if (pendingRole) {
-      window.dispatchEvent(new CustomEvent("role-change-cancelled"));
-    }
-    setPendingRole(null);
-    setShowRoleConfirm(false);
-  };
+	const cancelRoleChange = () => {
+		if (pendingRole) {
+			window.dispatchEvent(new CustomEvent("role-change-cancelled"));
+		}
+		setPendingRole(null);
+		setShowRoleConfirm(false);
+	};
 
-  const handleRoleChangeRequest = (newRole: string) => {
-    setPendingRole(newRole);
-    setShowRoleConfirm(true);
-  };
+	const handleRoleChangeRequest = (newRole: string) => {
+		setPendingRole(newRole);
+		setShowRoleConfirm(true);
+	};
 
-  const confirmRoleChange = () => {
-    if (!pendingRole) return;
+	const confirmRoleChange = () => {
+		if (!pendingRole) return;
 
-    setShowRoleConfirm(false);
+		setShowRoleConfirm(false);
 
-    // send back to form via callback OR update editUser if needed
-    window.dispatchEvent(
-      new CustomEvent("role-confirmed", {
-        detail: pendingRole,
-      })
-    );
+		// send back to form via callback OR update editUser if needed
+		window.dispatchEvent(
+			new CustomEvent("role-confirmed", {
+				detail: pendingRole,
+			}),
+		);
 
-    setPendingRole(null);
-  };
+		setPendingRole(null);
+	};
 
-  // Filters
-  const [roleFilters, setRoleFilters] = useState<Set<string>>(new Set());
-  const [gsoFilters, setGsoFilters] = useState<Set<string>>(new Set());
-  const [activeChip, setActiveChip] = useState("All");
+	// Filters
+	const [roleFilters, setRoleFilters] = useState<Set<string>>(new Set());
+	const [gsoFilters, setGsoFilters] = useState<Set<string>>(new Set());
+	const [activeChip, setActiveChip] = useState("All");
 
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editUser, setEditUser] = useState<any>(null);
-  const [editLoading, setEditLoading] = useState(false);
-  const [editError, setEditError] = useState<string | null>(null);
+	const [createModalOpen, setCreateModalOpen] = useState(false);
+	const [editModalOpen, setEditModalOpen] = useState(false);
+	const [editUser, setEditUser] = useState<any>(null);
+	const [editLoading, setEditLoading] = useState(false);
+	const [editError, setEditError] = useState<string | null>(null);
 
-  const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [detailError, setDetailError] = useState<string | null>(null);
+	const [detailModalOpen, setDetailModalOpen] = useState(false);
+	const [selectedUser, setSelectedUser] = useState<any>(null);
+	const [detailLoading, setDetailLoading] = useState(false);
+	const [detailError, setDetailError] = useState<string | null>(null);
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [deletePassword, setDeletePassword] = useState("");
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [deleteError, setDeleteError] = useState<string | null>(null);
+	const [deletePassword, setDeletePassword] = useState("");
 
-  // Sync search state with URL parameter synchronously to avoid "previous search" flash
-  const urlSearch = searchParams.get("search") || "";
-  if (urlSearch !== prevUrlSearch) {
-    setPrevUrlSearch(urlSearch);
-    setSearch(urlSearch);
-    // clear filters when searching from global search to ensure result is visible
-    if (urlSearch) {
-      setRoleFilters(new Set());
-      setGsoFilters(new Set());
-      setActiveChip("All");
-    }
-  }
+	// Multi-selection state
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+	const [batchDeleteModalOpen, setBatchDeleteModalOpen] = useState(false);
+	const [batchDeletePassword, setBatchDeletePassword] = useState("");
+	const [batchDeleteError, setBatchDeleteError] = useState<string | null>(
+		null,
+	);
+	const [isBatchDeleting, setIsBatchDeleting] = useState(false);
 
-  const [toast, setToast] = useState<{ variant: "success"|"error"; title: string; message?: string } | null>(null);
+	// Sync search state with URL parameter synchronously to avoid "previous search" flash
+	const urlSearch = searchParams.get("search") || "";
+	if (urlSearch !== prevUrlSearch) {
+		setPrevUrlSearch(urlSearch);
+		setSearch(urlSearch);
+		// clear filters when searching from global search to ensure result is visible
+		if (urlSearch) {
+			setRoleFilters(new Set());
+			setGsoFilters(new Set());
+			setActiveChip("All");
+		}
+	}
 
-  useEffect(() => {
-  setProfiles(initialProfiles);
-  }, [initialProfiles]);
+	const [toast, setToast] = useState<{
+		variant: "success" | "error";
+		title: string;
+		message?: string;
+	} | null>(null);
 
-  const autoOpenedRef = useRef(false);
-  const autoOpenId = searchParams.get("user");
-  useEffect(() => {
-    if (autoOpenId && !autoOpenedRef.current) {
-        autoOpenedRef.current = true;
-        openDetailModal(autoOpenId);
-    }
-  }, [autoOpenId]);
+	useEffect(() => {
+		setProfiles(initialProfiles);
+	}, [initialProfiles]);
 
-  const showToast = (variant: "success"|"error", title: string, message?: string) => {
-    setToast({ variant, title, message });
-    setTimeout(() => setToast(null), 3000);
-  };
+	const autoOpenedRef = useRef(false);
+	const autoOpenId = searchParams.get("user");
+	useEffect(() => {
+		if (autoOpenId && !autoOpenedRef.current) {
+			autoOpenedRef.current = true;
+			openDetailModal(autoOpenId);
+		}
+	}, [autoOpenId]);
 
-  const filtered = useMemo(() => {
-    let result = profiles;
-    
-    if (search.trim()) {
-      result = result.filter((p) =>
-        `${p.full_name ?? ""} ${p.email ?? ""} ${p.role ?? ""}`
-          .toLowerCase()
-          .includes(search.toLowerCase())
-      );
-    }
+	const showToast = (
+		variant: "success" | "error",
+		title: string,
+		message?: string,
+	) => {
+		setToast({ variant, title, message });
+		setTimeout(() => setToast(null), 3000);
+	};
 
-    if (roleFilters.size > 0) {
-      result = result.filter((p) => roleFilters.has(p.role?.toLowerCase() ?? ""));
-    }
+	const filtered = useMemo(() => {
+		let result = profiles;
 
-    if (gsoFilters.size > 0) {
-      result = result.filter((p) => {
-        const status = getTotalEventsAttended(p) > 0 ? "attended" : "pending";
-        return gsoFilters.has(status);
-      });
-    }
+		if (search.trim()) {
+			result = result.filter((p) =>
+				`${p.full_name ?? ""} ${p.email ?? ""} ${p.role ?? ""}`
+					.toLowerCase()
+					.includes(search.toLowerCase()),
+			);
+		}
 
-    return sortProfiles(result, sort.field, sort.direction);
-  }, [profiles, sort, roleFilters, gsoFilters, search]);
+		if (roleFilters.size > 0) {
+			result = result.filter((p) =>
+				roleFilters.has(p.role?.toLowerCase() ?? ""),
+			);
+		}
 
-  const paginatedProfiles = paginate(filtered, page, PER_PAGE);
-  const pageCount = totalPages(filtered.length, PER_PAGE);
+		if (gsoFilters.size > 0) {
+			result = result.filter((p) => {
+				const status =
+					getTotalEventsAttended(p) > 0 ? "attended" : "pending";
+				return gsoFilters.has(status);
+			});
+		}
 
-  const getTotalEventsAttended = (profile: Profile) =>
-    [
-      profile.gso_attended,
-      profile.asho_attended,
-      profile.forum_attended,
-      profile.research_attended,
-      profile.training_attended,
-      profile.workshop_attended,
-    ].reduce((sum, value) => sum + (value ?? 0), 0);
+		return sortProfiles(result, sort.field, sort.direction);
+	}, [profiles, sort, roleFilters, gsoFilters, search]);
 
-  // Filter toggle helpers
-  function toggleRole(r: string) {
-    setRoleFilters((prev) => {
-      const next = new Set(prev);
-      next.has(r) ? next.delete(r) : next.add(r);
-      return next;
-    });
-    setActiveChip("All");
-    setPage(1);
-  }
+	const paginatedProfiles = paginate(filtered, page, PER_PAGE);
+	const pageCount = totalPages(filtered.length, PER_PAGE);
 
-  function toggleGso(g: string) {
-    setGsoFilters((prev) => {
-      const next = new Set(prev);
-      next.has(g) ? next.delete(g) : next.add(g);
-      return next;
-    });
-    setPage(1);
-  }
+	const getTotalEventsAttended = (profile: Profile) =>
+		[
+			profile.gso_attended,
+			profile.asho_attended,
+			profile.forum_attended,
+			profile.research_attended,
+			profile.training_attended,
+			profile.workshop_attended,
+		].reduce((sum, value) => sum + (value ?? 0), 0);
 
-  function clearAllFilters() {
-    setRoleFilters(new Set());
-    setGsoFilters(new Set());
-    setActiveChip("All");
-    setPage(1);
-  }
+	// Filter toggle helpers
+	function toggleRole(r: string) {
+		setRoleFilters((prev) => {
+			const next = new Set(prev);
+			next.has(r) ? next.delete(r) : next.add(r);
+			return next;
+		});
+		setActiveChip("All");
+		setPage(1);
+	}
 
-  const handleChipChange = (chip: string) => {
-    setActiveChip(chip);
-    if (chip === "All") {
-      setRoleFilters(new Set());
-    } else {
-      setRoleFilters(new Set([chip.toLowerCase()]));
-    }
-    setPage(1);
-  };
+	function toggleGso(g: string) {
+		setGsoFilters((prev) => {
+			const next = new Set(prev);
+			next.has(g) ? next.delete(g) : next.add(g);
+			return next;
+		});
+		setPage(1);
+	}
 
-  const handleSort = (field: SortState["field"]) => {
-    setSort((prev) => ({
-      field,
-      direction: prev.field === field && prev.direction === "asc" ? "desc" : "asc",
-    }));
-    setPage(1);
-  };
+	function clearAllFilters() {
+		setRoleFilters(new Set());
+		setGsoFilters(new Set());
+		setActiveChip("All");
+		setPage(1);
+	}
 
-  const openEditModal = async (userId: string) => {
-    setEditUser(null);
-    setEditError(null);
-    setEditLoading(true);
-    setEditModalOpen(true);
-    try {
-      const res = await fetch(`/api/admin/get-user?id=${userId}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to fetch user");
-      setEditUser(data);
-    } catch (err: any) {
-      setEditError("Failed to update user. Please try again.");
-    } finally {
-      setEditLoading(false);
-    }
-  };
+	const handleChipChange = (chip: string) => {
+		setActiveChip(chip);
+		if (chip === "All") {
+			setRoleFilters(new Set());
+		} else {
+			setRoleFilters(new Set([chip.toLowerCase()]));
+		}
+		setPage(1);
+	};
 
-  const closeEditModal = () => {
+	const handleSort = (field: SortState["field"]) => {
+		setSort((prev) => ({
+			field,
+			direction:
+				prev.field === field && prev.direction === "asc"
+					? "desc"
+					: "asc",
+		}));
+		setPage(1);
+	};
+
+	const openEditModal = async (userId: string) => {
+		setEditUser(null);
+		setEditError(null);
+		setEditLoading(true);
+		setEditModalOpen(true);
+		try {
+			const res = await fetch(`/api/admin/get-user?id=${userId}`);
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || "Failed to fetch user");
+			setEditUser(data);
+		} catch (err: any) {
+			setEditError("Failed to update user. Please try again.");
+		} finally {
+			setEditLoading(false);
+		}
+	};
+
+	const closeEditModal = () => {
 		setEditModalOpen(false);
 		setEditUser(null);
 		setEditError(null);
 		setIsFormDirty(false);
-  };
+	};
 
-  const openDetailModal = async (userId: string) => {
-    setDetailModalOpen(true);
-    setSelectedUser(null);
-    setDetailError(null);
-    setDetailLoading(true);
-    try {
-      const res = await fetch(`/api/admin/get-user?id=${userId}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to fetch user");
-      setSelectedUser(data);
-    } catch (err: unknown) {
-      setDetailError("Failed to load user details. Please try again.");
-    } finally {
-      setDetailLoading(false);
-    }
-  };
+	const openDetailModal = async (userId: string) => {
+		setDetailModalOpen(true);
+		setSelectedUser(null);
+		setDetailError(null);
+		setDetailLoading(true);
+		try {
+			const res = await fetch(`/api/admin/get-user?id=${userId}`);
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || "Failed to fetch user");
+			setSelectedUser(data);
+		} catch (err: unknown) {
+			setDetailError("Failed to load user details. Please try again.");
+		} finally {
+			setDetailLoading(false);
+		}
+	};
 
-  const closeDetailModal = () => {
-    setDetailModalOpen(false);
-    setSelectedUser(null);
-    setDetailError(null);
-  };
+	const closeDetailModal = () => {
+		setDetailModalOpen(false);
+		setSelectedUser(null);
+		setDetailError(null);
+	};
 
-  const openDeleteModal = (profile: Profile) => {
-    setDeleteTarget(profile);
-    setDeleteError(null);
-    setDeleteModalOpen(true);
-  };
+	const openDeleteModal = (profile: Profile) => {
+		setDeleteTarget(profile);
+		setDeleteError(null);
+		setDeleteModalOpen(true);
+	};
 
-  const closeDeleteModal = () => {
-    if (isDeleting) return;
-    setDeleteModalOpen(false);
-    setDeleteTarget(null);
-    setDeleteError(null);
-    setDeletePassword("");
-  };
+	const closeDeleteModal = () => {
+		if (isDeleting) return;
+		setDeleteModalOpen(false);
+		setDeleteTarget(null);
+		setDeleteError(null);
+		setDeletePassword("");
+	};
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setIsDeleting(true);
-    setDeleteError(null);
+	const handleDelete = async () => {
+		if (!deleteTarget) return;
+		setIsDeleting(true);
+		setDeleteError(null);
 
-    const supabase = createClient();
-    const { data: userData } = await supabase.auth.getUser();
+		const supabase = createClient();
+		const { data: userData } = await supabase.auth.getUser();
 
-    if (!userData.user || !userData.user.email) {
-      setDeleteError("Unable to verify user.");
-      setIsDeleting(false);
-      return;
-    }
+		if (!userData.user || !userData.user.email) {
+			setDeleteError("Unable to verify user.");
+			setIsDeleting(false);
+			return;
+		}
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: userData.user.email,
-      password: deletePassword,
-    });
+		const { error: authError } = await supabase.auth.signInWithPassword({
+			email: userData.user.email,
+			password: deletePassword,
+		});
 
-    if (authError) {
-      setDeleteError("Invalid password");
-      setDeletePassword("");
-      setIsDeleting(false);
-      return;
-    }
+		if (authError) {
+			setDeleteError("Invalid password");
+			setDeletePassword("");
+			setIsDeleting(false);
+			return;
+		}
 
-    try {
-      const result = await deleteUser(deleteTarget.id);
-      if (result.success) {
-        setProfiles((prev) => prev.filter((p) => p.id !== deleteTarget.id));
-        router.refresh();
-        closeDeleteModal();
-        showToast("success", `User "${deleteTarget.full_name}" deleted successfully.`);
-      }
-    } catch (err: any) {
-      setDeleteError("Failed to delete user. Please try again.");
-      showToast("error", "Failed to delete user. Please try again.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+		try {
+			const result = await deleteUser(deleteTarget.id);
+			if (result.success) {
+				setProfiles((prev) =>
+					prev.filter((p) => p.id !== deleteTarget.id),
+				);
+				router.refresh();
+				closeDeleteModal();
+				showToast(
+					"success",
+					`User "${deleteTarget.full_name}" deleted successfully.`,
+				);
+			}
+		} catch (err: any) {
+			setDeleteError("Failed to delete user. Please try again.");
+			showToast("error", "Failed to delete user. Please try again.");
+		} finally {
+			setIsDeleting(false);
+		}
+	};
 
-  const activeFilterCount = roleFilters.size + gsoFilters.size;
-  const hasActiveFilters = activeFilterCount > 0;
+	const handleSelectRow = (id: string, checked: boolean) => {
+		setSelectedIds((prev) => {
+			const next = new Set(prev);
+			if (checked) next.add(id);
+			else next.delete(id);
+			return next;
+		});
+	};
 
-  const columns: Column<Profile>[] = [
-    {
-      key: "full_name",
-      header: "User",
-      width: "20%",
-      render: (p) => (
-        <span 
-        title={p.full_name ?? undefined}>
-        <div className="flex items-center gap-2">
-            <div className="font-semibold text-[13px] text-primary-dark">{p.full_name ?? "—"}</div>
-        </div>
-        </span>
-      ),
-    },
-    {key: "email",
-    header: "Email", 
-    width: "20%",
-    render: (p) => (
-      <span 
-      title={p.email ?? undefined}>
-      <div className="flex items-center gap-2">
-        <div className="text-[13px] text-primary-dark">{p.email ?? "—"}</div>
-      </div>
-      </span>
-    ),},
-    {
-      key: "role",
-      header: "Role",
-      width: "13%",
-      render: (p) => (
-        <Badge variant={ROLE_VARIANT[p.role?.toLowerCase() ?? ""] ?? "dark"}>
-          <span className="capitalize">{p.role ?? "—"}</span>
-        </Badge>
-      ),
-    },
-    {
-      key: "total_events_attended",
-      header: <div className="text-center">Total Events Attended</div>,
-      width: "15%",
-      render: (p) => (
-        <div className="text-center text-[13px] text-primary-dark">
-          {getTotalEventsAttended(p)}
-        </div>
-      ),
-    },
-    {
-      key: "actions",
-      header: <div className="text-center">Actions</div>,
-      width: "12%",
-      render: (p) => (
-        <div className="text-center">
-          <Button variant="icon" title="Edit user" onClick={(e) => { e.stopPropagation(); openEditModal(p.id); }}>
-            <Pencil size={14} />
-          </Button>
-          <Button
-            variant="icon"
-            title="Delete user"
-            style={{ color: "var(--error)" }}
-            onClick={(e) => { e.stopPropagation(); openDeleteModal(p); }}
-          >
-            <Trash2 size={14} />
-          </Button>
-        </div>
-      ),
-    },
-  ];
+	const handleSelectAll = (checked: boolean) => {
+		setSelectedIds((prev) => {
+			const next = new Set(prev);
+			paginatedProfiles.forEach((p) => {
+				if (checked) next.add(p.id);
+				else next.delete(p.id);
+			});
+			return next;
+		});
+	};
 
-  const SORT_OPTIONS: { label: string; field: SortState["field"] }[] = [
-    { label: "Full name", field: "full_name" },
-    { label: "Email", field: "email" },
-    { label: "Role", field: "role" },
-  ];
+	const handleBatchDelete = async () => {
+		if (selectedIds.size === 0) return;
+		setIsBatchDeleting(true);
+		setBatchDeleteError(null);
 
-  const sortLabel = `${SORT_OPTIONS.find((o) => o.field === sort.field)?.label ?? "Full name"} ${sort.direction === "asc" ? "↑" : "↓"}`;
+		const supabase = createClient();
+		const { data: userData } = await supabase.auth.getUser();
 
+		if (!userData.user || !userData.user.email) {
+			setBatchDeleteError("Unable to verify user.");
+			setIsBatchDeleting(false);
+			return;
+		}
 
-  return (
+		const { error: authError } = await supabase.auth.signInWithPassword({
+			email: userData.user.email,
+			password: batchDeletePassword,
+		});
+
+		if (authError) {
+			setBatchDeleteError("Invalid password");
+			setBatchDeletePassword("");
+			setIsBatchDeleting(false);
+			return;
+		}
+
+		try {
+			const idsArray = Array.from(selectedIds);
+			const result = await deleteUsers(idsArray);
+			if (result.success) {
+				setProfiles((prev) =>
+					prev.filter((p) => !selectedIds.has(p.id)),
+				);
+				setSelectedIds(new Set());
+				setBatchDeleteModalOpen(false);
+				setBatchDeletePassword("");
+				showToast(
+					"success",
+					`Successfully deleted ${idsArray.length} selected user${idsArray.length > 1 ? "s" : ""}.`,
+				);
+				router.refresh();
+			}
+		} catch (err: any) {
+			setBatchDeleteError(
+				"Failed to delete selected users. Please try again.",
+			);
+			showToast(
+				"error",
+				"Failed to delete selected users. Please try again.",
+			);
+		} finally {
+			setIsBatchDeleting(false);
+		}
+	};
+
+	const activeFilterCount = roleFilters.size + gsoFilters.size;
+	const hasActiveFilters = activeFilterCount > 0;
+
+	const columns: Column<Profile>[] = [
+		{
+			key: "full_name",
+			header: "User",
+			width: "20%",
+			render: (p) => (
+				<span title={p.full_name ?? undefined}>
+					<div className="flex items-center gap-2">
+						<div className="font-semibold text-[13px] text-primary-dark">
+							{p.full_name ?? "—"}
+						</div>
+					</div>
+				</span>
+			),
+		},
+		{
+			key: "email",
+			header: "Email",
+			width: "20%",
+			render: (p) => (
+				<span title={p.email ?? undefined}>
+					<div className="flex items-center gap-2">
+						<div className="text-[13px] text-primary-dark">
+							{p.email ?? "—"}
+						</div>
+					</div>
+				</span>
+			),
+		},
+		{
+			key: "role",
+			header: "Role",
+			width: "13%",
+			render: (p) => (
+				<Badge
+					variant={
+						ROLE_VARIANT[p.role?.toLowerCase() ?? ""] ?? "dark"
+					}
+				>
+					<span className="capitalize">{p.role ?? "—"}</span>
+				</Badge>
+			),
+		},
+		{
+			key: "total_events_attended",
+			header: <div className="text-center">Total Events Attended</div>,
+			width: "15%",
+			render: (p) => (
+				<div className="text-center text-[13px] text-primary-dark">
+					{getTotalEventsAttended(p)}
+				</div>
+			),
+		},
+		{
+			key: "actions",
+			header: <div className="text-center">Actions</div>,
+			width: "12%",
+			render: (p) => (
+				<div className="text-center">
+					<Button
+						variant="icon"
+						title="Edit user"
+						onClick={(e) => {
+							e.stopPropagation();
+							openEditModal(p.id);
+						}}
+					>
+						<Pencil size={14} />
+					</Button>
+					<Button
+						variant="icon"
+						title="Delete user"
+						style={{ color: "var(--error)" }}
+						onClick={(e) => {
+							e.stopPropagation();
+							openDeleteModal(p);
+						}}
+					>
+						<Trash2 size={14} />
+					</Button>
+				</div>
+			),
+		},
+	];
+
+	const SORT_OPTIONS: { label: string; field: SortState["field"] }[] = [
+		{ label: "Full name", field: "full_name" },
+		{ label: "Email", field: "email" },
+		{ label: "Role", field: "role" },
+	];
+
+	const sortLabel = `${SORT_OPTIONS.find((o) => o.field === sort.field)?.label ?? "Full name"} ${sort.direction === "asc" ? "↑" : "↓"}`;
+
+	return (
 		<div className="flex flex-col gap-3">
 			{/* toolbar */}
 			<div className="flex flex-col gap-3">
@@ -644,12 +782,48 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 						</div>
 					</Card>
 				) : (
-					<DataTable
-						columns={columns}
-						rows={paginatedProfiles}
-						keyExtractor={(p) => p.id}
-						onRowClick={(p) => openDetailModal(p.id)}
-					/>
+					<div className="flex flex-col gap-3">
+						{selectedIds.size > 0 && (
+							<div className="flex items-center justify-between bg-[var(--lavender)] px-4 py-2.5 rounded-full border border-[rgba(107,70,193,0.15)]">
+								<span className="text-sm font-semibold text-[var(--primary-dark)]">
+									{selectedIds.size} user
+									{selectedIds.size > 1 ? "s" : ""} selected
+								</span>
+								<div className="flex items-center gap-2">
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={() =>
+											setSelectedIds(new Set())
+										}
+									>
+										Deselect all
+									</Button>
+									<Button
+										variant="primary"
+										className="!bg-[var(--error)]"
+										size="sm"
+										onClick={() =>
+											setBatchDeleteModalOpen(true)
+										}
+									>
+										<Trash2 size={14} /> Batch Delete (
+										{selectedIds.size})
+									</Button>
+								</div>
+							</div>
+						)}
+						<DataTable
+							selectable
+							selectedIds={selectedIds}
+							onSelectRow={handleSelectRow}
+							onSelectAll={handleSelectAll}
+							columns={columns}
+							rows={paginatedProfiles}
+							keyExtractor={(p) => p.id}
+							onRowClick={(p) => openDetailModal(p.id)}
+						/>
+					</div>
 				))}
 
 			{/* pagination */}
@@ -899,6 +1073,76 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 				) : null}
 			</Modal>
 
+			{batchDeleteModalOpen && (
+				<Modal
+					open={batchDeleteModalOpen}
+					onClose={() => {
+						if (!isBatchDeleting) {
+							setBatchDeleteModalOpen(false);
+							setBatchDeletePassword("");
+							setBatchDeleteError(null);
+						}
+					}}
+					title={`Delete ${selectedIds.size} Selected Users`}
+					subtitle="This action cannot be undone."
+					footer={
+						<div className="flex gap-3 w-full">
+							<Button
+								variant="ghost"
+								style={{ flex: 1 }}
+								onClick={() => {
+									setBatchDeleteModalOpen(false);
+									setBatchDeletePassword("");
+									setBatchDeleteError(null);
+								}}
+								disabled={isBatchDeleting}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="primary"
+								className="!bg-[var(--error)] flex-1"
+								onClick={handleBatchDelete}
+								disabled={
+									isBatchDeleting ||
+									!batchDeletePassword.trim()
+								}
+							>
+								{isBatchDeleting ? (
+									<>
+										<Loader2
+											size={16}
+											className="animate-spin"
+										/>{" "}
+										Deleting...
+									</>
+								) : (
+									`Delete ${selectedIds.size} Users`
+								)}
+							</Button>
+						</div>
+					}
+				>
+					<div className="space-y-4 justify-center">
+						<p className="text-sm text-[var(--error)] font-bold">
+							Are you sure you want to delete these{" "}
+							{selectedIds.size} selected users?
+						</p>
+						<Input
+							label="Enter your password to confirm deletion"
+							type="password"
+							placeholder="Password"
+							value={batchDeletePassword}
+							onChange={(e) =>
+								setBatchDeletePassword(e.target.value)
+							}
+							error={batchDeleteError || undefined}
+							disabled={isBatchDeleting}
+						/>
+					</div>
+				</Modal>
+			)}
+
 			{showRoleConfirm && (
 				<Modal
 					open={showRoleConfirm}
@@ -985,5 +1229,5 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 				</div>
 			)}
 		</div>
-  );
+	);
 };
