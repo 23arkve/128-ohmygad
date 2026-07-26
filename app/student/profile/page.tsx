@@ -88,7 +88,21 @@ export default function StudentProfilePage() {
       if (error && error.code !== "PGRST116") throw error;
 
       if (data) {
-        const p = { ...data, email: user.email ?? data.email };
+        const p = {
+          ...data,
+          email: user.email ?? data.email ?? "",
+          full_name: data.full_name ?? "",
+          display_name: data.display_name ?? "",
+          contact_num: data.contact_num ?? "",
+          address: data.address ?? "",
+          student_num: data.student_num ?? "",
+          year_level: data.year_level ?? "",
+          college: data.college ?? "",
+          program: data.program ?? "",
+          pronouns: data.pronouns ?? "",
+          sex_at_birth: data.sex_at_birth ?? "",
+          gender_identity: data.gender_identity ?? "",
+        };
         setProfile(p);
         setInitialProfile(p);
       } else {

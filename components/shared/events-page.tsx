@@ -9,9 +9,10 @@ import {
 	Clock,
 	ArrowUpDown,
 	ClipboardList,
-    Calendar,
-    Copy,
-    Check,
+	Calendar,
+	Copy,
+	Check,
+	Share2,
 } from "lucide-react";
 import {
 	deriveStatus,
@@ -126,11 +127,17 @@ export default function EventsPage() {
 		? registeringId === detailEvent.id
 		: false;
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value), [setSearch]);
-  const handleSearchClear  = useCallback(() => setSearch(""), [setSearch]);
-  const handleModalClose   = useCallback(() => { setDetailEvent(null); setRegisterError(null); }, [setRegisterError]);
+	const handleSearchChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value),
+		[setSearch],
+	);
+	const handleSearchClear = useCallback(() => setSearch(""), [setSearch]);
+	const handleModalClose = useCallback(() => {
+		setDetailEvent(null);
+		setRegisterError(null);
+	}, [setRegisterError]);
 
-// PAGE -----------------------------------------------------------------------
+	// PAGE -----------------------------------------------------------------------
 	return (
 		<div className="flex flex-col gap-4">
 			{/* search, sort, filter */}
@@ -491,22 +498,6 @@ export default function EventsPage() {
 						return (
 							<div className="px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-5 sm:pb-5 shrink-0 flex gap-2">
 								<Button
-									variant="soft"
-									onClick={() => handleCopyLink(detailEvent.id!)}
-									title="Copy shareable link to this event"
-									className="shrink-0"
-								>
-									{copiedLink ? (
-										<>
-											<Check size={15} /> Link Copied!
-										</>
-									) : (
-										<>
-											<Copy size={15} /> Share Link
-										</>
-									)}
-								</Button>
-								<Button
 									variant={
 										isDetailRegistered
 											? "ghost"
@@ -562,7 +553,8 @@ export default function EventsPage() {
 							<div className="flex gap-2 items-center flex-wrap justify-between">
 								<div className="flex gap-2 items-center">
 									<Badge variant="ghost">
-										{detailEvent.category ?? "Uncategorized"}
+										{detailEvent.category ??
+											"Uncategorized"}
 									</Badge>
 									{(() => {
 										const detailStatus = deriveStatus(
@@ -572,8 +564,9 @@ export default function EventsPage() {
 										return detailStatus ? (
 											<Badge
 												variant={
-													STATUS_VARIANT[detailStatus] ??
-													"dark"
+													STATUS_VARIANT[
+														detailStatus
+													] ?? "dark"
 												}
 											>
 												<span className="capitalize">
@@ -586,7 +579,9 @@ export default function EventsPage() {
 								<Button
 									variant="soft"
 									size="sm"
-									onClick={() => handleCopyLink(detailEvent.id!)}
+									onClick={() =>
+										handleCopyLink(detailEvent.id!)
+									}
 									title="Copy shareable link to this event"
 								>
 									{copiedLink ? (
@@ -595,7 +590,7 @@ export default function EventsPage() {
 										</>
 									) : (
 										<>
-											<Copy size={14} /> Share Link
+											<Share2 size={14} /> Share Link
 										</>
 									)}
 								</Button>

@@ -188,7 +188,11 @@ export function Select({
 	return (
 		<div className="input-wrap">
 			{label && <label className="label">{label}</label>}
-			<select className={`select ${className}`.trim()} {...props}>
+			<select
+				className={`select ${className}`.trim()}
+				{...props}
+				value={props.value ?? ""}
+			>
 				{options.map((o, idx) => (
 					<option
 						key={o.value}
