@@ -15,7 +15,7 @@ export async function GET(request: Request) {
         .from('profile')
         .select('role, is_onboarded')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'

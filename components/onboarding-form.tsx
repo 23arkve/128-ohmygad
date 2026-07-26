@@ -104,7 +104,7 @@ export function OnboardingForm({
 				.from("profile")
 				.select("role")
 				.eq("id", user.id)
-				.single();
+				.maybeSingle();
 
 			// Default to student for uniformity if no role is set
 			setRole(profile?.role ?? "student");
@@ -287,34 +287,45 @@ export function OnboardingForm({
 					"No active session found. Please log in again.",
 				);
 
+			const cleanContactNum = contact_num
+				? contact_num.replace(/\D/g, "").trim() || null
+				: null;
+			const cleanStudentNum =
+				role === "student" && student_num
+					? Number(student_num.replace(/\D/g, "").trim()) || null
+					: null;
+
 			const updatePayload: Record<string, unknown> = {
-				full_name: full_name || null,
-				display_name: display_name || null,
-				contact_num: contact_num || null,
-				address: address || null,
-				pronouns: pronouns || null,
-				sex_at_birth: sex_at_birth,
-				gender_identity: gender_identity || null,
+				id: user.id,
+				email: user.email,
+				full_name: full_name ? full_name.trim() || null : null,
+				display_name: display_name ? display_name.trim() || null : null,
+				contact_num: cleanContactNum,
+				student_num: cleanStudentNum,
+				address: address ? address.trim() || null : null,
+				pronouns: pronouns ? pronouns.trim() || null : null,
+				sex_at_birth: sex_at_birth || null,
+				gender_identity: gender_identity ? gender_identity.trim() || null : null,
 				college: college || null,
 				program: program || null,
+				department:
+					role === "faculty" ? (department ? department.trim() || null : null) : null,
+				office:
+					role === "admin" || role === "staff"
+						? (office ? office.trim() || null : null)
+						: null,
+				year_level: role === "student" ? year_level || null : null,
 				is_onboarded: true,
-				role: role, // In case it wasn't set previously and defaults to student
+				role: role || "student",
 			};
-
-			if (role === "student") {
-				const cleanStudentNum = student_num
-					? student_num.replace(/\D/g, "")
-					: null;
-				updatePayload.student_num = cleanStudentNum;
-				updatePayload.year_level = year_level || null;
-			}
 
 			const { error: profileError } = await supabase
 				.from("profile")
-				.update(updatePayload)
-				.eq("id", user.id);
+				.upsert(updatePayload, { onConflict: "id" });
 
 			if (profileError) throw profileError;
+
+			router.refresh();
 
 			switch (role) {
 				case "admin":
@@ -332,15 +343,23 @@ export function OnboardingForm({
 					break;
 			}
 		} catch (error: any) {
-			// catching errors:
-			// unique violation error, if it already exists, show this error
+			console.error("Onboarding submission error:", error);
 			if (
 				error?.code === "23505" ||
 				error?.message?.includes("duplicate key")
 			) {
-				setError(
-					"This student number or contact number is already registered to another account.",
-				);
+				const detail = `${error?.details || ""} ${error?.message || ""}`;
+				if (detail.includes("student_num")) {
+					setError("This student number is already registered to another account.");
+				} else if (detail.includes("contact_num")) {
+					setError("This contact number is already registered to another account.");
+				} else if (detail.includes("email")) {
+					setError("This email address is already registered to another account.");
+				} else {
+					setError(
+						`A record with this information already exists (${error?.message || "duplicate key"}).`
+					);
+				}
 			} else {
 				setError(
 					error?.message ||

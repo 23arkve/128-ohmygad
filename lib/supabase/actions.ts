@@ -6,6 +6,9 @@ import { Provider } from "@supabase/supabase-js";
 import { createClientForServer } from "@/lib/supabase/server";
 
 const getSiteUrl = async () => {
+	if (process.env.NODE_ENV === "development") {
+		return (process.env.SITE_URL || "http://localhost:3000").trim().replace(/\/+$/, "");
+	}
 	try {
 		const headerList = await headers();
 		const host = headerList.get("host");

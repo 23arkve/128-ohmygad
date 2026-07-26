@@ -41,7 +41,7 @@ export const getCurrentUserWithRole = cache(async (): Promise<AuthResult> => {
     .from('profile')
     .select('role')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   if (profileError || !profile) {
     return { user: null, error: 'no_profile' };
