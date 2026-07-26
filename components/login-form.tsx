@@ -6,9 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/supabase/actions";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, PulsingLoader } from "./ui";
+import { PulsingLoader } from "./ui";
 import { ERR } from "@/lib/user-error";
 
 export function LoginForm({
@@ -147,7 +146,7 @@ export function LoginForm({
 
 	return (
 		<div className={cn("auth-card w-full", className)} {...props}>
-			<div className="mb-6 flex flex-col items-center text-center">
+			<div className="mb-2     flex flex-col items-center text-center">
 				<h2 className="heading-lg m-1">Welcome!</h2>
 				<p className="caption">Sign in to your account to continue.</p>
 			</div>
@@ -158,85 +157,6 @@ export function LoginForm({
 				</div>
 			)}
 
-			<form onSubmit={handleLogin} className="flex flex-col gap-5">
-				{/* Email Input */}
-				<div className="input-wrap">
-					<label htmlFor="email" className="label">
-						UP Mail
-					</label>
-					<div className="input-icon-wrap">
-						<Mail className="input-prefix-icon w-4 h-4" />
-						<Input
-							id="email"
-							type="email"
-							placeholder="jmdelacruz@up.edu.ph"
-							//   required
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							className="input"
-						/>
-					</div>
-				</div>
-
-				{/* Password Input */}
-				<div className="input-wrap">
-					<label htmlFor="password" className="label">
-						Password
-					</label>
-					<div className="input-icon-wrap">
-						<Lock className="input-prefix-icon w-4 h-4" />
-						<Input
-							id="password"
-							type={showPassword ? "text" : "password"}
-							//   required
-							maxLength={128}
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							className="input"
-						/>
-						<button
-							type="button"
-							onClick={() => setShowPassword((prev) => !prev)}
-							className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray)] hover:text-[var(--text)] transition-colors"
-							tabIndex={-1}
-						>
-							{showPassword ? (
-								<EyeOff className="w-4 h-4" />
-							) : (
-								<Eye className="w-4 h-4" />
-							)}
-						</button>
-					</div>
-					<div className="flex justify-end">
-						<Link
-							href="/auth/forgot-password"
-							className="caption hover:text-[var(--primary-dark)] hover:underline underline-offset-4 transition-colors"
-						>
-							Forgot password?
-						</Link>
-					</div>
-				</div>
-
-				{/* Error Toast */}
-				{error && (
-					<div className="toast toast-error mt-1">
-						<span className="font-semibold text-[var(--error)]">
-							{error}
-						</span>
-					</div>
-				)}
-
-				{/* Submit Button */}
-				<Button
-					type="submit"
-					disabled={!email || !password || isLoading}
-					variant="primary"
-					className="mt-2"
-				>
-					{isLoading ? "Logging in..." : "Login"}
-				</Button>
-			</form>
-
 			{/* Sign in With Google */}
 			{/* https://developers.google.com/identity/branding-guidelines */}
 			<form
@@ -246,7 +166,7 @@ export function LoginForm({
 				{eventId && (
 					<input type="hidden" name="eventId" value={eventId} />
 				)}
-				<hr className="w-full border-[var(--gray)] m-4" />
+
 				<Button type="submit" variant="ghost" className="w-full">
 					<svg
 						version="1.1"
