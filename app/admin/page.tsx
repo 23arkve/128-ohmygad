@@ -1214,8 +1214,7 @@ export default function DashboardPage() {
 				<aside className="flex flex-col gap-5 xl:w-[268px] shrink-0 pb-8">
 					<Card variant="no-hover" className="p-4">
 						<MiniCalendar
-							eventDays={activeEventDays}
-							ongoingDays={ongoingEventDays}
+							events={allEvents}
 							onDayClick={(date) => setSelectedDate(date)}
 						/>
 					</Card>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { ArrowLeft, Menu } from "lucide-react";
+import Link from "next/link";
 import UserMenu from "@/components/user-menu";
 import { Button } from "@/components/ui/button";
 import { useMobileMenu } from "@/components/ui/mobile-menu-context";
@@ -82,18 +83,23 @@ export default function DashboardHeader({
 						>
 							<Menu size={22} />
 						</button>
-						<Image
-							src="/kasarian-upb-logo.svg"
-							alt="UPB Kasarian"
-							width={38}
-							height={38}
-						/>
-						<div className="flex flex-col justify-center">
-							<span className="caption">UP BAGUIO KASARIAN</span>
-							<span className="heading-sm">
-								OhMyGAD!
-							</span>
-						</div>
+						<Link
+							href={basePath || "/"}
+							className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+						>
+							<Image
+								src="/kasarian-upb-logo.svg"
+								alt="UPB Kasarian"
+								width={38}
+								height={38}
+							/>
+							<div className="flex flex-col justify-center">
+								<span className="caption">UP BAGUIO KASARIAN</span>
+								<span className="heading-sm">
+									OhMyGAD!
+								</span>
+							</div>
+						</Link>
 					</div>
 					{!isDashboard && (
 						<div className="hidden md:flex">

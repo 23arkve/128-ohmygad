@@ -122,10 +122,7 @@ export function EventDetailModal({
 	const [loadingRegs, setLoadingRegs] = useState(false);
 	const [copied, setCopied] = useState(false);
 	const [copiedLink, setCopiedLink] = useState(false);
-	const [
-		// togglingId,
-		setTogglingId,
-	] = useState<string | null>(null);
+	const [togglingId, setTogglingId] = useState<string | null>(null);
 	const [registrantSearch, setRegistrantSearch] = useState("");
 
 	const registrationsCache = useRef<Record<string, RegisteredUser[]>>({});

@@ -297,7 +297,7 @@ export default function SurveysPage() {
 			setSurveys((prev) => prev.filter((e) => e.id !== deleteTarget.id));
 			showToast(
 				"success",
-				`Survey "${deleteTarget.title}" deleted successfully!`,
+				`Survey "${deleteTarget.title}" deleted successfully.`,
 			);
 		}
 
@@ -661,7 +661,7 @@ export default function SurveysPage() {
 						getSurveys();
 						showToast(
 							"success",
-							`"Survey ${title}" created successfully!`,
+							`Survey "${title}" created successfully.`,
 						);
 					}}
 					onCancel={() =>
@@ -707,7 +707,7 @@ export default function SurveysPage() {
 								getSurveys();
 								showToast(
 									"success",
-									`Survey "${title}" updated successfully!`,
+									`Survey "${title}" updated successfully.`,
 								);
 							}}
 							onCancel={() =>

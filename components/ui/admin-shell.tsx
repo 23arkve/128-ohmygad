@@ -101,7 +101,7 @@ function AdminSidebarPanel() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo - ALIGNED TO BOTTOM (items-end) WITH EXACT PADDING */}
-				<div className="flex shrink-0 items-center pb-4 py-5 overflow-hidden">
+				<Link href="/admin" className="flex shrink-0 items-center pb-4 py-5 overflow-hidden hover:opacity-80 transition-opacity">
 					<div className="flex w-full items-center gap-1">
 						<div
 							className="flex items-center justify-center shrink-0"
@@ -125,7 +125,7 @@ function AdminSidebarPanel() {
 							</div>
 						)}
 					</div>
-				</div>
+				</Link>
 
 				{/* nav */}
 				<nav className="flex flex-col flex-1 gap-4 overflow-y-auto overflow-x-hidden">

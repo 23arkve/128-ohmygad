@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -19,7 +19,14 @@ const MONTHS = [
 	"December",
 ];
 
+interface CalendarEvent {
+	start_date?: string | null;
+	end_date?: string | null;
+}
+
 interface MiniCalendarProps {
+	/** Array of events. Start and ongoing dots are calculated automatically for the currently displayed month. */
+	events?: CalendarEvent[];
 	/** days where an event starts. shows a pink dot. */
 	eventDays?: Set<number>;
 	/** days where an event is ongoing but didn't start that day. shows a periwinkle dot. */
@@ -29,6 +36,7 @@ interface MiniCalendarProps {
 }
 
 export function MiniCalendar({
+	events,
 	eventDays = new Set(),
 	ongoingDays,
 	onDayClick,
@@ -36,6 +44,61 @@ export function MiniCalendar({
 	const today = new Date();
 	const [year, setYear] = useState(today.getFullYear());
 	const [month, setMonth] = useState(today.getMonth());
+
+	const { computedEventDays, computedOngoingDays } = useMemo(() => {
+		if (!events || events.length === 0) {
+			return {
+				computedEventDays: eventDays,
+				computedOngoingDays: ongoingDays ?? new Set<number>(),
+			};
+		}
+
+		const startSet = new Set<number>();
+		const ongoingSet = new Set<number>();
+
+		function parseLocalDate(str?: string | null): Date | null {
+			if (!str) return null;
+			const datePart = str.split("T")[0].split(" ")[0];
+			if (!datePart) return null;
+			const [y, m, d] = datePart.split("-").map(Number);
+			if (y && m && d) return new Date(y, m - 1, d);
+			return null;
+		}
+
+		events.forEach((e) => {
+			const start = parseLocalDate(e.start_date);
+			const end = parseLocalDate(e.end_date) || start;
+			if (!start) return;
+
+			if (start.getFullYear() === year && start.getMonth() === month) {
+				startSet.add(start.getDate());
+			}
+
+			if (end && start.getTime() !== end.getTime()) {
+				const cur = new Date(start);
+				cur.setDate(cur.getDate() + 1);
+				const endDay = new Date(end);
+				endDay.setHours(23, 59, 59, 999);
+
+				while (cur <= endDay) {
+					if (cur.getFullYear() === year && cur.getMonth() === month) {
+						if (
+							!(
+								cur.getFullYear() === start.getFullYear() &&
+								cur.getMonth() === start.getMonth() &&
+								cur.getDate() === start.getDate()
+							)
+						) {
+							ongoingSet.add(cur.getDate());
+						}
+					}
+					cur.setDate(cur.getDate() + 1);
+				}
+			}
+		});
+
+		return { computedEventDays: startSet, computedOngoingDays: ongoingSet };
+	}, [events, eventDays, ongoingDays, year, month]);
 
 	function prevMonth() {
 		if (month === 0) {
@@ -117,12 +180,12 @@ export function MiniCalendar({
 								}`}
 							>
 								{d}
-								{(eventDays.has(d) || ongoingDays?.has(d)) && (
+								{(computedEventDays.has(d) || computedOngoingDays.has(d)) && (
 									<span className="absolute bottom-[3px] left-1/2 -translate-x-1/2 flex items-center gap-[2px]">
-										{eventDays.has(d) && (
+										{computedEventDays.has(d) && (
 											<span className={`w-[3px] h-[3px] rounded-full shrink-0 ${isToday(d) ? "bg-white" : "bg-[var(--soft-pink)]"}`} />
 										)}
-										{ongoingDays?.has(d) && (
+										{computedOngoingDays.has(d) && (
 											<span className={`w-[3px] h-[3px] rounded-full shrink-0 ${isToday(d) ? "bg-white/60" : "bg-[var(--periwinkle)]"}`} />
 										)}
 									</span>

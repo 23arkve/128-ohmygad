@@ -453,7 +453,7 @@ export default function EventsPage() {
 			getEvents();
 			setCreateModalOpen(false);
 			setCreateFormDirty(false);
-			showToast("success", `Event "${title}" created successfully!`);
+			showToast("success", `Event "${title}" created successfully.`);
 		},
 		[getEvents, showToast],
 	);
@@ -467,7 +467,7 @@ export default function EventsPage() {
 			setDetailEvent(null);
 			setEditTarget(null);
 			setEditFormDirty(false);
-			showToast("success", `Event "${title}" updated successfully!`);
+			showToast("success", `Event "${title}" updated successfully.`);
 		},
 		[getEvents, showToast],
 	);

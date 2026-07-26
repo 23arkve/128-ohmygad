@@ -207,7 +207,7 @@ export default function SharedSettingsPage() {
         
             setToast({
                 type: "success",
-                message: "Password updated successfully!"
+                message: "Password updated successfully."
             });
 
             setCurrentPassword("");

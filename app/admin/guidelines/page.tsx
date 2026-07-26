@@ -207,7 +207,7 @@ const confirmDelete = async () => {
     setDeleteError("Failed to delete guideline. Please try again.");
   } else {
     setGuidelines((prev) => prev.filter((e) => e.id !== deleteTarget.id));
-    showToast("success", `"Guideline ${deleteTarget.title}" deleted successfully`);
+    showToast("success", `Guideline "${deleteTarget.title}" deleted successfully.`);
 
     setDeleteTarget(null);
     setDeletePassword("");
@@ -417,7 +417,7 @@ const confirmDelete = async () => {
 						getGuidelines();
 						showToast(
 							"success",
-							`"Guideline ${title}" created successfully`,
+							`Guideline "${title}" created successfully.`,
 						);
 					}}
 					onCancel={() => requestClose(() => { setCreateModalOpen(false); setCreateFormDirty(false); }, createFormDirty)}
@@ -444,7 +444,7 @@ const confirmDelete = async () => {
 							getGuidelines();
 							showToast(
 								"success",
-								`"Guideline ${title}" updated successfully`,
+								`Guideline "${title}" updated successfully.`,
 							);
 						}}
 						onCancel={() => requestClose(() => { setEditTarget(null); setEditFormDirty(false); }, editFormDirty)}

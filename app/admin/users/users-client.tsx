@@ -346,7 +346,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
         setProfiles((prev) => prev.filter((p) => p.id !== deleteTarget.id));
         router.refresh();
         closeDeleteModal();
-        showToast("success", `User "${deleteTarget.full_name}" deleted successfully`);
+        showToast("success", `User "${deleteTarget.full_name}" deleted successfully.`);
       }
     } catch (err: any) {
       setDeleteError("Failed to delete user. Please try again.");
@@ -681,7 +681,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 						router.refresh();
 						showToast(
 							"success",
-							`User "${name}" created successfully`,
+							`User "${name}" created successfully.`,
 						);
 					}}
 					onCancel={() =>
@@ -732,7 +732,7 @@ export const UsersClient = ({ initialProfiles, fetchError }: UsersClientProps) =
 							router.refresh();
 							showToast(
 								"success",
-								`User "${name}" updated successfully`,
+								`User "${name}" updated successfully.`,
 							);
 						}}
 						onRoleChangeRequest={handleRoleChangeRequest}

@@ -1113,8 +1113,7 @@ export default function DashboardPage() {
 					{/* calendar */}
 					<Card variant="no-hover" className="p-4">
 						<MiniCalendar
-							eventDays={activeEventDays}
-							ongoingDays={ongoingEventDays}
+							events={allEvents}
 							onDayClick={(date) => setSelectedDate(date)}
 						/>
 					</Card>
