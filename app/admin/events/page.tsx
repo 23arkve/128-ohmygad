@@ -26,6 +26,7 @@ import { EventDetailModal } from "@/components/admin/event-detail-modal";
 import { paginate, totalPages, PER_PAGE } from "@/lib/pagination.utils";
 import { Pagination } from "@/components/pagination";
 import { PulsingLoader } from "@/components/ui";
+import { stripHtml } from "@/lib/utils";
 
 import {
 	Input,
@@ -326,7 +327,7 @@ export default function EventsPage() {
 				regCountMap.get(e.id ?? "") ?? 0,
 				attendedCountMap.get(e.id ?? "") ?? 0,
 				deriveStatus(e.start_date ?? "", e.end_date ?? ""),
-				e.description ?? "—",
+				stripHtml(e.description) || "—",
 				e.location ?? "—",
 				fmt(e.start_date),
 				fmt(e.end_date),
