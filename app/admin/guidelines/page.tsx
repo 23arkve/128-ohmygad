@@ -21,6 +21,7 @@ import {
   Modal,
   Toast,
 } from "@/components/ui";
+import { stripHtml } from "@/lib/utils";
 
 
 
@@ -135,7 +136,7 @@ export default function GuidelinesPage() {
     let result = guidelines;
 
     result = result.filter((e) =>
-      `${e.title} ${e.description}`.toLowerCase().includes(q)
+      `${e.title} ${stripHtml(e.description)}`.toLowerCase().includes(q)
     );
 
     // Sorting (multi-field)
@@ -316,15 +317,18 @@ const confirmDelete = async () => {
       key: "description",
       header: "Description",
       width: "65%",
-      render: (guideline) => (
-        <span
-          style={{ color: "var(--primary-dark)", fontSize: 13 }}
-          className="capitalize truncate block"
-          title={guideline.description}
-        >
-          {guideline.description}
-        </span>
-      ),
+      render: (guideline) => {
+        const plainDesc = stripHtml(guideline.description);
+        return (
+          <span
+            style={{ color: "var(--primary-dark)", fontSize: 13 }}
+            className="truncate block"
+            title={plainDesc}
+          >
+            {plainDesc}
+          </span>
+        );
+      },
     },
     {
       key: "actions",
@@ -746,7 +750,7 @@ const confirmDelete = async () => {
 
 			{/* floating toast notification */}
 			{toast && (
-				<div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[9999] animate-in fade-in-50">
+				<div className="fixed bottom-6 inset-x-0 mx-auto w-max max-w-[90vw] z-[9999] pointer-events-none flex justify-center">
 					<Toast
 						variant={toast.variant}
 						title={toast.title}

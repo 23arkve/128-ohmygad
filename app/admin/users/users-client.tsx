@@ -1220,7 +1220,7 @@ export const UsersClient = ({
 
 			{/* floating toast notification */}
 			{toast && (
-				<div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[9999] animate-in fade-in-50">
+				<div className="fixed bottom-6 inset-x-0 mx-auto w-max max-w-[90vw] z-[9999] pointer-events-none flex justify-center">
 					<Toast
 						variant={toast.variant}
 						title={toast.title}
