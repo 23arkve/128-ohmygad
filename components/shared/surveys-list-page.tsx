@@ -368,7 +368,7 @@ export default function SurveysListPage({ basePath }: SurveysListPageProps) {
 			)}
 
 			{toast && (
-				<div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] w-max max-w-[90vw]">
+				<div className="fixed bottom-6 inset-x-0 mx-auto w-max max-w-[90vw] z-[9999] pointer-events-none flex justify-center">
 					<Toast
 						variant={toast.variant}
 						title={toast.title}

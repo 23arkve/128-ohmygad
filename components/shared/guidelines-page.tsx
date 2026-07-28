@@ -30,6 +30,7 @@ import {
   Toast,
   PulsingLoader,
 } from "@/components/ui";
+import { stripHtml } from "@/lib/utils";
 
 // --- Types & Constants ---
 
@@ -139,7 +140,7 @@ export default function GuidelinesPage() {
   const filteredAndSorted = useMemo(() => {
     return guidelines
       .filter((c) => {
-        const matchesSearch = `${c.title} ${c.description || ""}`.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = `${c.title} ${stripHtml(c.description)}`.toLowerCase().includes(search.toLowerCase());
         
 
         return matchesSearch;
@@ -251,10 +252,9 @@ export default function GuidelinesPage() {
 							<div className="flex flex-col gap-2 text-sm text-gray-500 mt-1">
 								<div
 									className="line-clamp-2 leading-snug min-h-[2.5rem] break-words mb-2"
-									title={guideline.description}
+									title={stripHtml(guideline.description)}
 								>
-									{guideline.description ||
-										"No Description Available"}
+									{stripHtml(guideline.description) || "No Description Available"}
 								</div>
 
 								{/* Read More Indicator */}
@@ -296,17 +296,14 @@ export default function GuidelinesPage() {
 								Description
 							</p>
 
-							<p
-								className="text-gray-600 whitespace-pre-wrap break-words leading-relaxed"
-								lang="en"
-								style={{
-									overflowWrap: "anywhere", // Prevents long URLs from breaking layout
-									hyphens: "auto",
+							<div
+								className="prose-guideline text-gray-600 leading-relaxed text-sm"
+								dangerouslySetInnerHTML={{
+									__html:
+										detailGuideline.description ||
+										"No description provided.",
 								}}
-							>
-								{detailGuideline.description ||
-									"No description provided."}
-							</p>
+							/>
 						</div>
 					</div>
 				)}

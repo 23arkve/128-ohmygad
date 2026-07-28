@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { createClientForServer } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
@@ -14,7 +15,7 @@ export async function GET(request: Request) {
         .from('profile')
         .select('role, is_onboarded')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
@@ -33,13 +34,29 @@ export async function GET(request: Request) {
       }
 
       const roleRoutes: Record<string, string> = {
+        admin: '/admin/events',
+        staff: '/staff/events',
+        faculty: '/faculty/events',
+        student: '/student/events',
+      }
+
+      const defaultRoleRoutes: Record<string, string> = {
         admin: '/admin',
         staff: '/staff',
         faculty: '/faculty',
         student: '/student',
       }
 
-      const destination = roleRoutes[profile.role] ?? '/'
+      const cookieStore = await cookies()
+      const eventId = searchParams.get('event') || cookieStore.get('event_redirect_id')?.value
+      if (cookieStore.has('event_redirect_id')) {
+        cookieStore.delete('event_redirect_id')
+      }
+
+      const destination = eventId
+        ? `${roleRoutes[profile.role] ?? '/student/events'}?event=${eventId}`
+        : (defaultRoleRoutes[profile.role] ?? '/')
+
       return NextResponse.redirect(`${baseUrl}${destination}`)
     }
   }

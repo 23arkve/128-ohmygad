@@ -98,7 +98,7 @@ function StaffSidebarPanel() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo */}
-				<div className="flex shrink-0 items-center pb-4 py-5 overflow-hidden">
+				<Link href="/staff" className="flex shrink-0 items-center pb-4 py-5 overflow-hidden hover:opacity-80 transition-opacity">
 					<div className="flex w-full items-center gap-1">
 						<div
 							className="flex items-center justify-center shrink-0"
@@ -122,7 +122,7 @@ function StaffSidebarPanel() {
 							</div>
 						)}
 					</div>
-				</div>
+				</Link>
 
 				{/* nav */}
 				<nav className="flex flex-col flex-1 gap-4 overflow-y-auto overflow-x-hidden">

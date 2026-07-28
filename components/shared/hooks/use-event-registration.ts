@@ -1,13 +1,11 @@
-// handles all event registration mutations (register + cancel) and toast notifications.
-
 "use client";
 
 import { useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { type EventFormData } from "@/components/admin/event-form";
 import {
-	type EventFormData,
-	deriveStatus,
-} from "@/components/admin/event-form";
+	useRegisterEventMutation,
+	useCancelRegistrationMutation,
+} from "@/lib/hooks/use-events-query";
 
 type ToastState = {
 	variant: "success" | "error" | "warning" | "info";
@@ -19,24 +17,23 @@ interface UseEventRegistrationProps {
 	currentUserId: string | null;
 	events: EventFormData[];
 	registeredIds: Set<string>;
-	setRegisteredIds: React.Dispatch<React.SetStateAction<Set<string>>>;
-	regCounts: Record<string, number>;
-	setRegCounts: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+	setRegisteredIds?: React.Dispatch<React.SetStateAction<Set<string>>>;
+	regCounts?: Record<string, number>;
+	setRegCounts?: React.Dispatch<React.SetStateAction<Record<string, number>>>;
 }
 
 export function useEventRegistration({
 	currentUserId,
 	events,
 	registeredIds,
-	setRegisteredIds,
-	regCounts,
-	setRegCounts,
 }: UseEventRegistrationProps) {
 	const [registeringId, setRegisteringId] = useState<string | null>(null);
 	const [registerError, setRegisterError] = useState<string | null>(null);
 	const [toast, setToast] = useState<ToastState>(null);
 
-	// useCallback function reference stays stable between renders, so any child component receiving it as a prop wont rerender js bcs EventsPage rerendered
+	const registerMutation = useRegisterEventMutation();
+	const cancelMutation = useCancelRegistrationMutation();
+
 	const showToast = useCallback((t: ToastState) => {
 		setToast(t);
 		setTimeout(() => setToast(null), 3500);
@@ -83,43 +80,23 @@ export function useEventRegistration({
 			}
 
 			setRegisteringId(eventId);
-			const supabase = createClient();
-
-			const { error } = await supabase.from("event_registration").insert({
-				event_id: eventId,
-				user_id: currentUserId,
-				status: "registered",
-				registration_date: new Date().toISOString(),
-			});
-
-			if (error) {
+			try {
+				await registerMutation.mutateAsync({ eventId, userId: currentUserId });
+				showToast({
+					variant: "success",
+					title: `Registered to "${event?.title ?? 'event'}" successfully.`,
+				});
+			} catch {
 				showToast({
 					variant: "error",
 					title: "Registration failed",
 					message: "Registration failed. Please try again.",
 				});
-			} else {
-				setRegisteredIds((prev) => new Set([...prev, eventId]));
-				setRegCounts((prev) => ({
-					...prev,
-					[eventId]: (prev[eventId] ?? 0) + 1,
-				}));
-				showToast({
-					variant: "success",
-					title: `Registered to "${event?.title}" successfully.`,
-				});
+			} finally {
+				setRegisteringId(null);
 			}
-
-			setRegisteringId(null);
 		},
-		[
-			currentUserId,
-			events,
-			registeredIds,
-			setRegisteredIds,
-			setRegCounts,
-			showToast,
-		],
+		[currentUserId, events, registeredIds, registerMutation, showToast]
 	);
 
 	const handleCancelRegistration = useCallback(
@@ -129,43 +106,27 @@ export function useEventRegistration({
 
 			const event = events.find((ev) => ev.id === eventId);
 			setRegisteringId(eventId);
-			const supabase = createClient();
-
-			const { error } = await supabase
-				.from("event_registration")
-				.delete()
-				.eq("event_id", eventId)
-				.eq("user_id", currentUserId);
-
-			if (error) {
+			try {
+				await cancelMutation.mutateAsync({ eventId, userId: currentUserId });
+				showToast({
+					variant: "info",
+					title: `Cancelled registration for "${event?.title ?? 'event'}".`,
+				});
+			} catch {
 				showToast({
 					variant: "error",
 					title: "Cancellation failed",
 					message: "Cancellation failed. Please try again.",
 				});
-			} else {
-				setRegisteredIds((prev) => {
-					const next = new Set(prev);
-					next.delete(eventId);
-					return next;
-				});
-				setRegCounts((prev) => ({
-					...prev,
-					[eventId]: Math.max((prev[eventId] ?? 1) - 1, 0),
-				}));
-				showToast({
-					variant: "info",
-					title: `Cancelled registration for "${event?.title}".`,
-				});
+			} finally {
+				setRegisteringId(null);
 			}
-
-			setRegisteringId(null);
 		},
-		[currentUserId, events, setRegisteredIds, setRegCounts, showToast],
+		[cancelMutation, currentUserId, events, showToast]
 	);
 
 	return {
-		registeringId,
+		registeringId: registeringId || (registerMutation.isPending || cancelMutation.isPending ? "pending" : null),
 		registerError,
 		setRegisterError,
 		toast,

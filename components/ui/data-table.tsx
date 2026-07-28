@@ -98,8 +98,8 @@
   />
 */
 
-
 import React from "react";
+import { Checkbox } from "@/components/ui/input";
 
 // types
 export interface Column<T> {
@@ -115,64 +115,138 @@ interface DataTableProps<T> {
 	keyExtractor: (row: T, index: number) => string;
 	minRows?: number;
 	onRowClick?: (row: T, index: number) => void;
+	// multi-selection props
+	selectable?: boolean;
+	selectedIds?: Set<string>;
+	onSelectRow?: (id: string, checked: boolean) => void;
+	onSelectAll?: (checked: boolean) => void;
+	selectColumnWidth?: string;
 }
 
 // DataTable
-export function DataTable<T>({ columns, rows, keyExtractor, minRows, onRowClick }: DataTableProps<T>) {
-	const padCount = minRows && minRows > rows.length ? minRows - rows.length : 0;
+export function DataTable<T>({
+	columns,
+	rows,
+	keyExtractor,
+	minRows,
+	onRowClick,
+	selectable = false,
+	selectedIds = new Set(),
+	onSelectRow,
+	onSelectAll,
+	selectColumnWidth = "36px",
+}: DataTableProps<T>) {
+	const padCount =
+		minRows && minRows > rows.length ? minRows - rows.length : 0;
+
+	const allVisibleSelected =
+		rows.length > 0 &&
+		rows.every((row, i) => selectedIds.has(keyExtractor(row, i)));
 
 	return (
-    <div
-      className="card"
-      style={{
-        padding: 0,
-        overflowX: "auto",
-        WebkitOverflowScrolling: "touch",
-      }}
-    >
-      <table className="table" style={{ tableLayout: "fixed" }}>
-        <thead>
-          	<tr
-                style={{
-                    background: "rgba(244, 235, 255, 0.25)",
-                }}
-            >
-				{columns.map((col) => (
-					<th
-						key={col.key}
-						draggable={false}
-						style={col.width ? { width: col.width } : undefined}
+		<div
+			className="card"
+			style={{
+				padding: 0,
+				overflowX: "auto",
+				WebkitOverflowScrolling: "touch",
+			}}
+		>
+			<table className="table" style={{ tableLayout: "fixed" }}>
+				<thead>
+					<tr
+						style={{
+							background: "rgba(244, 235, 255, 0.25)",
+						}}
 					>
-					{col.header}
-				</th>
-				))}
-          	</tr>
-        </thead>
-        <tbody>
-			{rows.map((row, i) => (
-				<tr
-					key={keyExtractor(row, i)}
-					onClick={() => onRowClick?.(row, i)}
-					style={{
-						background:
-						i % 2 === 0 ? "transparent" : "rgba(255, 235, 245, 0.25)",
-						...(onRowClick ? { cursor: "pointer" } : {}),
-					}}
-				>
-					{columns.map((col) => (
-						<td key={col.key}>{col.render(row, i)}</td>
+						{selectable && (
+							<th
+								style={{
+									width: selectColumnWidth,
+									minWidth: selectColumnWidth,
+									maxWidth: selectColumnWidth,
+									textAlign: "center",
+									paddingLeft: 4,
+									paddingRight: 4,
+								}}
+							>
+								<div className="flex items-center justify-center">
+									<Checkbox
+										checked={allVisibleSelected}
+										onChange={(checked) => onSelectAll?.(checked)}
+									/>
+								</div>
+							</th>
+						)}
+						{columns.map((col) => (
+							<th
+								key={col.key}
+								draggable={false}
+								style={
+									col.width ? { width: col.width } : undefined
+								}
+							>
+								{col.header}
+							</th>
+						))}
+					</tr>
+				</thead>
+				<tbody>
+					{rows.map((row, i) => {
+						const rowKey = keyExtractor(row, i);
+						const isSelected = selectedIds.has(rowKey);
+
+						return (
+							<tr
+								key={rowKey}
+								onClick={() => onRowClick?.(row, i)}
+								style={{
+									background: isSelected
+										? "rgba(107, 70, 193, 0.08)"
+										: i % 2 === 0
+										? "transparent"
+										: "rgba(255, 235, 245, 0.25)",
+									...(onRowClick ? { cursor: "pointer" } : {}),
+								}}
+							>
+								{selectable && (
+									<td
+										style={{
+											width: selectColumnWidth,
+											minWidth: selectColumnWidth,
+											maxWidth: selectColumnWidth,
+											textAlign: "center",
+											paddingLeft: 4,
+											paddingRight: 4,
+										}}
+										onClick={(e) => e.stopPropagation()}
+									>
+										<div className="flex items-center justify-center">
+											<Checkbox
+												checked={isSelected}
+												onChange={(checked) =>
+													onSelectRow?.(rowKey, checked)
+												}
+											/>
+										</div>
+									</td>
+								)}
+								{columns.map((col) => (
+									<td key={col.key}>{col.render(row, i)}</td>
+								))}
+							</tr>
+						);
+					})}
+					{Array.from({ length: padCount }).map((_, i) => (
+						<tr key={`__pad_${i}`} aria-hidden="true">
+							{selectable && <td style={{ width: selectColumnWidth }}>&nbsp;</td>}
+							{columns.map((col) => (
+								<td key={col.key}>&nbsp;</td>
+							))}
+						</tr>
 					))}
-				</tr>
-			))}
-			{Array.from({ length: padCount }).map((_, i) => (
-				<tr key={`__pad_${i}`} aria-hidden="true">
-					{columns.map((col) => (
-						<td key={col.key}>&nbsp;</td>
-					))}
-				</tr>
-			))}
-        </tbody>
-      </table>
-    </div>
-  );
+				</tbody>
+			</table>
+		</div>
+	);
 }

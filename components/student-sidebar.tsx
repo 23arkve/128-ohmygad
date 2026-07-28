@@ -100,7 +100,7 @@ function MobileNav() {
 					>
 						{/* header inside mobile drawer */}
 						<div className="flex h-[100px] shrink-0 items-center justify-between border-b border-white/[0.07] px-4">
-							<div className="flex items-center gap-3">
+							<Link href="/student" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
 								<Image
 									src="/kasarian-upb-logo.svg"
 									alt="UPB Kasarian"
@@ -113,7 +113,7 @@ function MobileNav() {
 										OhMyGAD!
 									</span>
 								</div>
-							</div>
+							</Link>
 							<button
 								onClick={() => setIsOpen(false)}
 								className="rounded-full p-2 text-white/50 transition-colors bg-white/10 hover:bg-[var(--periwinkle)] hover:text-[var(--primary-dark)]"
@@ -211,7 +211,7 @@ export default function StudentSidebar() {
 				style={{ background: "var(--primary-dark)" }}
 			>
 				{/* logo */}
-				<div className="flex shrink-0 items-center pb-4 py-5 overflow-hidden">
+				<Link href="/student" className="flex shrink-0 items-center pb-4 py-5 overflow-hidden hover:opacity-80 transition-opacity">
 					<div
 						className="flex shrink-0 items-center"
 						style={{ width: COLLAPSED, height: "100%" }}
@@ -233,7 +233,7 @@ export default function StudentSidebar() {
 							</span>
 						</div>
 					)}
-				</div>
+				</Link>
 
 				{/* nav */}
 				<nav className="flex flex-1 flex-col gap-4 overflow-y-auto overflow-x-hidden">

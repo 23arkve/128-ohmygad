@@ -1113,8 +1113,7 @@ export default function DashboardPage() {
 					{/* calendar */}
 					<Card variant="no-hover" className="p-4">
 						<MiniCalendar
-							eventDays={activeEventDays}
-							ongoingDays={ongoingEventDays}
+							events={allEvents}
 							onDayClick={(date) => setSelectedDate(date)}
 						/>
 					</Card>
@@ -1299,7 +1298,7 @@ export default function DashboardPage() {
 			</Modal>
 
 			{quickToast && (
-				<div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[9999] animate-in fade-in-50">
+				<div className="fixed bottom-6 inset-x-0 mx-auto w-max max-w-[90vw] z-[9999] pointer-events-none flex justify-center">
 					<Toast variant="success" title={quickToast.title} />
 				</div>
 			)}

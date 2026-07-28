@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSurveyCompletionRatesQuery } from "@/lib/hooks/use-surveys-query";
 
 export interface SurveyCompletionDatum {
   id: string;
@@ -14,48 +14,10 @@ export interface SurveyCompletionDatum {
 }
 
 export function useSurveyCompletionRates() {
-  const [data, setData] = useState<SurveyCompletionDatum[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchSurveyCompletion() {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/admin/survey-completion-rates", {
-          cache: "no-store",
-        });
-
-        if (!response.ok) {
-          const payload = await response.json().catch(() => null);
-          throw new Error(
-            payload?.error || response.statusText || "Failed to load survey completion data",
-          );
-        }
-
-        const result: SurveyCompletionDatum[] = await response.json();
-
-        if (!cancelled) {
-          setData(result ?? []);
-        }
-      } catch (err: any) {
-        if (!cancelled) {
-          setError("Failed to load survey completion data. Please refresh.");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    fetchSurveyCompletion();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return { data, loading, error };
+  const { data = [], isLoading: loading, error } = useSurveyCompletionRatesQuery();
+  return {
+    data,
+    loading,
+    error: error ? "Failed to load survey completion data. Please refresh." : null,
+  };
 }

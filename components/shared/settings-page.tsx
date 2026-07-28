@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import {
-  Mail, Lock, KeyRound, AlertCircle
+  Mail, Lock, KeyRound
 } from "lucide-react";
 
 import { Card, Input, Button, Toast, PulsingLoader } from "@/components/ui";
 
 type ToastState = { type: "success" | "error" | "info"; message: string } | null;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
 
 export default function SharedSettingsPage() {
   const router = useRouter();
@@ -18,6 +20,7 @@ export default function SharedSettingsPage() {
   // states
   const [loading, setLoading] = useState(true);
   const [currentEmail, setCurrentEmail] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
   
   // email form states
   const [newEmail, setNewEmail] = useState("");
@@ -29,10 +32,15 @@ export default function SharedSettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordTouched, setPasswordTouched] = useState({
+    current: false,
+    next: false,
+    confirm: false,
+  });
 
   const [toast, setToast] = useState<ToastState>(null);
+  const lastEmailValidationToast = useRef<string | null>(null);
+  const lastPasswordValidationToast = useRef<string | null>(null);
 
   useEffect(() => {
     fetchUser();
@@ -63,17 +71,91 @@ export default function SharedSettingsPage() {
     setLoading(false);
   }
 
+  function notifyEmailValidation(message: string | null) {
+    if (!message) {
+      lastEmailValidationToast.current = null;
+      return;
+    }
+    if (lastEmailValidationToast.current !== message) {
+      setToast({ type: "error", message });
+      lastEmailValidationToast.current = message;
+    }
+  }
+
+  function notifyPasswordValidation(message: string | null) {
+    if (!message) {
+      lastPasswordValidationToast.current = null;
+      return;
+    }
+    if (lastPasswordValidationToast.current !== message) {
+      setToast({ type: "error", message });
+      lastPasswordValidationToast.current = message;
+    }
+  }
+
+  function getEmailValidationError(email: string) {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) return "Please enter a new email address.";
+    if (trimmedEmail === currentEmail) {
+      return "New email must be different from your current email.";
+    }
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
+      return "Please enter a valid email address.";
+    }
+    return null;
+  }
+
+  function getPasswordValidationError(values: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }, touched: {
+    current: boolean;
+    next: boolean;
+    confirm: boolean;
+  }) {
+    if (touched.current && !values.currentPassword) {
+      return "Please enter your current password.";
+    }
+    if (touched.next) {
+      if (!values.newPassword) {
+        return "Please enter a new password.";
+      }
+      if (values.newPassword.length < MIN_PASSWORD_LENGTH) {
+        return `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`;
+      }
+      if (values.currentPassword && values.newPassword === values.currentPassword) {
+        return "New password must be different from your current password.";
+      }
+    }
+    if (touched.confirm) {
+      if (!values.confirmPassword) {
+        return "Please confirm your new password.";
+      }
+      if (values.newPassword && values.confirmPassword && values.newPassword !== values.confirmPassword) {
+        return "Passwords do not match.";
+      }
+    }
+    return null;
+  }
+
   // handle email update
   async function handleUpdateEmail(e: React.FormEvent) {
     e.preventDefault();
-    if (!newEmail || newEmail === currentEmail) return;
+    const trimmedEmail = newEmail.trim();
+    const validationError = getEmailValidationError(trimmedEmail);
+    if (validationError) {
+      setEmailTouched(true);
+      notifyEmailValidation(validationError);
+      return;
+    }
 
-    setEmailError(null);
+    setSavingEmail(true);
     try {
-      const { error } = await supabase.auth.updateUser({ email: newEmail });
+      const { error } = await supabase.auth.updateUser({ email: trimmedEmail });
       
       if (error) {
-        setEmailError(error.message);
+        setToast({ type: "error", message: error.message });
         return;
       }
       
@@ -92,22 +174,16 @@ export default function SharedSettingsPage() {
   // handle password update
   async function handleUpdatePassword(e: React.FormEvent) {
     e.preventDefault();
-    setPasswordError(null);
-
-        if (!currentPassword) {
-            setPasswordError("Please enter your current password.");
-            return;
-        }
-        
-        if (newPassword.length < 8) {
-            setPasswordError("Password must be at least 6 characters long.");
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            setPasswordError("Passwords do not match.");
-            return;
-        }
+    const validationError = getPasswordValidationError({
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    }, { current: true, next: true, confirm: true });
+    if (validationError) {
+      setPasswordTouched({ current: true, next: true, confirm: true });
+      notifyPasswordValidation(validationError);
+      return;
+    }
 
         setSavingPassword(true);
 
@@ -120,7 +196,7 @@ export default function SharedSettingsPage() {
                 }
             );
             if (signInError) {
-                setPasswordError("Current password is incorrect.");
+                setToast({ type: "error", message: "Current password is incorrect." });
                 return;
             }
 
@@ -131,13 +207,14 @@ export default function SharedSettingsPage() {
         
             setToast({
                 type: "success",
-                message: "Password updated successfully!"
+                message: "Password updated successfully."
             });
 
+            setCurrentPassword("");
             setNewPassword("");
             setConfirmPassword("");
         }   catch (error: any) {
-                setPasswordError(error.message || "Failed to update password. Please try again.");
+                setToast({ type: "error", message: error.message || "Failed to update password. Please try again." });
         }   finally {
                 setSavingPassword(false);
             }
@@ -181,16 +258,17 @@ export default function SharedSettingsPage() {
               type="email"
               placeholder="e.g. new.email@up.edu.ph"
               value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setNewEmail(value);
+                setEmailTouched(true);
+                const error = getEmailValidationError(value);
+                if (emailTouched || value) notifyEmailValidation(error);
+              }}
               required
               prefixIcon={<Mail size={15} />}
             />
 
-            {emailError && (
-              <div className="toast toast-error py-2 px-3 mt-1">
-                <span className="text-xs font-semibold text-[var(--error)]">{emailError}</span>
-              </div>
-            )}
             <div className="flex justify-end mt-2">
               <Button 
                 type="submit" 
@@ -223,7 +301,16 @@ export default function SharedSettingsPage() {
                     type="password"
                     placeholder="••••••••"
                     value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setCurrentPassword(value);
+                      setPasswordTouched((prev) => ({ ...prev, current: true }));
+                      const error = getPasswordValidationError(
+                        { currentPassword: value, newPassword, confirmPassword },
+                        { ...passwordTouched, current: true },
+                      );
+                      notifyPasswordValidation(error);
+                    }}
                     required
                     maxLength={16}
                     prefixIcon={<KeyRound size={15} />}
@@ -233,7 +320,16 @@ export default function SharedSettingsPage() {
                     type="password"
                     placeholder="••••••••"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setNewPassword(value);
+                      setPasswordTouched((prev) => ({ ...prev, next: true }));
+                      const error = getPasswordValidationError(
+                        { currentPassword, newPassword: value, confirmPassword },
+                        { ...passwordTouched, next: true },
+                      );
+                      notifyPasswordValidation(error);
+                    }}
                     required
                     maxLength={16}
                     prefixIcon={<KeyRound size={15} />}
@@ -243,18 +339,20 @@ export default function SharedSettingsPage() {
                     type="password"
                     placeholder="••••••••"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setConfirmPassword(value);
+                      setPasswordTouched((prev) => ({ ...prev, confirm: true }));
+                      const error = getPasswordValidationError(
+                        { currentPassword, newPassword, confirmPassword: value },
+                        { ...passwordTouched, confirm: true },
+                      );
+                      notifyPasswordValidation(error);
+                    }}
                     required
                     maxLength={16}
                     prefixIcon={<KeyRound size={15} />}
                 />
-                
-                {/* inline error */}
-                {passwordError && (
-                  <div className="toast toast-error py-2 px-3 mt-1">
-                    <span className="text-xs font-semibold text-[var(--error)]">{passwordError}</span>
-                  </div>
-                )}
 
                 <div className="flex justify-end mt-2">
                 <Button 
@@ -284,7 +382,7 @@ export default function SharedSettingsPage() {
 
       {/* fixed toast notification */}
       {toast && (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[9999] animate-in fade-in-50">
+        <div className="fixed bottom-6 inset-x-0 mx-auto w-max max-w-[90vw] z-[9999] pointer-events-none flex justify-center">
           <Toast variant={toast.type === "info" ? "warning" : toast.type} title={toast.message} />
         </div>
       )}

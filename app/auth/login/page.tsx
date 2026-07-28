@@ -1,5 +1,6 @@
 import { LoginForm } from "@/components/login-form";
 import Image from "next/image";
+import { Suspense } from "react";
 
 export default function LoginPage() {
   return (
@@ -55,7 +56,9 @@ export default function LoginPage() {
 
 				{/* Right column — login form */}
 				<div className="md:flex-1">
-					<LoginForm />
+					<Suspense>
+						<LoginForm />
+					</Suspense>
 				</div>
 			</div>
 		</div>

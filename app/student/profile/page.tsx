@@ -88,7 +88,21 @@ export default function StudentProfilePage() {
       if (error && error.code !== "PGRST116") throw error;
 
       if (data) {
-        const p = { ...data, email: user.email ?? data.email };
+        const p = {
+          ...data,
+          email: user.email ?? data.email ?? "",
+          full_name: data.full_name ?? "",
+          display_name: data.display_name ?? "",
+          contact_num: data.contact_num ?? "",
+          address: data.address ?? "",
+          student_num: data.student_num ?? "",
+          year_level: data.year_level ?? "",
+          college: data.college ?? "",
+          program: data.program ?? "",
+          pronouns: data.pronouns ?? "",
+          sex_at_birth: data.sex_at_birth ?? "",
+          gender_identity: data.gender_identity ?? "",
+        };
         setProfile(p);
         setInitialProfile(p);
       } else {
@@ -410,7 +424,7 @@ export default function StudentProfilePage() {
 
       {/* fixed toast notification */}
       {toast && (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[9999] animate-in fade-in-50">
+        <div className="fixed bottom-6 inset-x-0 mx-auto w-max max-w-[90vw] z-[9999] pointer-events-none flex justify-center">
           <Toast variant={toast.type} title={toast.message} />
         </div>
       )}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import QueryProvider from "@/components/providers/query-provider";
 import "./globals.css";
 import "./fonts.css";
 
@@ -31,13 +32,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={plusJakartaSans.variable}>
       <body className="antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

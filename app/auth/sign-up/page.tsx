@@ -1,5 +1,6 @@
 import { SignUpForm } from "@/components/sign-up-form";
 import Image from "next/image";
+import { Suspense } from "react";
 
 export default function SignUpPage() {
 	return (
@@ -55,7 +56,9 @@ export default function SignUpPage() {
 
 				{/* Right column — login form */}
 				<div className="md:flex-1">
-					<SignUpForm />
+					<Suspense>
+						<SignUpForm />
+					</Suspense>
 				</div>
 			</div>
 		</div>
