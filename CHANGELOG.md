@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/23arkve/128-ohmygad/compare/v1.0.0...v1.1.0) (2026-07-30)
+
+
+### Features
+
+* improve profile badges across role pages ([1770bda](https://github.com/23arkve/128-ohmygad/commit/1770bdaf8fbe944a3d0a3b80c926a48ffddc2f1c))
+
+
+### Bug Fixes
+
+* fixed the YAML syntax error ([9148e98](https://github.com/23arkve/128-ohmygad/commit/9148e9867a406c46d40859a0be7fff25a41aa680))
+* raise card action z-index for edit user ([a7b4b14](https://github.com/23arkve/128-ohmygad/commit/a7b4b14225d0a12281d8000cba8569d8d679ff80))
+* release build env for Supabase admin client ([6bfcae2](https://github.com/23arkve/128-ohmygad/commit/6bfcae2919054d09adeca90c1de389c90dcf66cf))
+
 ## 1.0.0 (2026-07-28)
 
 
