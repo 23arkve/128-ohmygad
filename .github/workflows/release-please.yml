@@ -28,11 +28,15 @@ jobs:
               if: ${{ steps.release.outputs.release_created }}
               uses: actions/setup-node@v4
               with:
-                  node-version: "20"
+                  node-version: "22"
                   cache: "npm"
 
             - name: Install & Build
-              if: ${{ steps.release.outputs.release_created }}
-              run: |
-                  npm ci
-                  npm run build
+            if: ${{ steps.release.outputs.release_created }}
+            env:
+                NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+                NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets. NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+                SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            run: |
+                npm ci
+                npm run build

@@ -11,9 +11,10 @@ interface BadgeProps {
   className?: string;
 }
 
-export function Badge({ children, variant = "pink-light", className = "" }: BadgeProps) {
+export function Badge({ children, variant = "pink-light", dot, className = "" }: BadgeProps) {
   return (
     <span className={`badge badge-${variant} ${className}`}>
+      {dot && <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />}
       {children}
     </span>
   );

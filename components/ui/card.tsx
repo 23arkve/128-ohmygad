@@ -443,7 +443,7 @@ export function UserCard({
 					</div>
 
 					{/* Actions */}
-					<div className="flex flex-col items-end gap-3 absolute top-0 right-0">
+					<div className="flex flex-col items-end gap-3 absolute top-0 right-0 z-20">
 						{onClose && (
 							<Button
 								variant="icon-sm"
@@ -458,7 +458,7 @@ export function UserCard({
 				</div>
 
 				{onEdit && (
-					<div className="absolute bottom-6 right-7">
+					<div className="absolute bottom-6 right-7 z-20">
 						<Button
 							variant="soft"
 							size="sm"

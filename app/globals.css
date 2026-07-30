@@ -1212,6 +1212,10 @@ header {
 	letter-spacing: 0.04em;
 	padding: 7px 11px;
 	font-size: 12px;
+	max-width: 100%;
+	word-break: break-word;
+	overflow-wrap: break-word;
+	text-align: center;
 }
 
 .badge-pink-light {
