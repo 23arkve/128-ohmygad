@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Suspense } from "react";
 
 export default function LoginPage() {
-  return (
+	return (
 		<div className="page-bg relative w-full min-h-screen overflow-hidden flex items-center justify-center p-4 sm:p-8">
 			{/* --- design --- */}
 			<div
@@ -37,6 +37,7 @@ export default function LoginPage() {
 							alt="UPB Kasarian Gender Studies Program Logo"
 							width={120}
 							height={120}
+							priority
 							className="w-[70px] h-[70px] md:w-[120px] md:h-[120px]"
 						/>
 						<div className="flex flex-col items-center md:items-start">
@@ -62,5 +63,5 @@ export default function LoginPage() {
 				</div>
 			</div>
 		</div>
-  );
+	);
 }
