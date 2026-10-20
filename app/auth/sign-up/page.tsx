@@ -37,6 +37,7 @@ export default function SignUpPage() {
 							alt="UPB Kasarian Gender Studies Program Logo"
 							width={120}
 							height={120}
+							priority
 							className="w-[70px] h-[70px] md:w-[120px] md:h-[120px]"
 						/>
 						<div className="flex flex-col items-center md:items-start">
