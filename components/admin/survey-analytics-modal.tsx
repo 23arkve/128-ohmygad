@@ -22,100 +22,102 @@ import {
 import { SURVEY_STATUS_VARIANT as STATUS_VARIANT } from "@/lib/constants";
 import { getSurveyAnalytics } from "@/app/admin/surveys/actions";
 import {
-  MultipleChoiceChart,
-  YesNoChart,
-  LikertChart,
-  TextResponses,
+	MultipleChoiceChart,
+	YesNoChart,
+	LikertChart,
+	TextResponses,
 } from "./survey-analytics-charts";
 
 interface QuestionRow {
-  id: string;
-  question_text: string;
-  question_type: string;
-  options: string[] | null;
-  is_required: boolean;
-  order_index: number;
+	id: string;
+	question_text: string;
+	question_type: string;
+	options: string[] | null;
+	is_required: boolean;
+	order_index: number;
 }
 
 interface ResponseRow {
-  question_id: string;
-  response_value: string | null;
-  response_token: string;
+	question_id: string;
+	response_value: string | null;
+	response_token: string;
 }
 
 interface Props {
-  survey: SurveyFormData;
-  open: boolean;
-  onClose: () => void;
+	survey: SurveyFormData;
+	open: boolean;
+	onClose: () => void;
 }
 
 const formatDate = (val?: string | null) =>
-  val
-    ? new Date(val).toLocaleDateString("en-PH", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    })
-    : null;
+	val
+		? new Date(val).toLocaleDateString("en-PH", {
+				month: "short",
+				day: "numeric",
+				year: "numeric",
+			})
+		: null;
 
 export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
-  const [questions, setQuestions] = useState<QuestionRow[]>([]);
-  const [responses, setResponses] = useState<ResponseRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const computedStatus = deriveStatus(survey.open_at, survey.close_at);
+	const [questions, setQuestions] = useState<QuestionRow[]>([]);
+	const [responses, setResponses] = useState<ResponseRow[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const computedStatus = deriveStatus(survey.open_at, survey.close_at);
 
-  // fetch questions + responses on mount / survey change
-  useEffect(() => {
-    if (!open || !survey.id) return;
-    let cancelled = false;
+	// fetch questions + responses on mount / survey change
+	useEffect(() => {
+		if (!open || !survey.id) return;
+		let cancelled = false;
 
-    async function fetchData() {
-      setLoading(true);
-      setError(null);
+		async function fetchData() {
+			setLoading(true);
+			setError(null);
 
-      const result = await getSurveyAnalytics(survey.id!);
+			const result = await getSurveyAnalytics(survey.id!);
 
-      if (!cancelled) {
-        if (result.error) {
-          setError(result.error);
-        } else {
-          const qs = (result.questions ?? []).map((q) => ({
-            ...q,
-            options: Array.isArray(q.options)
-              ? q.options
-              : typeof q.options === "string"
-                ? JSON.parse(q.options)
-                : null,
-          }));
-          setQuestions(qs);
-          setResponses(result.responses ?? []);
-        }
-        setLoading(false);
-      }
-    }
+			if (!cancelled) {
+				if (result.error) {
+					setError(result.error);
+				} else {
+					const qs = (result.questions ?? []).map((q) => ({
+						...q,
+						options: Array.isArray(q.options)
+							? q.options
+							: typeof q.options === "string"
+								? JSON.parse(q.options)
+								: null,
+					}));
+					setQuestions(qs);
+					setResponses(result.responses ?? []);
+				}
+				setLoading(false);
+			}
+		}
 
-    fetchData();
-    return () => { cancelled = true; };
-  }, [open, survey.id]);
+		fetchData();
+		return () => {
+			cancelled = true;
+		};
+	}, [open, survey.id]);
 
-  // total unique respondents
-  const totalRespondents = useMemo(() => {
-    return new Set(responses.map((r) => r.response_token)).size;
-  }, [responses]);
+	// total unique respondents
+	const totalRespondents = useMemo(() => {
+		return new Set(responses.map((r) => r.response_token)).size;
+	}, [responses]);
 
-  // group responses by question id
-  const responsesByQuestion = useMemo(() => {
-    const map: Record<string, ResponseRow[]> = {};
-    for (const r of responses) {
-      (map[r.question_id] ??= []).push(r);
-    }
-    return map;
-  }, [responses]);
+	// group responses by question id
+	const responsesByQuestion = useMemo(() => {
+		const map: Record<string, ResponseRow[]> = {};
+		for (const r of responses) {
+			(map[r.question_id] ??= []).push(r);
+		}
+		return map;
+	}, [responses]);
 
-  if (!open) return null;
+	if (!open) return null;
 
-  return (
+	return (
 		<div className="modal-backdrop" onClick={onClose}>
 			<div
 				className="modal"
@@ -308,60 +310,69 @@ export default function SurveyAnalyticsModal({ survey, open, onClose }: Props) {
 				</div>
 			</div>
 		</div>
-  );
+	);
 }
 
 /*
   Per-Question Card — dispatches to the correct chart based on question type
 */
 const TYPE_LABELS: Record<string, string> = {
-  multiple_choice: "Multiple Choice",
-  rating: "Likert Scale (1–5)",
-  yes_no: "Yes / No",
-  text: "Open-ended Text",
+	multiple_choice: "Multiple Choice",
+	rating: "Likert Scale (1–5)",
+	yes_no: "Yes / No",
+	text: "Open-ended Text",
 };
 
 function QuestionCard({
-  question,
-  index,
-  responses,
-  totalRespondents,
+	question,
+	index,
+	responses,
+	totalRespondents,
 }: {
-  question: QuestionRow;
-  index: number;
-  responses: ResponseRow[];
-  totalRespondents: number;
+	question: QuestionRow;
+	index: number;
+	responses: ResponseRow[];
+	totalRespondents: number;
 }) {
-  const type = question.question_type;
-  const typeLabel = TYPE_LABELS[type] ?? "Open-ended Text";
+	const type = question.question_type;
+	const typeLabel = TYPE_LABELS[type] ?? "Open-ended Text";
 
-  return ( 
-    <Card variant="no-shadow" className="flex flex-col gap-4">
-      {/* question header */}
-      <div className="flex items-start justify-between gap-3 border-b border-[rgba(45,42,74,0.08)] pb-3">
-        <div className="min-w-0">
-          <p className="caption text-[var(--gray)] mb-1">
-            Question {index + 1} · {typeLabel}
-          </p>
-          <h3 className="heading-md">{question.question_text}</h3>
-        </div>
-        <Badge variant="periwinkle" className="shrink-0 whitespace-nowrap">
-          {responses.length} response{responses.length !== 1 ? "s" : ""}
-        </Badge>
-      </div>
+	return (
+		<Card variant="no-shadow" className="flex flex-col gap-4">
+			{/* question header */}
+			<div className="flex items-start justify-between gap-3 border-b border-[rgba(45,42,74,0.08)] pb-3">
+				<div className="min-w-0">
+					<p className="caption text-[var(--gray)] mb-1">
+						Question {index + 1} · {typeLabel}
+					</p>
+					<h3 className="heading-md">{question.question_text}</h3>
+				</div>
+				<Badge
+					variant="periwinkle"
+					className="shrink-0 whitespace-nowrap"
+				>
+					{responses.length} response
+					{responses.length !== 1 ? "s" : ""}
+				</Badge>
+			</div>
 
-      {/* chart area */}
-      {responses.length === 0 ? (
-        <p className="body text-[var(--gray)] py-4 text-center">No responses for this question.</p>
-      ) : type === "multiple_choice" ? (
-        <MultipleChoiceChart question={question} responses={responses} />
-      ) : type === "yes_no" ? (
-        <YesNoChart responses={responses} />
-      ) : type === "rating" ? (
-        <LikertChart responses={responses} />
-      ) : (
-        <TextResponses responses={responses} />
-      )}
-    </Card>
-  );
+			{/* chart area */}
+			{responses.length === 0 ? (
+				<p className="body text-[var(--gray)] py-4 text-center">
+					No responses for this question.
+				</p>
+			) : type === "multiple_choice" ? (
+				<MultipleChoiceChart
+					question={question}
+					responses={responses}
+				/>
+			) : type === "yes_no" ? (
+				<YesNoChart responses={responses} />
+			) : type === "rating" ? (
+				<LikertChart responses={responses} />
+			) : (
+				<TextResponses responses={responses} />
+			)}
+		</Card>
+	);
 }
