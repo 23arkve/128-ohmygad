@@ -6,42 +6,55 @@ import "./globals.css";
 import "./fonts.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-body",
+	subsets: ["latin"],
+	weight: ["300", "400", "500", "600"],
+	variable: "--font-body",
 });
 
 const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+	? `https://${process.env.VERCEL_URL}`
+	: "http://localhost:3000";
 
 export const metadata: Metadata = {
-  icons: {
-    icon: '/kasarian-upb-logo.svg',
-  },
-  metadataBase: new URL(defaultUrl),
-  title: "UPB Kasarian OhMyGAD!",
-  description: "Event Management Platform for UPB Kasarian Gender Program",
+	icons: {
+		icon: "/kasarian-upb-logo.svg",
+	},
+	metadataBase: new URL(defaultUrl),
+	title: "UPB Kasarian OhMyGAD!",
+	description: "Event Management Platform for UPB Kasarian Gender Program",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning className={plusJakartaSans.variable}>
-      <body className="antialiased">
-        <QueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </QueryProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html
+			lang="en"
+			suppressHydrationWarning
+			className={plusJakartaSans.variable}
+		>
+			<head>
+				<link
+					rel="preload"
+					href="/fonts/ClashDisplay-Bold.woff2"
+					as="font"
+					type="font/woff2"
+					crossOrigin="anonymous"
+				/>
+			</head>
+			<body className="antialiased">
+				<QueryProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="light"
+						disableTransitionOnChange
+					>
+						{children}
+					</ThemeProvider>
+				</QueryProvider>
+			</body>
+		</html>
+	);
 }
