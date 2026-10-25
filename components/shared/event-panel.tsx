@@ -161,10 +161,10 @@ export const EventPanel = (): JSX.Element => {
 
 									<p className="caption text-[var(--gray)] mt-0.5">
 										{tab === "upcoming"
-											? "You haven't registered for any upcoming events."
+											? "You haven't registered for upcoming events."
 											: tab === "today"
-											? "You have no events scheduled for today."
-											: "You have no past registered events."}
+												? "You have no events scheduled for today."
+												: "You have no past registered events."}
 									</p>
 								</div>
 							</div>
@@ -177,7 +177,10 @@ export const EventPanel = (): JSX.Element => {
 									variant="soft"
 									size="sm"
 									onClick={() => {
-										const base = window.location.pathname.split("/").slice(0, 2).join("/");
+										const base = window.location.pathname
+											.split("/")
+											.slice(0, 2)
+											.join("/");
 
 										window.location.href = `${base}/events`;
 									}}
@@ -247,16 +250,33 @@ export const EventPanel = (): JSX.Element => {
 																	</div>
 																	<div className="flex items-center gap-x-3 gap-y-1 flex-wrap caption text-[var(--gray)]">
 																		<span className="flex items-center gap-1 shrink-0">
-																			<Clock size={11} />
-																			{event.time}
+																			<Clock
+																				size={
+																					11
+																				}
+																			/>
+																			{
+																				event.time
+																			}
 																		</span>
 																		<span className="flex items-center gap-1 min-w-0">
-																			<MapPin size={11} className="shrink-0" />
-																			<span className="truncate">{event.location}</span>
+																			<MapPin
+																				size={
+																					11
+																				}
+																				className="shrink-0"
+																			/>
+																			<span className="truncate">
+																				{
+																					event.location
+																				}
+																			</span>
 																		</span>
 																	</div>
 																	<h3 className="heading-sm leading-snug m-0 line-clamp-2">
-																		{event.title}
+																		{
+																			event.title
+																		}
 																	</h3>
 																	<div>
 																		{event.registrationStatus && (
@@ -345,16 +365,33 @@ export const EventPanel = (): JSX.Element => {
 															<div className="flex flex-col gap-1.5 flex-1 min-w-0">
 																<div className="flex items-center gap-x-3 gap-y-1 flex-wrap caption text-[var(--gray)]">
 																	<span className="flex items-center gap-1 shrink-0">
-																		<Clock size={11} />
-																		{event.time}
+																		<Clock
+																			size={
+																				11
+																			}
+																		/>
+																		{
+																			event.time
+																		}
 																	</span>
 																	<span className="flex items-center gap-1 min-w-0">
-																		<MapPin size={11} className="shrink-0" />
-																		<span className="truncate">{event.location}</span>
+																		<MapPin
+																			size={
+																				11
+																			}
+																			className="shrink-0"
+																		/>
+																		<span className="truncate">
+																			{
+																				event.location
+																			}
+																		</span>
 																	</span>
 																</div>
 																<h3 className="heading-sm leading-snug m-0 line-clamp-2">
-																	{event.title}
+																	{
+																		event.title
+																	}
 																</h3>
 																<div className="flex gap-2 flex-wrap mt-0.5">
 																	{event.registrationStatus && (
@@ -439,16 +476,22 @@ export const EventPanel = (): JSX.Element => {
 										{detailEvent.title}
 									</h2>
 									<div className="flex flex-col gap-1.5">
-									<div className="flex items-center gap-x-4 gap-y-1 flex-wrap caption text-[var(--gray)]">
-										<span className="flex items-center gap-2 shrink-0">
-											<Clock size={13} />
-											{detailEvent.date} · {detailEvent.time}
-										</span>
-										<span className="flex items-center gap-2 min-w-0">
-											<MapPin size={13} className="shrink-0" />
-											<span className="truncate">{detailEvent.location}</span>
-										</span>
-									</div>
+										<div className="flex items-center gap-x-4 gap-y-1 flex-wrap caption text-[var(--gray)]">
+											<span className="flex items-center gap-2 shrink-0">
+												<Clock size={13} />
+												{detailEvent.date} ·{" "}
+												{detailEvent.time}
+											</span>
+											<span className="flex items-center gap-2 min-w-0">
+												<MapPin
+													size={13}
+													className="shrink-0"
+												/>
+												<span className="truncate">
+													{detailEvent.location}
+												</span>
+											</span>
+										</div>
 									</div>
 									{detailEvent.registrationStatus && (
 										<Badge
