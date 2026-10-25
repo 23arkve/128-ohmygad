@@ -67,7 +67,7 @@ export const EventPanel = (): JSX.Element => {
 		<div className="flex flex-col h-full gap-2 md:gap-4">
 			{/* header */}
 			<div className="flex items-center justify-between gap-4 shrink-0 flex-wrap">
-				<h2 className="heading-lg">Events</h2>
+				<h2 className="heading-lg">Your Events</h2>
 				<Tabs
 					tabs={["Today", "Upcoming", "Past"]}
 					defaultTab={

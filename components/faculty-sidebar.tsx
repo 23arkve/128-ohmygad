@@ -80,7 +80,7 @@ function MobileNav() {
 						exit={{ opacity: 0 }}
 						transition={{ duration: 0.2 }}
 						onClick={() => setIsOpen(false)}
-						className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
+						className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm md:hidden"
 						aria-hidden="true"
 					/>
 
@@ -94,7 +94,7 @@ function MobileNav() {
 							stiffness: 300,
 							damping: 30,
 						}}
-						className="fixed bottom-0 left-0 top-0 z-50 flex w-[280px] max-w-[80vw] flex-col shadow-2xl md:hidden"
+						className="fixed bottom-0 left-0 top-0 z-[70] flex w-[280px] max-w-[80vw] flex-col shadow-2xl md:hidden"
 						style={{ background: "var(--primary-dark)" }}
 						aria-label="Mobile navigation"
 					>

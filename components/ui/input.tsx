@@ -226,7 +226,10 @@ export function SearchBar({
 			<span className="search-icon">
 				<Search size={16} />
 			</span>
-			<input className={`search-input ${className}`.trim()} {...props} />
+			<input
+				className={`search-input ${onClear ? "pr-10" : ""} ${className}`.trim()}
+				{...props}
+			/>
 			{props.value && onClear && (
 				<button
 					type="button"

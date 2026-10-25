@@ -71,7 +71,7 @@ export default function DashboardHeader({
 			/>
 
 			{/* content */}
-			<div className="relative z-10 flex w-full items-center justify-between gap-3 px-3 md:px-5">
+			<div className="relative z-20 flex w-full items-center justify-between gap-3 px-3 md:px-5">
 				{/* left: logo (mobile) + back button + title */}
 				<div className="flex items-center gap-2 min-w-0 min-h-[40px]">
 					<div className="flex md:hidden items-center gap-1.5 shrink-0">
@@ -94,10 +94,10 @@ export default function DashboardHeader({
 								height={38}
 							/>
 							<div className="flex flex-col justify-center">
-								<span className="caption">UP BAGUIO KASARIAN</span>
-								<span className="heading-sm">
-									OhMyGAD!
+								<span className="caption">
+									UP BAGUIO KASARIAN
 								</span>
+								<span className="heading-sm">OhMyGAD!</span>
 							</div>
 						</Link>
 					</div>
@@ -126,8 +126,7 @@ export default function DashboardHeader({
 
 			{/* mobile page title (non-dashboard) */}
 			{!isDashboard && (
-				// Removed "absolute bottom-0" and added standard relative positioning with "mt-4" to space it out below the logo
-				<div className="relative z-10 w-full flex md:hidden items-center gap-1.5 px-3 mt-4">
+				<div className="relative z-0 w-full flex md:hidden items-center gap-1.5 px-3 mt-4">
 					<h1 className="heading-md leading-none">{pageLabel}</h1>
 				</div>
 			)}

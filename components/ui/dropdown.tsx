@@ -61,91 +61,109 @@ import { useState } from "react";
 import React from "react";
 import { usePathname } from "next/navigation";
 
-//  DropdownItem 
+//  DropdownItem
 interface DropdownItemProps {
-  icon?: React.ReactNode;
-  children: React.ReactNode;
-  danger?: boolean;
-  onClick?: () => void;
+	icon?: React.ReactNode;
+	children: React.ReactNode;
+	danger?: boolean;
+	onClick?: () => void;
 }
 
-export function DropdownItem({ icon, children, danger, onClick }: DropdownItemProps) {
-  return (
-    <div className={`dropdown-item${danger ? " danger" : ""}`} onClick={onClick}>
-      {icon}
-      {children}
-    </div>
-  );
+export function DropdownItem({
+	icon,
+	children,
+	danger,
+	onClick,
+}: DropdownItemProps) {
+	return (
+		<div
+			className={`dropdown-item${danger ? " danger" : ""}`}
+			onClick={onClick}
+		>
+			{icon}
+			{children}
+		</div>
+	);
 }
 
 export function DropdownDivider() {
-  return <div className="dropdown-divider" />;
+	return <div className="dropdown-divider" />;
 }
 
-//  Dropdown 
+//  Dropdown
 interface DropdownProps {
-  trigger: React.ReactNode;
-  children: React.ReactNode;
-  menuStyle?: React.CSSProperties;
+	trigger: React.ReactNode;
+	children: React.ReactNode;
+	menuStyle?: React.CSSProperties;
 }
 
 export function Dropdown({ trigger, children, menuStyle }: DropdownProps) {
-  const [open, setOpen] = useState(false);
-  const [pos, setPos] = React.useState<{ top: number; right: number; maxWidth: number } | null>(null);
-  const ref = React.useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
+	const [open, setOpen] = useState(false);
+	const [pos, setPos] = React.useState<{
+		top: number;
+		right: number;
+		maxWidth: number;
+	} | null>(null);
+	const ref = React.useRef<HTMLDivElement>(null);
+	const pathname = usePathname();
 
-  React.useEffect(() => { setOpen(false); }, [pathname]);
+	React.useEffect(() => {
+		setOpen(false);
+	}, [pathname]);
 
-  React.useEffect(() => {
-    function handleOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    function handleResize() { setOpen(false); }
-    if (open) {
-      document.addEventListener("mousedown", handleOutside);
-      window.addEventListener("resize", handleResize);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleOutside);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [open]);
+	React.useEffect(() => {
+		function handleOutside(e: MouseEvent) {
+			if (ref.current && !ref.current.contains(e.target as Node))
+				setOpen(false);
+		}
+		function handleResize() {
+			setOpen(false);
+		}
+		if (open) {
+			document.addEventListener("mousedown", handleOutside);
+			window.addEventListener("resize", handleResize);
+		}
+		return () => {
+			document.removeEventListener("mousedown", handleOutside);
+			window.removeEventListener("resize", handleResize);
+		};
+	}, [open]);
 
-  function handleClick() {
-    if (!open && ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      const rightFromEdge = Math.max(0, window.innerWidth - rect.right);
-      setPos({
-        top: rect.bottom + 8,
-        right: rightFromEdge,
-        // max width that keeps the left edge ≥ 8px from the viewport
-        maxWidth: window.innerWidth - rightFromEdge - 8,
-      });
-    }
-    setOpen(o => !o);
-  }
+	function handleClick() {
+		if (!open && ref.current) {
+			const rect = ref.current.getBoundingClientRect();
+			const rightFromEdge = Math.max(0, window.innerWidth - rect.right);
+			setPos({
+				top: rect.bottom + 8,
+				right: rightFromEdge,
+				// max width that keeps the left edge ≥ 8px from the viewport
+				maxWidth: window.innerWidth - rightFromEdge - 8,
+			});
+		}
+		setOpen((o) => !o);
+	}
 
-  return (
-    <div className="dropdown" ref={ref}>
-      <div onClick={handleClick}>{trigger}</div>
-      {open && pos && (
-        <div
-          className="dropdown-menu"
-          style={{
-            position: "fixed",
-            top: pos.top,
-            right: pos.right,
-            left: "auto",
-            width: "max-content",
-            ...menuStyle,
-            // enforce viewport-safe maxWidth regardless of what menuStyle requests
-            maxWidth: pos.maxWidth,
-          }}
-        >
-          {children}
-        </div>
-      )}
-    </div>
-  );
+	return (
+		<div className="dropdown" ref={ref}>
+			<div onClick={handleClick}>{trigger}</div>
+			{open && pos && (
+				<div
+					className="dropdown-menu"
+					style={{
+						position: "fixed",
+						zIndex: 50,
+						top: pos.top,
+						right: pos.right,
+						left: "auto",
+						width: "max-content",
+						...menuStyle,
+						// enforce viewport-safe maxWidth regardless of what menuStyle requests
+						maxWidth: pos.maxWidth,
+					}}
+				>
+					{children}
+				</div>
+			)}
+		</div>
+	);
 }

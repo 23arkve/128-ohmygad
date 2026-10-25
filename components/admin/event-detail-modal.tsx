@@ -545,43 +545,14 @@ export function EventDetailModal({
 											size={15}
 											className="shrink-0"
 										/>
-										<span
-											title={
-												event.registration_open
-													? `Registration: ${new Date(event.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}` +
-														(event.registration_close &&
-														event.registration_close !==
-															event.registration_open
-															? ` — ${new Date(event.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}`
-															: "")
-													: "No date set"
-											}
-										>
+										<span>
 											Registration:&nbsp;
 											{event.registration_open
-												? new Date(
-														event.registration_open,
-													).toLocaleDateString(
-														"en-PH",
-														{
-															month: "long",
-															day: "numeric",
-															year: "numeric",
-														},
-													)
+												? `${new Date(event.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric" })}, ${new Date(event.registration_open).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}`
 												: "?"}
 											&nbsp;—&nbsp;
 											{event.registration_close
-												? new Date(
-														event.registration_close,
-													).toLocaleDateString(
-														"en-PH",
-														{
-															month: "long",
-															day: "numeric",
-															year: "numeric",
-														},
-													)
+												? `${new Date(event.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric" })}, ${new Date(event.registration_close).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}`
 												: "?"}
 										</span>
 									</div>
