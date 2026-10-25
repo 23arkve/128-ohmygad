@@ -24,7 +24,7 @@ export function Tabs({ tabs, icons, defaultTab, onChange, className }: TabsProps
       {tabs.map((t, i) => (
         <button
           key={t}
-          className={`tab${active === t ? " active" : ""}${icons?.[i] ? " flex items-center gap-1.5" : ""}`}
+          className={`tab${active === t ? " active" : ""}${icons?.[i] ? " flex items-center justify-center gap-1.5" : " flex items-center justify-center"}`}
           onClick={() => handleClick(t)}
         >
           {icons?.[i]}
