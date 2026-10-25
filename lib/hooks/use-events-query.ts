@@ -22,8 +22,7 @@ export function useEventsQuery() {
 			// 2 — fetch registration counts
 			const { data: counts } = await supabase
 				.from("event_registration_counts")
-				.select("event_id, count")
-				.neq("status", "cancelled");
+				.select("event_id, count");
 
 			const regCounts: Record<string, number> = {};
 			if (counts) {
