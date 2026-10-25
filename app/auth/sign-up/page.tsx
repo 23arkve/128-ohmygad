@@ -4,7 +4,7 @@ import { Suspense } from "react";
 
 export default function SignUpPage() {
 	return (
-		<div className="page-bg relative w-full min-h-screen overflow-hidden flex items-center justify-center p-4 sm:p-8">
+		<main className="page-bg relative w-full min-h-screen overflow-hidden flex items-center justify-center p-4 sm:p-8">
 			{/* --- design --- */}
 			<div
 				className="blob blob-pink hidden md:block"
@@ -62,6 +62,6 @@ export default function SignUpPage() {
 					</Suspense>
 				</div>
 			</div>
-		</div>
+		</main>
 	);
 }
