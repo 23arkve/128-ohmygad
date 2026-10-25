@@ -2,8 +2,8 @@ import { ForgotPasswordForm } from "@/components/forgot-password-form";
 import Image from "next/image";
 
 export default function Page() {
-  return (
-		<div className="page-bg flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+	return (
+		<main className="page-bg flex min-h-svh w-full items-center justify-center p-6 md:p-10">
 			<div
 				className="blob blob-pink hidden md:block"
 				style={{
@@ -36,13 +36,11 @@ export default function Page() {
 					/>
 					<div className="flex flex-col items-center">
 						<p className="body">UP BAGUIO KASARIAN</p>
-						<h1 className="heading-lg md:heading-xl">
-							OhMyGAD!
-						</h1>
+						<h1 className="heading-lg md:heading-xl">OhMyGAD!</h1>
 					</div>
 				</div>
 				<ForgotPasswordForm />
 			</div>
-		</div>
-  );
+		</main>
+	);
 }

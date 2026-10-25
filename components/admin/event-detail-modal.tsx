@@ -52,11 +52,13 @@ type RegisteredUser = {
 	display_name: string | null;
 	full_name: string | null;
 	email: string | null;
+	sex_at_birth: string | null;
+	gender_identity: string | null;
 	registration_date: string | null;
 	attended: boolean;
 };
 
-const MODAL_STYLE = { maxWidth: 960, padding: 0 };
+const MODAL_STYLE = { maxWidth: 1220, padding: 0 };
 const MODAL_CONTENT_STYLE = {
 	display: "flex",
 	flexDirection: "column" as const,
@@ -76,15 +78,33 @@ const UserRow = memo(function UserRow({
 }) {
 	return (
 		<div
-			className={`grid gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--lavender)] transition-colors items-center ${showCheckbox ? "grid-cols-[1fr_1fr_44px]" : "grid-cols-[1fr_1fr]"} ${i % 2 !== 0 ? "bg-[rgba(45,42,74,0.02)]" : ""}`}
+			className={`grid gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--lavender)] transition-colors items-center ${showCheckbox ? "grid-cols-[1.5fr_1.5fr_0.5fr_0.5fr_44px]" : "grid-cols-[1.5fr_1.5fr_0.7fr_0.7fr]"} ${i % 2 !== 0 ? "bg-[rgba(45,42,74,0.02)]" : ""}`}
 		>
-			<span className="caption truncate font-medium">
-				{user.display_name || user.full_name || (
+			<span
+				className="caption truncate font-medium"
+				title={user.full_name || user.display_name || ""}
+			>
+				{user.full_name || user.display_name || (
 					<span className="text-[var(--gray)]">—</span>
 				)}
 			</span>
-			<span className="caption truncate text-[var(--gray)]">
+			<span
+				className="caption truncate text-[var(--gray)]"
+				title={user.email || ""}
+			>
 				{user.email || "—"}
+			</span>
+			<span
+				className="caption truncate text-[var(--gray)]"
+				title={user.sex_at_birth || ""}
+			>
+				{user.sex_at_birth || "—"}
+			</span>
+			<span
+				className="caption truncate text-[var(--gray)]"
+				title={user.gender_identity || ""}
+			>
+				{user.gender_identity || "—"}
 			</span>
 			{showCheckbox && (
 				<div
@@ -140,7 +160,7 @@ export function EventDetailModal({
 		const { data } = await supabase
 			.from("event_registration")
 			.select(
-				"id, user_id, registration_date, attended, profile:user_id ( display_name, full_name, email )",
+				"id, user_id, registration_date, attended, profile:user_id ( display_name, full_name, email, sex_at_birth, gender_identity )",
 			)
 			.eq("event_id", eventId);
 
@@ -152,6 +172,8 @@ export function EventDetailModal({
 				display_name: r.profile?.display_name ?? null,
 				full_name: r.profile?.full_name ?? null,
 				email: r.profile?.email ?? null,
+				sex_at_birth: r.profile?.sex_at_birth ?? null,
+				gender_identity: r.profile?.gender_identity ?? null,
 				registration_date: r.registration_date,
 				attended: r.attended ?? false,
 			}));
@@ -281,10 +303,19 @@ export function EventDetailModal({
 
 		const regRows = [
 			["REGISTRATIONS"],
-			["Name", "Email", "Registration Date", "Attended"],
+			[
+				"Full Name",
+				"Email",
+				"Sex at Birth",
+				"Gender Identity",
+				"Registration Date",
+				"Attended",
+			],
 			...registrations.map((r) => [
-				r.display_name || r.full_name || "—",
+				r.full_name || r.display_name || "—",
 				r.email ?? "—",
+				r.sex_at_birth ?? "—",
+				r.gender_identity ?? "—",
 				fmt(r.registration_date),
 				r.attended ? "Yes" : "No",
 			]),
@@ -297,10 +328,12 @@ export function EventDetailModal({
 			[
 				`${attended.length} attended out of ${registrations.length} registered`,
 			],
-			["Name", "Email"],
+			["Full Name", "Email", "Sex at Birth", "Gender Identity"],
 			...attended.map((r) => [
-				r.display_name || r.full_name || "—",
+				r.full_name || r.display_name || "—",
 				r.email ?? "—",
+				r.sex_at_birth ?? "—",
+				r.gender_identity ?? "—",
 			]),
 		];
 
@@ -333,9 +366,13 @@ export function EventDetailModal({
 			registrations.filter(
 				(r) =>
 					!q ||
-					[r.display_name, r.full_name, r.email].some((v) =>
-						v?.toLowerCase().includes(q),
-					),
+					[
+						r.full_name,
+						r.display_name,
+						r.email,
+						r.sex_at_birth,
+						r.gender_identity,
+					].some((v) => v?.toLowerCase().includes(q)),
 			),
 		[registrations, q],
 	);
@@ -350,9 +387,13 @@ export function EventDetailModal({
 			attendedUsers.filter(
 				(r) =>
 					!q ||
-					[r.display_name, r.full_name, r.email].some((v) =>
-						v?.toLowerCase().includes(q),
-					),
+					[
+						r.full_name,
+						r.display_name,
+						r.email,
+						r.sex_at_birth,
+						r.gender_identity,
+					].some((v) => v?.toLowerCase().includes(q)),
 			),
 		[attendedUsers, q],
 	);
@@ -545,43 +586,14 @@ export function EventDetailModal({
 											size={15}
 											className="shrink-0"
 										/>
-										<span
-											title={
-												event.registration_open
-													? `Registration: ${new Date(event.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}` +
-														(event.registration_close &&
-														event.registration_close !==
-															event.registration_open
-															? ` — ${new Date(event.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}`
-															: "")
-													: "No date set"
-											}
-										>
+										<span>
 											Registration:&nbsp;
 											{event.registration_open
-												? new Date(
-														event.registration_open,
-													).toLocaleDateString(
-														"en-PH",
-														{
-															month: "long",
-															day: "numeric",
-															year: "numeric",
-														},
-													)
+												? `${new Date(event.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric" })}, ${new Date(event.registration_open).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}`
 												: "?"}
 											&nbsp;—&nbsp;
 											{event.registration_close
-												? new Date(
-														event.registration_close,
-													).toLocaleDateString(
-														"en-PH",
-														{
-															month: "long",
-															day: "numeric",
-															year: "numeric",
-														},
-													)
+												? `${new Date(event.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric" })}, ${new Date(event.registration_close).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}`
 												: "?"}
 										</span>
 									</div>
@@ -728,34 +740,42 @@ export function EventDetailModal({
 											</p>
 										</Card>
 									) : (
-										<div className="flex flex-col max-h-[420px] overflow-y-auto pr-1">
-											<div className="grid grid-cols-[1fr_1fr_44px] gap-3 px-3 sticky top-0 bg-white">
-												<span className="label">
-													Name
-												</span>
-												<span className="label">
-													Email
-												</span>
-												<span className="label text-center">
-													Present
-												</span>
+										<div className="flex flex-col max-h-[420px] overflow-y-auto overflow-x-auto pr-1">
+											<div className="min-w-[560px]">
+												<div className="grid grid-cols-[1.5fr_1.5fr_0.5fr_0.5fr_44px] gap-3 px-3 sticky top-0 bg-white">
+													<span className="label">
+														Full Name
+													</span>
+													<span className="label">
+														Email
+													</span>
+													<span className="label">
+														Sex
+													</span>
+													<span className="label">
+														Gender
+													</span>
+													<span className="label text-center">
+														Present
+													</span>
+												</div>
+												<div className="divider my-0" />
+												{filteredRegistrations.map(
+													(user, i) => (
+														<UserRow
+															key={
+																user.registration_id
+															}
+															user={user}
+															i={i}
+															showCheckbox
+															onToggle={
+																handleToggleAttendance
+															}
+														/>
+													),
+												)}
 											</div>
-											<div className="divider my-0" />
-											{filteredRegistrations.map(
-												(user, i) => (
-													<UserRow
-														key={
-															user.registration_id
-														}
-														user={user}
-														i={i}
-														showCheckbox
-														onToggle={
-															handleToggleAttendance
-														}
-													/>
-												),
-											)}
 										</div>
 									)}
 								</div>
@@ -834,27 +854,39 @@ export function EventDetailModal({
 											</p>
 										</Card>
 									) : (
-										<div className="flex flex-col max-h-[420px] overflow-y-auto pr-1">
-											<div className="grid grid-cols-[1fr_1fr] gap-3 px-3 sticky top-0 bg-white">
-												<span className="label">
-													Name
-												</span>
-												<span className="label">
-													Email
-												</span>
+										<div className="flex flex-col max-h-[420px] overflow-y-auto overflow-x-auto pr-1">
+											<div className="min-w-[520px]">
+												<div className="grid grid-cols-[1.5fr_1.5fr_0.7fr_0.7fr] gap-3 px-3 sticky top-0 bg-white">
+													<span className="label">
+														Full Name
+													</span>
+													<span className="label">
+														Email
+													</span>
+													<span className="label">
+														Sex
+													</span>
+													<span className="label">
+														Gender
+													</span>
+												</div>
+												<div className="divider my-0" />
+												{filteredAttended.map(
+													(user, i) => (
+														<UserRow
+															key={
+																user.registration_id
+															}
+															user={user}
+															i={i}
+															showCheckbox={false}
+															onToggle={
+																handleToggleAttendance
+															}
+														/>
+													),
+												)}
 											</div>
-											<div className="divider my-0" />
-											{filteredAttended.map((user, i) => (
-												<UserRow
-													key={user.registration_id}
-													user={user}
-													i={i}
-													showCheckbox={false}
-													onToggle={
-														handleToggleAttendance
-													}
-												/>
-											))}
 										</div>
 									)}
 								</div>

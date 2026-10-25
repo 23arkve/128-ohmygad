@@ -81,22 +81,27 @@ export function useEventRegistration({
 
 			setRegisteringId(eventId);
 			try {
-				await registerMutation.mutateAsync({ eventId, userId: currentUserId });
+				await registerMutation.mutateAsync({
+					eventId,
+					userId: currentUserId,
+				});
 				showToast({
 					variant: "success",
-					title: `Registered to "${event?.title ?? 'event'}" successfully.`,
+					title: `Registered to "${event?.title ?? "event"}" successfully.`,
 				});
-			} catch {
+			} catch (err: any) {
 				showToast({
 					variant: "error",
 					title: "Registration failed",
-					message: "Registration failed. Please try again.",
+					message:
+						err?.message ||
+						"Registration failed. Please try again.",
 				});
 			} finally {
 				setRegisteringId(null);
 			}
 		},
-		[currentUserId, events, registeredIds, registerMutation, showToast]
+		[currentUserId, events, registeredIds, registerMutation, showToast],
 	);
 
 	const handleCancelRegistration = useCallback(
@@ -107,10 +112,13 @@ export function useEventRegistration({
 			const event = events.find((ev) => ev.id === eventId);
 			setRegisteringId(eventId);
 			try {
-				await cancelMutation.mutateAsync({ eventId, userId: currentUserId });
+				await cancelMutation.mutateAsync({
+					eventId,
+					userId: currentUserId,
+				});
 				showToast({
 					variant: "info",
-					title: `Cancelled registration for "${event?.title ?? 'event'}".`,
+					title: `Cancelled registration for "${event?.title ?? "event"}".`,
 				});
 			} catch {
 				showToast({
@@ -122,11 +130,15 @@ export function useEventRegistration({
 				setRegisteringId(null);
 			}
 		},
-		[cancelMutation, currentUserId, events, showToast]
+		[cancelMutation, currentUserId, events, showToast],
 	);
 
 	return {
-		registeringId: registeringId || (registerMutation.isPending || cancelMutation.isPending ? "pending" : null),
+		registeringId:
+			registeringId ||
+			(registerMutation.isPending || cancelMutation.isPending
+				? "pending"
+				: null),
 		registerError,
 		setRegisterError,
 		toast,

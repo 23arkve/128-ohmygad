@@ -699,27 +699,11 @@ export default function EventsPage() {
 										<span>
 											Registration:&nbsp;
 											{detailEvent.registration_open
-												? new Date(
-														detailEvent.registration_open,
-													).toLocaleDateString(
-														"en-PH",
-														{
-															month: "long",
-															day: "numeric",
-														},
-													)
+												? `${new Date(detailEvent.registration_open).toLocaleDateString("en-PH", { month: "long", day: "numeric" })}, ${new Date(detailEvent.registration_open).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}`
 												: "?"}
 											&nbsp;—&nbsp;
 											{detailEvent.registration_close
-												? new Date(
-														detailEvent.registration_close,
-													).toLocaleDateString(
-														"en-PH",
-														{
-															month: "long",
-															day: "numeric",
-														},
-													)
+												? `${new Date(detailEvent.registration_close).toLocaleDateString("en-PH", { month: "long", day: "numeric" })}, ${new Date(detailEvent.registration_close).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}`
 												: "?"}
 										</span>
 									</div>
