@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.1.0](https://github.com/23arkve/128-ohmygad/compare/v1.0.0...v1.1.0) (2026-10-26)
+
+
+### Features
+
+* addtl details on event detail modal ([a2ed108](https://github.com/23arkve/128-ohmygad/commit/a2ed108af4785b6b5560b8090e9241f07e6f94bd))
+* change event time from 30 to 5 interval ([980a9ee](https://github.com/23arkve/128-ohmygad/commit/980a9eee43434adb26f4754b807716566533ba8d))
+* change wording ([9c88c99](https://github.com/23arkve/128-ohmygad/commit/9c88c991ee4a83030f6ed272d559f437ed9e8941))
+* improve profile badges across role pages ([1770bda](https://github.com/23arkve/128-ohmygad/commit/1770bdaf8fbe944a3d0a3b80c926a48ffddc2f1c))
+* use aggregated registration counts in events query ([ad9a217](https://github.com/23arkve/128-ohmygad/commit/ad9a217f66a2c36a80bd223b494fcc77bb08fa0f))
+
+
+### Bug Fixes
+
+* fixed the YAML syntax error ([9148e98](https://github.com/23arkve/128-ohmygad/commit/9148e9867a406c46d40859a0be7fff25a41aa680))
+* general ui breaks ([c6948a5](https://github.com/23arkve/128-ohmygad/commit/c6948a5d9ef19a85c7deb9afde41fcc55fabdfc2))
+* page hierarchy and ui breaks ([a3ead08](https://github.com/23arkve/128-ohmygad/commit/a3ead0826525b750e59720f1f61753c7b00ae193))
+* raise card action z-index for edit user ([a7b4b14](https://github.com/23arkve/128-ohmygad/commit/a7b4b14225d0a12281d8000cba8569d8d679ff80))
+* release build env for Supabase admin client ([6bfcae2](https://github.com/23arkve/128-ohmygad/commit/6bfcae2919054d09adeca90c1de389c90dcf66cf))
+* remove status cancelled in reg counts ([5dfdcab](https://github.com/23arkve/128-ohmygad/commit/5dfdcabb86c93dce2039d410544b2090d8e7df55))
+* tab text alignment in event detail modal ([f3ca560](https://github.com/23arkve/128-ohmygad/commit/f3ca5608fc75d4da9b1b053bea178cc2ceca192b))
+* ui break on event details modal table ([e2bdd1b](https://github.com/23arkve/128-ohmygad/commit/e2bdd1b2199360e7fee423124f9f0b37edbaa649))
+* ui break on survey analytics ([263b9d6](https://github.com/23arkve/128-ohmygad/commit/263b9d6ede7e1ae7ad81ae3ac61be88db8357053))
+
+
+### Performance Improvements
+
+* add priority tag to image in login ([bbd36d8](https://github.com/23arkve/128-ohmygad/commit/bbd36d8b49f7211afaac87bebb88d683c35bdcb5))
+* add priority tag to image to fix loading delay ([b074877](https://github.com/23arkve/128-ohmygad/commit/b074877fe5e205f40a0c1ca0d35616535b8e7145))
+* pre-load css and html simultaneously ltaenously ([15578e5](https://github.com/23arkve/128-ohmygad/commit/15578e5e3cd3d89b7b7f33576bd1e8920a967ed1))
+
 ## 1.0.0 (2026-07-28)
 
 
