@@ -62,6 +62,7 @@ const MODAL_STYLE = { maxWidth: 1220, padding: 0 };
 const MODAL_CONTENT_STYLE = {
 	display: "flex",
 	flexDirection: "column" as const,
+	overflow: "hidden",
 };
 const SEARCHBAR_FULL_WIDTH = { width: "100%" };
 
@@ -78,7 +79,7 @@ const UserRow = memo(function UserRow({
 }) {
 	return (
 		<div
-			className={`grid gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--lavender)] transition-colors items-center ${showCheckbox ? "grid-cols-[1.5fr_1.5fr_0.5fr_0.5fr_44px]" : "grid-cols-[1.5fr_1.5fr_0.7fr_0.7fr]"} ${i % 2 !== 0 ? "bg-[rgba(45,42,74,0.02)]" : ""}`}
+			className={`grid gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--lavender)] transition-colors items-center ${showCheckbox ? "grid-cols-[1.5fr_1.5fr_0.5fr_0.5fr_40px]" : "grid-cols-[1.5fr_1.5fr_0.7fr_0.7fr]"} ${i % 2 !== 0 ? "bg-[rgba(45,42,74,0.02)]" : ""}`}
 		>
 			<span
 				className="caption truncate font-medium"
@@ -411,7 +412,7 @@ export function EventDetailModal({
 				<div className="flex flex-col min-h-0">
 					{/* banner */}
 					<div
-						className="h-[300px] sm:h-[280px] relative shrink-0 rounded-t-[var(--radius-xl)]"
+						className="h-[300px] relative shrink-0 rounded-t-[var(--radius-xl)]"
 						style={{
 							background: event.banner_url
 								? `url(${event.banner_url}) center/cover no-repeat`
@@ -442,9 +443,9 @@ export function EventDetailModal({
 					</div>
 
 					{/* two-column body */}
-					<div className="flex gap-6 p-7 overflow-y-auto">
+					<div className="flex gap-6 p-5 sm:p-6 overflow-hidden flex-1 min-h-0">
 						{/* left column */}
-						<div className="flex flex-col gap-4 flex-1 min-w-0">
+						<div className="flex flex-col gap-4 flex-1 min-w-0 overflow-y-auto pr-1">
 							<h2 className="heading-md">{event.title}</h2>
 							<div className="flex gap-2 items-center flex-wrap justify-between">
 								<div className="flex gap-2 items-center">
@@ -602,7 +603,7 @@ export function EventDetailModal({
 
 							<div className="divider" />
 
-							<div className="flex flex-col gap-3 pb-8">
+							<div className="flex flex-col gap-3">
 								<p className="label">ABOUT THIS EVENT</p>
 								<p className="body whitespace-pre-line">
 									{event.description ||
@@ -612,7 +613,7 @@ export function EventDetailModal({
 						</div>
 
 						{/* right column */}
-						<div className="flex flex-col gap-3 flex-1 min-w-0 pb-8">
+						<div className="flex flex-col gap-3 flex-1 min-w-0">
 							<div className="flex items-center justify-between gap-3">
 								<Tabs
 									tabs={["Registrations", "Attendance"]}
@@ -740,9 +741,9 @@ export function EventDetailModal({
 											</p>
 										</Card>
 									) : (
-										<div className="flex flex-col max-h-[420px] overflow-y-auto overflow-x-auto pr-1">
+										<div className="overflow-x-auto">
 											<div className="min-w-[560px]">
-												<div className="grid grid-cols-[1.5fr_1.5fr_0.5fr_0.5fr_44px] gap-3 px-3 sticky top-0 bg-white">
+												<div className="grid grid-cols-[1.5fr_1.5fr_0.45fr_0.6fr_45px] gap-3 px-3 py-2 border-b border-[rgba(45,42,74,0.08)] bg-white">
 													<span className="label">
 														Full Name
 													</span>
@@ -759,22 +760,23 @@ export function EventDetailModal({
 														Present
 													</span>
 												</div>
-												<div className="divider my-0" />
-												{filteredRegistrations.map(
-													(user, i) => (
-														<UserRow
-															key={
-																user.registration_id
-															}
-															user={user}
-															i={i}
-															showCheckbox
-															onToggle={
-																handleToggleAttendance
-															}
-														/>
-													),
-												)}
+												<div className="flex flex-col max-h-[245px] overflow-y-auto pr-1 pb-2">
+													{filteredRegistrations.map(
+														(user, i) => (
+															<UserRow
+																key={
+																	user.registration_id
+																}
+																user={user}
+																i={i}
+																showCheckbox
+																onToggle={
+																	handleToggleAttendance
+																}
+															/>
+														),
+													)}
+												</div>
 											</div>
 										</div>
 									)}
@@ -854,9 +856,9 @@ export function EventDetailModal({
 											</p>
 										</Card>
 									) : (
-										<div className="flex flex-col max-h-[420px] overflow-y-auto overflow-x-auto pr-1">
+										<div className="overflow-x-auto">
 											<div className="min-w-[520px]">
-												<div className="grid grid-cols-[1.5fr_1.5fr_0.7fr_0.7fr] gap-3 px-3 sticky top-0 bg-white">
+												<div className="grid grid-cols-[1.5fr_1.5fr_0.7fr_0.7fr] gap-3 px-3 py-2 border-b border-[rgba(45,42,74,0.08)] bg-white">
 													<span className="label">
 														Full Name
 													</span>
@@ -870,22 +872,25 @@ export function EventDetailModal({
 														Gender
 													</span>
 												</div>
-												<div className="divider my-0" />
-												{filteredAttended.map(
-													(user, i) => (
-														<UserRow
-															key={
-																user.registration_id
-															}
-															user={user}
-															i={i}
-															showCheckbox={false}
-															onToggle={
-																handleToggleAttendance
-															}
-														/>
-													),
-												)}
+												<div className="flex flex-col max-h-[245px] overflow-y-auto pr-1 pb-2">
+													{filteredAttended.map(
+														(user, i) => (
+															<UserRow
+																key={
+																	user.registration_id
+																}
+																user={user}
+																i={i}
+																showCheckbox={
+																	false
+																}
+																onToggle={
+																	handleToggleAttendance
+																}
+															/>
+														),
+													)}
+												</div>
 											</div>
 										</div>
 									)}
